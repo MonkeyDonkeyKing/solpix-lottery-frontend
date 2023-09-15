@@ -1,0 +1,148 @@
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 5rem;
+}
+
+.nftcontainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  border: 1px solid var(--color-text-grey);
+  border-radius: 20px;
+  padding: 1rem;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-text-grey);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  min-width: 20rem;
+}
+
+.switchwrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  scale: 0.8;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+.initialinput {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0rem;
+}
+
+.formContainer button {
+  background-color: white;
+  color: var(--color-text-dark);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  height: 30px;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.addsolprice {
+  display: flex;
+  flex-direction: column;
+}
+
+.table {
+  border: 1px solid var(--color-text-grey);
+  border-radius: 20px;
+  padding: 1rem;
+  margin-top: 2rem;
+  align-self: flex-start;
+}
+
+.table table {
+  width: 100%;
+  text-align: match-parent;
+}
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding: 3rem;
+  gap: 2rem;
+  width: 100%;
+}
+
+.actions button {
+    background-color: white;
+    color: var(--color-text-dark);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+.actions button:disabled {
+  background-color: rgb(24, 24, 24);
+  color: var(--color-text-grey);
+  cursor: not-allowed;
+}
+
+

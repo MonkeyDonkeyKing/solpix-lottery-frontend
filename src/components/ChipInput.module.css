@@ -1,0 +1,13 @@
+.chipinput {
+  display: flex;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  min-width: 100px;
+  border: 1px solid var(--color-text-light);
+  width: auto;
+}
+
+.chipinput p {
+  font-size: 20px;
+  margin: 0.7rem;
+}

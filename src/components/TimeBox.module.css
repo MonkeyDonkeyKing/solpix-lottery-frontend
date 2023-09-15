@@ -1,0 +1,30 @@
+.timebox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-text-light);
+  min-height: 69px;
+  border: 3px solid var(--background-gray);
+  gap: 1rem;
+  border-radius: var(--border-radius);
+  background-color: rgba(40,40,40,1);
+  padding: 10px;
+  min-width: 15rem;
+}
+
+.timebox div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timebox p {
+  margin: 0;
+  color: white;
+}
+
+.timebox div>span {
+  font-size: 12px;
+}
+
+

@@ -1,0 +1,170 @@
+@media screen and (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .drawingColumn,
+  .drawingColumn2,
+  .table {
+    min-width: unset;
+    width: 100%;
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .drawingColumn {
+    font-size: 2rem;
+    height: 120px;
+  }
+
+  .drawingColumn2 {
+    font-size: 1.5rem;
+  }
+
+  .table {
+    min-height: 300px;
+  }
+}
+
+.cardcontainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3rem;
+}
+
+.drawingColumn {
+  font-weight: bold;
+  color: var(--color-text-grey);
+  min-width: 549px;
+}
+
+.drawingColumn2 {
+  min-width: 200px;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.drawingColumn,
+.drawingColumn2 {
+  color: white;
+  background: linear-gradient(90deg, rgba(31, 31, 31, 1) 0%, rgba(40, 40, 40, 1) 100%);
+  border-radius: var(--border-radius) !important;
+  height: 85px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0rem 1rem;
+  font-size: 4rem;
+  font-weight: bold;
+}
+
+.table {
+  background: linear-gradient(90deg, rgba(31, 31, 31, 1) 0%, rgba(40, 40, 40, 1) 100%);
+  border-radius: var(--border-radius) !important;
+  box-shadow: none !important;
+  min-width: 377px;
+  min-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden !important;
+}
+
+.table p {
+  background-color: var(--background-gray);
+  border-radius: var(--border-radius);
+  margin-left: auto;
+  padding: 0.4rem 1rem;
+  color: var(--color-text-grey);
+  min-width: 82px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.table th {
+  color: var(--color-text-grey);
+  display: flex;
+  align-items: center;
+  padding: 10px 10px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.table th > span {
+  margin-left: auto;
+}
+
+.table td {
+  color: white;
+  display: flex;
+  align-items: center;
+  border-bottom: none !important;
+  line-height: 1;
+  padding: 0px 1rem;
+  height: 60px;
+  font-size: 28px;
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+}
+
+.sortButtons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 2rem 0rem;
+}
+
+.sortButtons button {
+  background: none;
+  color: var(--color-text-grey);
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+.sortButtons span {
+  font-size: 18px;
+  color: var(--color-text-grey);
+}
+
+.active {
+  color: white !important;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  padding-top: 3rem;
+}
+
+.container a {
+  border: 1px solid gray;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+}
+
+.buttoncontainer {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+.button {
+  border: 1px solid gray;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  background: var(--background-gray);
+  color: white;
+}

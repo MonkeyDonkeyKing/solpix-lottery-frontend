@@ -1,0 +1,72 @@
+.navigation {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0rem;
+  align-items: center;
+  position: relative;
+}
+
+.navigation a:first-child {
+  left: 0;
+  color: var(--color-text-light);
+  position: absolute;
+  margin: 0rem 3rem;
+}
+
+.navigation h3 {
+  font-weight: initial;
+  font-size: 30px;
+}
+
+.navigation nav{
+  display: flex;
+  align-items: center;
+  list-style-type: none;
+  gap: 1rem;
+  border: 1px solid white;
+  border-radius: var(--border-radius);
+  margin: 1rem 0rem;
+  height: 2rem;
+  width: 45rem;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+
+}
+
+.navigation li{
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: var(--color-text-light);
+}
+
+.navigation nav li:hover {
+  background-color: rgba(246, 246, 246,0.16);
+  cursor: pointer;
+  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius);
+}
+
+/* Ugly overwrite for solana wallet adapter */
+.walletButton {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-dark);
+  font-weight: normal;
+  border: none;
+  padding: unset;
+  margin: unset;
+  border-radius: unset;
+  filter: grayscale(1);
+  background-color: transparent !important;
+  height: unset;
+  line-height: unset;
+  color: var(--color-text-light);
+}
+
+@media screen and (max-width: 1084px) {
+  .navigation a:first-child {
+    display: none;
+  }
+}

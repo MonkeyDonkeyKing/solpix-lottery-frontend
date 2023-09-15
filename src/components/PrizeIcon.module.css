@@ -1,0 +1,44 @@
+.solicon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-text-light);
+  gap: 1rem;
+  background-color: var(--background-gray);
+  min-height: 69px;
+  border-radius: var(--border-radius);
+  width: fit-content;
+  border: 1px solid var(--color-text-light);
+  padding: 0px 20px;
+  cursor: pointer;
+}
+.solicon p {
+  text-transform: uppercase;
+}
+
+.solicon :first-child {
+  filter: invert();
+  margin-right: -10px;
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: inherit;
+  flex-wrap: wrap;
+  gap: 1rem 3rem;
+  flex-direction: column;
+}
+
+.card {
+  background: hsla(0, 0%, 38.4%, 0.80);
+  border-radius: var(--border-radius);
+  border: 2px solid var(--card-gray);
+}
+
+.card h1 {
+  text-align: center;
+  background: hsla(0, 0%, 0%, 0.44);
+}
+

@@ -1,0 +1,15 @@
+.collab p {
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  padding-top: 3rem;
+}
+
+.container a {
+  border: 1px solid gray;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+}

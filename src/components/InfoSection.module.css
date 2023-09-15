@@ -1,0 +1,24 @@
+.infosection {
+  display: flex;
+  margin: 4rem 0rem;
+}
+
+.infosection div {
+  padding: 0rem 1rem;
+}
+
+
+.infosection div h1 {
+  -webkit-text-stroke: 1px white; 
+  -moz-text-stroke: 1px white;
+  color: transparent;
+  font-size: 80px;
+  margin: 0;
+  padding: 0;
+}
+
+
+.infosection div p {
+  text-align: center;
+}
+

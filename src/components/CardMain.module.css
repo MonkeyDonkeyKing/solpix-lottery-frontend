@@ -1,0 +1,84 @@
+.card #card-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  color: var(--color-text-light);
+  background: linear-gradient(90deg, rgba(31,31,31,1) 0%, rgba(40,40,40,1) 100%);
+  align-items: baseline;
+  padding-top: 3rem;
+  justify-content: space-evenly;
+}
+
+.card section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card hr {
+  border-color: var(--background-gray);
+}
+
+.cardcolumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.buysection {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-around;
+}
+
+.buysection input[type="number"] {
+  text-align: center;
+  border-radius: var(--border-radius);
+  background-color: transparent;
+  width: 30%;
+  border-color: var(--color-text-light);
+  color: var(--color-text-light);
+  border: 1px solid white;
+  outline: none;
+  height: 30px;
+}
+
+.buysection button {
+  background-color: var(--background-gray);
+  color: var(--color-text-grey);
+  border: none;
+  border-radius: var(--border-radius);
+  width: 50px;
+  cursor: pointer;
+}
+
+.buybutton button {
+  background-color: white;
+  color: var(--color-text-dark);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  width: 100%;
+  height: 40px;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.ticketlabel {
+  color: var(--color-text-grey);
+
+}
+
+.buychance {
+  color: var(--color-text-grey);
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.iconwrapper {
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(2rem);
+}
