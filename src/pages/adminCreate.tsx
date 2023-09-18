@@ -1,8 +1,16 @@
 import Layout from "@/components/Layout";
 import NFTCard from "@/components/NFTCard";
 import { useState, useEffect } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { Connection, Keypair, clusterApiUrl } from "@solana/web3.js";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import {
+  Connection,
+  Keypair,
+  MessageV0,
+  TransactionMessage,
+  VersionedMessage,
+  VersionedTransaction,
+  clusterApiUrl,
+} from "@solana/web3.js";
 import {
   Metadata,
   Metaplex,
@@ -15,16 +23,20 @@ import styles from "../components/AdminCreate.module.css";
 import Banner from "@/components/Banner";
 import { Methods } from "@/lottery-program-build/utilityTypes";
 import { InstructionParams } from "@/lottery-program-build";
+import { api } from "@/utils/api";
 
 const allowedWallets = [
   "6fMUyugMke8TaRCtj7w8WW4g6Jp1KYe9TabQJCujxeJr",
-  "YOUR_ALLOWED_WALLET_PUBLIC_KEY_2",
+  "95ZwCRFtSNLKrbGz1WAbmxxYT1d4GY4SGTizfAKSi9by",
+  "1adTuNaAAm1Neyz6LdNFG5sfQJC3cMjMQ1J9cz5pVhY",
 ];
 
 type method = Methods<"initializeLottery">;
 
 const AdminCreate: NextPage = () => {
-  const { publicKey } = useWallet();
+  const initLottery = api.lottery.initializeLottery.useMutation();
+  const { publicKey, sendTransaction, signTransaction } = useWallet();
+  const { connection } = useConnection();
   const [nfts, setNfts] = useState<Metadata[]>([]);
   const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
   const isAllowedWallet =
@@ -34,7 +46,7 @@ const AdminCreate: NextPage = () => {
   const [inputPrice, setInputPrice] = useState<number>(0);
   const [ticketAmount, setTicketAmount] = useState<number>(0);
   const [endDate, setEndDate] = useState<string>(Date.now().toString());
-  const [useDate, setUseDate] = useState<boolean>(true);
+  const [useDate, setUseDate] = useState<boolean>(false);
   const [creatorFeeWallet, setCreatorFeeWallet] = useState<string>("");
   const [params, setParams] = useState<InstructionParams<method>>();
 
@@ -115,7 +127,7 @@ const AdminCreate: NextPage = () => {
   const today = new Date();
   const todayFormatted = today.toISOString().split("T")[0];
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!useDate) {
       setEndDate("Max Tickets");
     }
@@ -127,7 +139,36 @@ const AdminCreate: NextPage = () => {
       ticketAmount,
       creatorFeeWallet,
     };
-    console.log("Form Data:", formData);
+    console.log(formData);
+    console.log("test: ", new Date(endDate));
+    const type = useDate
+      ? {
+          time: {
+            endTime: new Date(endDate),
+            requiredMinTicketsSold: 1,
+          },
+        }
+      : {
+          capped: {
+            autoAnnounceWinnersAfter: new Date(endDate),
+          },
+        };
+
+    const instruction = await initLottery.mutateAsync({
+      lotteryManagerPublicKey: publicKey?.toBase58() || "",
+      params: {
+        LotteryType: {
+          ...type,
+        },
+        maxTicketsForSale: ticketAmount,
+        ticketPrice: 1,
+      },
+    });
+    const messagev0 = MessageV0.deserialize(instruction);
+    const transaction = new VersionedTransaction(messagev0);
+    console.log("transaction: ", transaction);
+    const txid = await sendTransaction!(transaction, connection);
+    console.log("txid: ", txid);
   };
 
   const removeSolPrice = (index: number) => {
@@ -193,7 +234,8 @@ const AdminCreate: NextPage = () => {
               <p>Choose Input:</p>
 
               <div className={styles.switchwrapper}>
-                <p>Pick Date</p>
+                <p>Max Tickets</p>
+
                 <label className={styles.switch}>
                   <input
                     type="checkbox"
@@ -202,21 +244,10 @@ const AdminCreate: NextPage = () => {
                   />
                   <span className={styles.slider}></span>
                 </label>
-                <p>Max Tickets</p>
+                <p>Pick Date</p>
               </div>
 
               {useDate ? (
-                <div className={styles.initialinput}>
-                  <p>Maximum Tickets sold</p>
-                  <input
-                    type="number"
-                    min={10}
-                    max={1000}
-                    value={ticketAmount}
-                    onChange={(e) => setTicketAmount(Number(e.target.value))}
-                  />
-                </div>
-              ) : (
                 <div className={styles.initialinput}>
                   <p>Enddate</p>
                   <input
@@ -226,6 +257,17 @@ const AdminCreate: NextPage = () => {
                     min={todayFormatted}
                     max={maxDateFormatted}
                     onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
+              ) : (
+                <div className={styles.initialinput}>
+                  <p>Maximum Tickets sold</p>
+                  <input
+                    type="number"
+                    min={10}
+                    max={1000}
+                    value={ticketAmount}
+                    onChange={(e) => setTicketAmount(Number(e.target.value))}
                   />
                 </div>
               )}

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, TransactionMessage } from "@solana/web3.js";
 import { methods } from "@/lottery-program-build";
 import * as anchor from "@coral-xyz/anchor";
 // convert the date into unix timestamp
@@ -12,7 +12,7 @@ const CappedLotterySchema = z.object({
 });
 
 const TimeLotterySchema = z.object({
-  endTime: z.date().transform((date) => date.getTime() / 1000),
+  endTime: z.date().transform((date) => new anchor.BN(date.getTime() / 1000)),
   requiredMinTicketsSold: z.number(),
 });
 
@@ -35,16 +35,21 @@ export const lotteryRouter = createTRPCRouter({
         }),
       })
     )
-    .query(async ({ ctx, input }) => {
-      console.log(input);
+    .mutation(async ({ ctx, input }) => {
       const result = await methods.lottery
         .initializeLottery({
           params: {
-            lotteryType: input.params.LotteryType as any,
-            maxTicketsForSale: input.params.maxTicketsForSale!,
+            lotteryType: {
+              capped: {
+                autoAnnounceWinnersAfter: new anchor.BN(
+                  new Date().getTime() / 1000 + 60 * 60 * 24 * 7
+                ),
+              },
+            },
+            maxTicketsForSale: 100,
             ticketPrice: {
               sol: {
-                value: input.params.ticketPrice,
+                value: new anchor.BN(1000),
               },
             },
           },
@@ -56,6 +61,12 @@ export const lotteryRouter = createTRPCRouter({
           throw err;
         });
 
-      return result;
+      const msg = new TransactionMessage({
+        instructions: [result.instruction],
+        payerKey: input.lotteryManagerPublicKey,
+        recentBlockhash: (await ctx.solanaRpc.getLatestBlockhash()).blockhash,
+      }).compileToV0Message();
+
+      return msg.serialize();
     }),
 });
