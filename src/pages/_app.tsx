@@ -1,16 +1,16 @@
 import { type AppType } from "next/app";
 
 import { api } from "@/utils/api";
-import { WalletAdapterProvider } from "@/contexts/WalletAdapterProvider";
-
 import "@/styles/globals.css";
+import "@solana/wallet-adapter-react-ui/styles.css";
+import { ContextProvider } from "@/contexts/walletProvider/ContextProvider";
 
-const MyApp: AppType = ({ Component, pageProps }) => {
+const MyApp: AppType<{}> = ({ Component, pageProps: { ...pageProps } }) => {
   return (
-    <WalletAdapterProvider>
+    <ContextProvider>
       <Component {...pageProps} />
       <div id="portal" />
-    </WalletAdapterProvider>
+    </ContextProvider>
   );
 };
 

@@ -20,6 +20,7 @@
     "@metaplex-foundation/js": "^0.19.4",
     "@mui/material": "^5.14.9",
     "@solana/spl-token": "^0.3.8",
+    "@solana-mobile/wallet-adapter-mobile": "^2.0.0",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-react-ui": "^0.9.34",

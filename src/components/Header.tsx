@@ -1,5 +1,8 @@
 // Header.tsx
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import {
+  WalletMultiButton,
+  useWalletModal,
+} from "@solana/wallet-adapter-react-ui";
 import Link from "next/link";
 import styles from "./Header.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,7 +16,8 @@ import {
 import { useWallet } from "@solana/wallet-adapter-react";
 
 const Header = () => {
-  const { publicKey } = useWallet();
+  const { publicKey, disconnect } = useWallet();
+  const { setVisible } = useWalletModal();
   const allowedWallets = [
     "6fMUyugMke8TaRCtj7w8WW4g6Jp1KYe9TabQJCujxeJr",
     "YOUR_ALLOWED_WALLET_PUBLIC_KEY_2",
@@ -48,7 +52,12 @@ const Header = () => {
         )}
         <li>
           <FontAwesomeIcon icon={faWallet} />
-          <WalletMultiButton className={styles.walletButton} />
+          <button
+            className={styles.walletButton}
+            onClick={!publicKey ? () => setVisible(true) : () => disconnect()}
+          >
+            {publicKey ? "Disconnect" : "Connect"}
+          </button>
         </li>
       </nav>
     </div>

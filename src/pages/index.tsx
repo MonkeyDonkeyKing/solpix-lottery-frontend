@@ -20,29 +20,29 @@ interface CreateLotteryArgs {
   ticketPrice: number;
 }
 
-const lotteryArgs: CreateLotteryArgs = {
-  distribution: 0.5,
-  endTime: Math.floor(new Date().getTime() / 1000) + 7200,
-  numberOfTickets: 200,
-  possibleWinners: 10,
-  ticketPrice: 1000000000,
-};
+// const lotteryArgs: CreateLotteryArgs = {
+//   distribution: 0.5,
+//   endTime: Math.floor(new Date().getTime() / 1000) + 7200,
+//   numberOfTickets: 200,
+//   possibleWinners: 10,
+//   ticketPrice: 1000000000,
+// };
 ///
 
 const Home: NextPage = () => {
-  const [date, setDate] = React.useState(new Date());
-  const handler = api.lottery.initializeLottery.useQuery({
-    lotteryManagerPublicKey: "95ZwCRFtSNLKrbGz1WAbmxxYT1d4GY4SGTizfAKSi9by",
-    params: {
-      LotteryType: {
-        capped: {
-          autoAnnounceWinnersAfter: date,
-        },
-      },
-      maxTicketsForSale: 100,
-      ticketPrice: 0.1,
-    },
-  });
+  // const [date, setDate] = React.useState(new Date());
+  // const handler = api.lottery.initializeLottery.useQuery({
+  //   lotteryManagerPublicKey: "95ZwCRFtSNLKrbGz1WAbmxxYT1d4GY4SGTizfAKSi9by",
+  //   params: {
+  //     LotteryType: {
+  //       capped: {
+  //         autoAnnounceWinnersAfter: date,
+  //       },
+  //     },
+  //     maxTicketsForSale: 100,
+  //     ticketPrice: 0.1,
+  //   },
+  // });
   // async function createTx() {
   //   if (!publicKey) return;
   //   console.log(await connection.getBalance(publicKey));
