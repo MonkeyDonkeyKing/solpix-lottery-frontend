@@ -15,14 +15,13 @@ const CardMain = ({
   lotteryData,
   address,
 }: {
-  lotteryData: [RouterOutputs["lottery"]["getLotteries"][number]["account"]];
 
   address: PublicKey;
 }) => {
   const user = useWallet();
   // const program = useProgram();
   const endTime = new Date(lotteryData.endTime);
-  const ticketPrice = parseInt(lotteryData.ticketPrice.toString(), 16) / 1e9;
+  const ticketPrice = parseInt(lotteryData.ticketPrice.toString()) / 1e7;
 
   const { connection } = useConnection();
   const [value, setValue] = useState(0);
@@ -119,6 +118,7 @@ const CardMain = ({
                 type="number"
                 value={value}
                 min={0}
+                max={lotteryData.numberOfTickets}
                 onChange={handleInputChange}
               />
               <button onClick={() => setValue(5)}>5</button>

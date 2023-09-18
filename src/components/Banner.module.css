@@ -16,6 +16,7 @@
   height: 420px;
   filter: brightness(0.5);
   width: 100%;
+  left: 0;
 }
 
 .banner h1 {

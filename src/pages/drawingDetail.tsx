@@ -12,7 +12,7 @@ import {
   TableRow,
   Paper,
 } from "@material-ui/core";
-import SlotCounter, { SlotCounterRef } from "react-slot-counter";
+import SlotCounter, { type SlotCounterRef } from "react-slot-counter";
 import Banner from "@/components/Banner";
 import { useRouter } from "next/router";
 
@@ -108,7 +108,7 @@ const DrawingDetail: NextPage = () => {
 
   async function getWinningTicket() {
     const winnerIndex = Math.floor(Math.random() * availableWinners.length);
-    const winner = availableWinners[winnerIndex] as Ticket;
+    const winner = availableWinners[winnerIndex]!;
 
     setWinningTicket(winner.walletID);
     setWinningAmount(winner.amount!);
@@ -120,10 +120,10 @@ const DrawingDetail: NextPage = () => {
   }
 
   function removeWinner(wallet: string) {
-    let newWinners = availableWinners.filter(
+    const newWinners = availableWinners.filter(
       (ticket) => ticket.walletID !== wallet
     );
-    let newAvailableTickets = availableTickets.filter(
+    const newAvailableTickets = availableTickets.filter(
       (ticket) => ticket.walletID !== wallet
     );
     setAvailableWinners(newWinners);
@@ -176,15 +176,14 @@ const DrawingDetail: NextPage = () => {
       <Layout>
         <Banner
           heading={parsedLotteryName}
-          subHeaderDraw="Drawing phase ends in "
-          time={formatTime(parsedEndTime)}
+          subHeaderDraw="Epic Draw Event: Witness the Excitement Unfold Live!"
           id={lotteryId}
           prizePool={formatPricePool(prizePool)}
           maxTickets={parsedNumberOfTickets}
           soldTickets={parsedNumberOfTicketsSold}
         />
 
-        <div className={styles.container}>
+        <div className={styles.containerD}>
           <div className={styles.drawingColumn}>
             <SlotCounter
               value={formatTicketOwningWallet(winningTicket)}

@@ -5,6 +5,7 @@ import { useState } from "react";
 import styles from "../components/TicketPage.module.css";
 import Banner from "@/components/Banner";
 import Link from "next/link";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 type Ticket = {
   ticketID: string;
@@ -36,6 +37,7 @@ const TestTickets: Ticket[] = [
 
 const TicketPage: NextPage = () => {
   const [tickets, setTickets] = useState<Ticket[]>(TestTickets);
+  const { publicKey } = useWallet();
 
   return (
     <>
@@ -47,42 +49,47 @@ const TicketPage: NextPage = () => {
       <Layout>
         <Banner
           heading="Your Tickets"
-          paragraph="Here you can see your purchased tickets and claim your prize / get back ticket rent"
+          paragraph="Your Ticket Playground: Manage, Claim, and Reap Crypto Rewards!"
         />
-        <div className={styles.ticketsSection}>
-          <table className={styles.ticketTable}>
-            <thead>
-              <tr>
-                <th>Ticket ID</th>
-                <th>Lottery ID</th>
-                <th>Price Pool</th>
-                <th>Claim Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tickets.map((ticket) => (
-                <tr key={ticket.ticketID}>
-                  <td>{ticket.ticketID}</td>
-                  <td>{ticket.lotteryID}</td>
-                  <td>{ticket.pricePool}</td>
-                  <td>
-                    {ticket.priceClaimed ? (
-                      <button className={styles.claimedButton} disabled>
-                        Claim Price
-                      </button>
-                    ) : (
-                      <button className={styles.claimButton}>
-                        Claim Price
-                      </button>
-                    )}
-                  </td>
+        {publicKey &&
+          <div className={styles.ticketsSection}>
+            <table className={styles.ticketTable}>
+              <thead>
+                <tr>
+                  <th>Ticket ID</th>
+                  <th>Lottery ID</th>
+                  <th>Price Pool</th>
+                  <th>Claim Price</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className={styles.container}>
-            <Link href={"/"}>Back to overview</Link>
+              </thead>
+              <tbody>
+                {tickets.map((ticket) => (
+                  <tr key={ticket.ticketID}>
+                    <td>{ticket.ticketID}</td>
+                    <td>{ticket.lotteryID}</td>
+                    <td>{ticket.pricePool}</td>
+                    <td>
+                      {ticket.priceClaimed ? (
+                        <button className={styles.claimedButton} disabled>
+                          Claim Price
+                        </button>
+                      ) : (
+                        <button className={styles.claimButton}>
+                          Claim Price
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+        }
+        {!publicKey && 
+          <h3>Please connect your wallet first</h3>
+        }
+        <div className={styles.container}>
+          <Link href={"/"}>Back to overview</Link>
         </div>
       </Layout>
     </>

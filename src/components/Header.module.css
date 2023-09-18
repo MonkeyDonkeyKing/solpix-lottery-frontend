@@ -26,7 +26,7 @@
   border: 1px solid white;
   border-radius: var(--border-radius);
   margin: 1rem 0rem;
-  height: 2rem;
+  min-height: 2rem;
   width: 45rem;
   justify-content: space-evenly;
   flex-wrap: wrap;
@@ -63,6 +63,7 @@
   height: unset;
   line-height: unset;
   color: var(--color-text-light);
+  font-size: inherit;
 }
 
 @media screen and (max-width: 1084px) {

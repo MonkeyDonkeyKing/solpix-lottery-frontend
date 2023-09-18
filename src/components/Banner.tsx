@@ -6,7 +6,6 @@ type BannerProps = {
   imageAlt?: string;
   heading: string;
   subHeaderDraw?: string;
-  time?: string;
   paragraph?: string;
   id?: string,
   prizePool?: string,
@@ -20,7 +19,6 @@ const Banner = ({
   heading,
   paragraph,
   subHeaderDraw,
-  time,
   id,
   prizePool,
   maxTickets,
@@ -37,12 +35,12 @@ const Banner = ({
       {subHeaderDraw && (
         <>
         <h2>
-          {subHeaderDraw} <span>{time}</span>
+          {subHeaderDraw}
         </h2>
         <div className={styles.chipcontainer}>
-        <ChipInput content={ id as string} />
-        <ChipInput content={prizePool as string} />
-        <ChipInput maxTickets={maxTickets as number}  soldTickets={soldTickets as number} />
+        <ChipInput content={ id} />
+        <ChipInput content={prizePool} />
+        <ChipInput maxTickets={maxTickets}  soldTickets={soldTickets} />
         </div>
         </>
       )}

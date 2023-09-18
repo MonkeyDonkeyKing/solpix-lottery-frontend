@@ -39,7 +39,7 @@
 .container {
   display: flex;
   justify-content: center;
-  padding-top: 3rem;
+  margin-top: auto;
 }
 
 .container a {

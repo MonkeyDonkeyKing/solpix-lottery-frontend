@@ -15,7 +15,6 @@ type PrizeIconProps = {
 }
 const PrizeIcon: React.FC<PrizeIconProps> = (prizes) => {
   const [isOpen, setIsOpen] = useState(false);
-  console.log("NFT PRIZES", prizes.nfts);
 
   return (
     <div className={styles.solicon} onClick={() => setIsOpen(!isOpen)}>

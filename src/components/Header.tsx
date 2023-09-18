@@ -16,7 +16,7 @@ import {
 import { useWallet } from "@solana/wallet-adapter-react";
 
 const Header = () => {
-  const { publicKey, disconnect } = useWallet();
+  const { publicKey, disconnect} = useWallet();
   const { setVisible } = useWalletModal();
   const allowedWallets = [
     "6fMUyugMke8TaRCtj7w8WW4g6Jp1KYe9TabQJCujxeJr",

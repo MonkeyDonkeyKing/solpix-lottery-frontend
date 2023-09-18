@@ -33,7 +33,7 @@ const Drawing: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <Banner heading="Upcoming Lotteries" paragraph="Lorem ipsum" />
+        <Banner heading="Upcoming Lotteries" paragraph="Unleash Your Inner Crypto Maverick: Dive into the Hottest Upcoming Lotteries!" />
         <div className={styles.sortButtons}>
           <button
             onClick={() => setSortingOption("all")}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type NextPage } from "next";
 import Head from "next/head";
 
@@ -30,7 +31,7 @@ interface CreateLotteryArgs {
 ///
 
 const Home: NextPage = () => {
-  // const [date, setDate] = React.useState(new Date());
+  const [date, setDate] = React.useState(new Date());
   // const handler = api.lottery.initializeLottery.useQuery({
   //   lotteryManagerPublicKey: "95ZwCRFtSNLKrbGz1WAbmxxYT1d4GY4SGTizfAKSi9by",
   //   params: {
@@ -86,7 +87,7 @@ const Home: NextPage = () => {
     associatedLotteryMaster: "string",
     id: 1,
     numberOfTickets: 150,
-    ticketPrice: "1000000000",
+    ticketPrice: "1000000",
     possibleWinners: 3,
     distribution: "test",
     winners: [
@@ -130,19 +131,19 @@ const Home: NextPage = () => {
           address={
             new web3.PublicKey("HEYAeTSbf6ojSoMatSoG8HSLmgC2berjphRrSd4XUyf8")
           }
-          lotteryData={testData as any}
+          lotteryData={testData}
         />
         <CardMain
           address={
             new web3.PublicKey("HEYAeTSbf6ojSoMatSoG8HSLmgC2berjphRrSd4XUyf8")
           }
-          lotteryData={testData as any}
+          lotteryData={testData}
         />
         <CardMain
           address={
             new web3.PublicKey("HEYAeTSbf6ojSoMatSoG8HSLmgC2berjphRrSd4XUyf8")
           }
-          lotteryData={testData as any}
+          lotteryData={testData}
         />
         {/* {lotteries.data?.map((lottery) => (
           <CardMain

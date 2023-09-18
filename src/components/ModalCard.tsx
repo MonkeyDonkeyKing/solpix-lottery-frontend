@@ -15,8 +15,8 @@ const ModalCard: React.FC<ModalCardProps> = ({ sol, nfts }) => {
     <><div className={styles.wrapper}>
       {nfts &&
         <div className={styles.container} >
-          {nfts.map((nft) => (
-            <div className={styles.card} >
+          {nfts.map((nft,index) => (
+            <div className={styles.card} key={index}>
               <img src={nft.image} alt={`NFT ${nft.name}`} />
               <p className={styles.name}>{nft.name}</p>
               <p>TEST</p>
