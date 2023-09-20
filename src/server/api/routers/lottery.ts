@@ -1,7 +1,11 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { PublicKey, TransactionMessage } from "@solana/web3.js";
+import {
+  PublicKey,
+  TransactionInstruction,
+  TransactionMessage,
+} from "@solana/web3.js";
 import { methods } from "@/lottery-program-build";
 import * as anchor from "@coral-xyz/anchor";
 // convert the date into unix timestamp
@@ -64,6 +68,64 @@ export const lotteryRouter = createTRPCRouter({
       const msg = new TransactionMessage({
         instructions: [result.instruction],
         payerKey: input.lotteryManagerPublicKey,
+        recentBlockhash: (await ctx.solanaRpc.getLatestBlockhash()).blockhash,
+      }).compileToV0Message();
+
+      return msg.serialize();
+    }),
+  addNftPrice: publicProcedure
+    .input(
+      z.object({
+        authority: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+        lottery: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+        mint: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await methods.lottery.addNftPrize({
+        program: ctx.program,
+        authority: input.authority,
+        lottery: input.lottery,
+        mint: input.mint,
+      });
+
+      const msg = new TransactionMessage({
+        instructions: [result.instruction],
+        payerKey: input.authority,
+        recentBlockhash: (await ctx.solanaRpc.getLatestBlockhash()).blockhash,
+      }).compileToV0Message();
+
+      return msg.serialize();
+    }),
+  addPoolPrize: publicProcedure
+    .input(
+      z.object({
+        authority: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+        lottery: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+        value: z.number().max(4_294_967_295).min(1),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await methods.lottery.addPoolPrize({
+        program: ctx.program,
+        authority: input.authority,
+        lottery: input.lottery,
+        value: input.value,
+      });
+
+      const msg = new TransactionMessage({
+        instructions: [result.instruction],
+        payerKey: input.authority,
         recentBlockhash: (await ctx.solanaRpc.getLatestBlockhash()).blockhash,
       }).compileToV0Message();
 
