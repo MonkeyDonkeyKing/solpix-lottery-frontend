@@ -11,6 +11,43 @@ import { initTRPC } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { PublicKey } from "@solana/web3.js";
+
+/*
+  import { Decimal } from "decimal.js"
+
+  SuperJSON.registerCustom<Decimal, string>(
+    {
+      isApplicable: (v): v is Decimal => Decimal.isDecimal(v),
+      serialize: v => v.toJSON(),
+      deserialize: v => new Decimal(v),
+    },
+    'decimal.js'
+  );
+*/
+
+superjson.registerCustom<PublicKey, string>(
+  {
+    isApplicable: (v): v is PublicKey => {
+      const a = v instanceof PublicKey;
+      console.log("all good");
+      return a;
+    },
+    serialize: (v: PublicKey) => {
+      if (v instanceof PublicKey) {
+        console.log("is a pubkey");
+        return v.toBase58();
+      }
+      console.log(v);
+      return v;
+    },
+    deserialize: (v) => {
+      console.log("a");
+      return new PublicKey("95ZwCRFtSNLKrbGz1WAbmxxYT1d4GY4SGTizfAKSi9by");
+    },
+  },
+  "PublicKey"
+);
 
 /**
  * 1. CONTEXT

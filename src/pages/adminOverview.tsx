@@ -6,10 +6,13 @@ import Head from "next/head";
 import Link from "next/link";
 import styles from "../components/AdminOverview.module.css";
 import { useState } from "react";
+import { api } from "@/utils/api";
+import { PublicKey } from "@solana/web3.js";
 
 const allowedWallets = [
   "6fMUyugMke8TaRCtj7w8WW4g6Jp1KYe9TabQJCujxeJr",
-  "YOUR_ALLOWED_WALLET_PUBLIC_KEY_2",
+  "95ZwCRFtSNLKrbGz1WAbmxxYT1d4GY4SGTizfAKSi9by",
+  "1adTuNaAAm1Neyz6LdNFG5sfQJC3cMjMQ1J9cz5pVhY",
 ];
 
 type LotteryOverviewProps = {
@@ -42,11 +45,18 @@ const TestLotteries: LotteryOverviewProps[] = [
 
 const AdminOverview: NextPage = () => {
   const { publicKey } = useWallet();
-  const [lotteries, setLotteries] =
-    useState<LotteryOverviewProps[]>(TestLotteries);
-
-  const isAllowedWallet =
-    publicKey && allowedWallets.includes(publicKey.toBase58());
+  const lotteryData = api.lottery.getLotteriesByAdmin.useQuery(
+    {
+      admin: publicKey?.toBase58()!,
+    },
+    {
+      enabled: !!publicKey,
+    }
+  );
+  if (lotteryData.isSuccess) {
+    console.log(lotteryData.data);
+  }
+  const isAllowedWallet = lotteryData.isSuccess && lotteryData.data.length > 0;
 
   if (!isAllowedWallet) {
     // NOT ALLOWED
@@ -63,6 +73,7 @@ const AdminOverview: NextPage = () => {
       </>
     );
   }
+
   // ALLOWED
   return (
     <>
@@ -87,9 +98,9 @@ const AdminOverview: NextPage = () => {
               </tr>
             </thead>
             <tbody>
-              {lotteries.map((lottery, index) => (
+              {lotteryData.data.map(({ account, publicKey }, index) => (
                 <tr key={index}>
-                  <td>{lottery.lotteryID}</td>
+                  <td>{publicKey}</td>
                   <td>
                     {lottery.pricePool} <span>SOL</span>
                   </td>
