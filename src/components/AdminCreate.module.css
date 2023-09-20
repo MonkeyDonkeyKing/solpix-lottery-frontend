@@ -6,12 +6,13 @@
 
 .nftcontainer {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 20px;
   justify-content: center;
   border: 1px solid var(--color-text-grey);
   border-radius: 20px;
   padding: 1rem;
+  flex-basis: 60%;
 }
 
 .formContainer {
@@ -88,6 +89,8 @@ input:checked + .slider:before {
   display: flex;
   flex-direction: column;
   padding: 1rem 0rem;
+  border: 1px solid var(--color-text-grey);
+
 }
 
 .formContainer button {
@@ -145,4 +148,12 @@ input:checked + .slider:before {
   cursor: not-allowed;
 }
 
+.inputSections {
+  border: 1px solid var(--color-text-grey);
+  border-radius: var(--border-radius);
+  padding: 15px 1rem;
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+}
 
