@@ -42,6 +42,7 @@ const AdminCreate: NextPage = () => {
   const isAllowedWallet =
     publicKey && allowedWallets.includes(publicKey.toBase58());
   const [creatorFee, setCreatorFee] = useState<number>(0);
+  const [ticketPrice, setTicketPrice] = useState<number>(0);
   const [solanaPrices, setSolanaPrices] = useState<number[]>([]);
   const [inputPrice, setInputPrice] = useState<number>(0);
   const [ticketAmount, setTicketAmount] = useState<number>(0);
@@ -143,16 +144,16 @@ const AdminCreate: NextPage = () => {
     console.log("test: ", new Date(endDate));
     const type = useDate
       ? {
-          time: {
-            endTime: new Date(endDate),
-            requiredMinTicketsSold: 1,
-          },
-        }
+        time: {
+          endTime: new Date(endDate),
+          requiredMinTicketsSold: 1,
+        },
+      }
       : {
-          capped: {
-            autoAnnounceWinnersAfter: new Date(endDate),
-          },
-        };
+        capped: {
+          autoAnnounceWinnersAfter: new Date(endDate),
+        },
+      };
 
     const instruction = await initLottery.mutateAsync({
       lotteryManagerPublicKey: publicKey?.toBase58() || "",
@@ -161,7 +162,7 @@ const AdminCreate: NextPage = () => {
           ...type,
         },
         maxTicketsForSale: ticketAmount,
-        ticketPrice: 1,
+        ticketPrice: ticketPrice,
       },
     });
     const messagev0 = MessageV0.deserialize(instruction);
@@ -233,11 +234,10 @@ const AdminCreate: NextPage = () => {
           </section>
           <section className={styles.formContainer}>
             <div className={styles.initialinput}>
-              <p>Choose Input:</p>
-
               <div className={styles.switchwrapper}>
+                <p>Choose Input:</p>
+                <div className={styles.switchDesc}>
                 <p>Max Tickets</p>
-
                 <label className={styles.switch}>
                   <input
                     type="checkbox"
@@ -247,6 +247,7 @@ const AdminCreate: NextPage = () => {
                   <span className={styles.slider}></span>
                 </label>
                 <p>Pick Date</p>
+                </div>
               </div>
 
               {useDate ? (
@@ -274,23 +275,42 @@ const AdminCreate: NextPage = () => {
                 </div>
               )}
             </div>
-
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={creatorFee}
-              onChange={(e) => setCreatorFee(Number(e.target.value))}
-            />
-            <p>Creator Fee: {creatorFee}%</p>
-            <input
-              type="text"
-              placeholder="Wallet that receives the creator fee"
-              value={creatorFeeWallet}
-              onChange={(e) => setCreatorFeeWallet(e.target.value)}
-            />
-            <p>Creator fee wallet: {creatorFeeWallet}</p>
+            
+            <div className={styles.inputSections}>
+              <p>Creator Fee: {creatorFee}%</p>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={creatorFee}
+                onChange={(e) => setCreatorFee(Number(e.target.value))}
+              />
+            </div>
+            <div className={styles.inputSections}>
+              <p>Creator fee wallet: {creatorFeeWallet}</p>
+              <input
+                type="text"
+                placeholder="Wallet that receives the creator fee"
+                value={creatorFeeWallet}
+                onChange={(e) => setCreatorFeeWallet(e.target.value)}
+              />
+            </div>
+            <div className={styles.inputSections}>
+              <p>Ticket price: {ticketPrice}</p>
+              <input
+                type="number"
+                min={0}
+                step={0.1}
+                placeholder="How much does a ticket cost?"
+                value={ticketPrice}
+                onChange={(e) => setTicketPrice(Number(e.target.value))}
+              />
+            </div>
             <div className={styles.addsolprice}>
+              <p>
+                Add % to calculate prizes from the prize pool. Prizes must add
+                up to 100 %
+              </p>
               <input
                 type="number"
                 min={1}
@@ -299,10 +319,6 @@ const AdminCreate: NextPage = () => {
                 onChange={handleSolPriceInput}
               />
               <button onClick={() => addSolPrice()}>Add % Price</button>
-              <p>
-                Add % to calculate prizes from the prize pool. Prizes must add
-                up to 100 %
-              </p>
             </div>
           </section>
         </div>
