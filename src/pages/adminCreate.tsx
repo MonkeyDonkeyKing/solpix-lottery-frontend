@@ -234,8 +234,9 @@ const AdminCreate: NextPage = () => {
           </section>
           <section className={styles.formContainer}>
             <div className={styles.initialinput}>
-              <p>Choose Input:</p>
               <div className={styles.switchwrapper}>
+                <p>Choose Input:</p>
+                <div className={styles.switchDesc}>
                 <p>Max Tickets</p>
                 <label className={styles.switch}>
                   <input
@@ -246,6 +247,7 @@ const AdminCreate: NextPage = () => {
                   <span className={styles.slider}></span>
                 </label>
                 <p>Pick Date</p>
+                </div>
               </div>
 
               {useDate ? (
