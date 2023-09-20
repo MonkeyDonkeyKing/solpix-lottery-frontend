@@ -128,7 +128,7 @@ export type SolpixLottery = {
         },
         {
           "name": "lotteryManager",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1505,7 +1505,7 @@ export const IDL: SolpixLottery = {
         },
         {
           "name": "lotteryManager",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {

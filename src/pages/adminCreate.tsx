@@ -167,7 +167,9 @@ const AdminCreate: NextPage = () => {
     const messagev0 = MessageV0.deserialize(instruction);
     const transaction = new VersionedTransaction(messagev0);
     console.log("transaction: ", transaction);
-    const txid = await sendTransaction!(transaction, connection);
+    const txid = await sendTransaction!(transaction, connection, {
+      skipPreflight: true,
+    });
     console.log("txid: ", txid);
   };
 
