@@ -4,6 +4,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { PublicKey, TransactionMessage } from "@solana/web3.js";
 import { methods, pdas } from "@/lottery-program-build";
 import * as anchor from "@coral-xyz/anchor";
+import lottery from "@/lottery-program-build/lottery";
 // convert the date into unix timestamp
 const CappedLotterySchema = z.object({
   autoAnnounceWinnersAfter: z
@@ -21,11 +22,11 @@ export const lotteryRouter = createTRPCRouter({
     .input(
       z.object({
         params: z.object({
+          maxTicketsForSale: z.number().nonnegative(),
           LotteryType: z.union([
             z.object({ capped: CappedLotterySchema }),
             z.object({ time: TimeLotterySchema }),
           ]),
-          maxTicketsForSale: z.number(),
           ticketPrice: z
             .number()
             .transform((sol) => new anchor.BN(sol * 10 ** 9)),
@@ -36,20 +37,23 @@ export const lotteryRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      // const [key, value] = Object.entries(input.params.LotteryType!)[0];
+      // console.log(key, value);
+      console.log(input.params.LotteryType!.time);
       const result = await methods.lottery
         .initializeLottery({
           params: {
             lotteryType: {
-              capped: {
-                autoAnnounceWinnersAfter: new anchor.BN(
-                  new Date().getTime() / 1000 + 60 * 60 * 24 * 7
-                ),
+              time: {
+                endTime: input.params.LotteryType!.time.endTime,
+                requiredMinTicketsSold:
+                  input.params.LotteryType!.time.requiredMinTicketsSold,
               },
             },
-            maxTicketsForSale: 100,
+            maxTicketsForSale: input.params.maxTicketsForSale!,
             ticketPrice: {
               sol: {
-                value: new anchor.BN(1000),
+                value: new anchor.BN(100),
               },
             },
           },
@@ -135,6 +139,7 @@ export const lotteryRouter = createTRPCRouter({
         }),
       })
     )
+    .output(z.any())
     .query(async ({ ctx, input }) => {
       const lotteryManagerAccount = pdas.lotteryPdas.getLotteryManagerPda(
         input.admin
@@ -145,6 +150,7 @@ export const lotteryRouter = createTRPCRouter({
           lotteryManagerAccount
         );
       });
-      return new PublicKey("1adTuNaAAm1Neyz6LdNFG5sfQJC3cMjMQ1J9cz5pVhY");
+      console.log(Number(adminLotteries[0]?.account.ticketPrice.sol?.value));
+      return adminLotteries;
     }),
 });

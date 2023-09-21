@@ -23,15 +23,18 @@ import styles from "../components/AdminCreate.module.css";
 import Banner from "@/components/Banner";
 import { Methods } from "@/lottery-program-build/utilityTypes";
 import { InstructionParams } from "@/lottery-program-build";
-import { api } from "@/utils/api";
+import { RouterInputs, api } from "@/utils/api";
+import { AppRouter } from "@/server/api/root";
 
 const allowedWallets = [
   "6fMUyugMke8TaRCtj7w8WW4g6Jp1KYe9TabQJCujxeJr",
   "95ZwCRFtSNLKrbGz1WAbmxxYT1d4GY4SGTizfAKSi9by",
   "1adTuNaAAm1Neyz6LdNFG5sfQJC3cMjMQ1J9cz5pVhY",
+  "FPk6H2qX3a4iEuUZ4M7CUH9KkHKaaqn2wEhuvj9wK6kd",
 ];
 
 type method = Methods<"initializeLottery">;
+type lotteryInput = RouterInputs["lottery"]["initializeLottery"]["params"];
 
 const AdminCreate: NextPage = () => {
   const initLottery = api.lottery.initializeLottery.useMutation();
@@ -47,7 +50,7 @@ const AdminCreate: NextPage = () => {
   const [inputPrice, setInputPrice] = useState<number>(0);
   const [ticketAmount, setTicketAmount] = useState<number>(0);
   const [endDate, setEndDate] = useState<string>(Date.now().toString());
-  const [useDate, setUseDate] = useState<boolean>(false);
+  const [useDate, setUseDate] = useState<"time" | "capped">("capped");
   const [creatorFeeWallet, setCreatorFeeWallet] = useState<string>("");
   const [params, setParams] = useState<InstructionParams<method>>();
 
@@ -142,18 +145,19 @@ const AdminCreate: NextPage = () => {
     };
     console.log(formData);
     console.log("test: ", new Date(endDate));
-    const type = useDate
-      ? {
-        time: {
-          endTime: new Date(endDate),
-          requiredMinTicketsSold: 1,
-        },
-      }
-      : {
-        capped: {
-          autoAnnounceWinnersAfter: new Date(endDate),
-        },
-      };
+    const type =
+      useDate === "time"
+        ? {
+            time: {
+              endTime: new Date(endDate),
+              requiredMinTicketsSold: 1,
+            },
+          }
+        : {
+            capped: {
+              autoAnnounceWinnersAfter: new Date(endDate),
+            },
+          };
 
     const instruction = await initLottery.mutateAsync({
       lotteryManagerPublicKey: publicKey?.toBase58() || "",
@@ -190,7 +194,11 @@ const AdminCreate: NextPage = () => {
 
   const handleSwitch = () => {
     setTicketAmount(0);
-    setUseDate(!useDate);
+    if (useDate === "time") {
+      setUseDate("capped");
+    } else {
+      setUseDate("time");
+    }
   };
 
   // NOT ALLOWED
@@ -237,16 +245,16 @@ const AdminCreate: NextPage = () => {
               <div className={styles.switchwrapper}>
                 <p>Choose Input:</p>
                 <div className={styles.switchDesc}>
-                <p>Max Tickets</p>
-                <label className={styles.switch}>
-                  <input
-                    type="checkbox"
-                    checked={useDate}
-                    onChange={handleSwitch}
-                  />
-                  <span className={styles.slider}></span>
-                </label>
-                <p>Pick Date</p>
+                  <p>Max Tickets</p>
+                  <label className={styles.switch}>
+                    <input
+                      type="checkbox"
+                      checked={useDate === "time"}
+                      onChange={handleSwitch}
+                    />
+                    <span className={styles.slider}></span>
+                  </label>
+                  <p>Pick Date</p>
                 </div>
               </div>
 
@@ -275,7 +283,7 @@ const AdminCreate: NextPage = () => {
                 </div>
               )}
             </div>
-            
+
             <div className={styles.inputSections}>
               <p>Creator Fee: {creatorFee}%</p>
               <input

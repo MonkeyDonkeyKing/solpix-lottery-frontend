@@ -53,9 +53,6 @@ const AdminOverview: NextPage = () => {
       enabled: !!publicKey,
     }
   );
-  if (lotteryData.isSuccess) {
-    console.log(lotteryData.data);
-  }
   const isAllowedWallet = lotteryData.isSuccess && lotteryData.data.length > 0;
 
   if (!isAllowedWallet) {
@@ -73,6 +70,7 @@ const AdminOverview: NextPage = () => {
       </>
     );
   }
+  console.log(lotteryData?.data[0]?.account.ticketPrice);
 
   // ALLOWED
   return (
@@ -100,14 +98,15 @@ const AdminOverview: NextPage = () => {
             <tbody>
               {lotteryData.data.map(({ account, publicKey }, index) => (
                 <tr key={index}>
-                  <td>{publicKey}</td>
+                  {/* lottery ID */}
+                  <td>{account.lotteryId}</td>
                   <td>
-                    {lottery.pricePool} <span>SOL</span>
+                    {0} <span>SOL</span>
                   </td>
                   <td>
-                    {lottery.creatorFee} <span>SOL</span>
+                    {account.ticketPrice.sol?.value} <span>SOL</span>
                   </td>
-                  <td>{lottery.status}</td>
+                  <td>{JSON.stringify(account.lotteryStatus)}</td>
                 </tr>
               ))}
             </tbody>
