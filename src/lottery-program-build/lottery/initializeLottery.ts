@@ -37,6 +37,8 @@ export default async function initializeLottery({
     systemProgram: anchor.web3.SystemProgram.programId,
   };
 
+  console.log({ params });
+
   // Prepare the instruction
   const instruction = await program.methods
     .initializeLottery(params)

@@ -3,17 +3,19 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { PublicKey, TransactionMessage } from "@solana/web3.js";
 import { methods, pdas } from "@/lottery-program-build";
-import * as anchor from "@coral-xyz/anchor";
+
 import { TRPCError } from "@trpc/server";
+import { BN } from "@coral-xyz/anchor";
 // convert the date into unix timestamp
+
 const CappedLotterySchema = z.object({
   autoAnnounceWinnersAfter: z
     .date()
-    .transform((date) => new anchor.BN(date.getTime() / 1000)),
+    .transform((date) => new BN(date.getTime() / 1000)),
 });
 
 const TimeLotterySchema = z.object({
-  endTime: z.date().transform((date) => new anchor.BN(date.getTime() / 1000)),
+  endTime: z.date().transform((date) => new BN(date.getTime() / 1000)),
   requiredMinTicketsSold: z.number(),
 });
 
@@ -27,9 +29,7 @@ export const lotteryRouter = createTRPCRouter({
             z.object({ capped: CappedLotterySchema }),
             z.object({ time: TimeLotterySchema }),
           ]),
-          ticketPrice: z
-            .number()
-            .transform((sol) => new anchor.BN(sol * 10 ** 9)),
+          ticketPrice: z.number().transform((sol) => new BN(sol * 10 ** 9)),
         }),
         lotteryManagerPublicKey: z.string().transform((key) => {
           return new PublicKey(key);
@@ -37,14 +37,18 @@ export const lotteryRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // const [key, value] = Object.entries(input.params.LotteryType!)[0];
-      // console.log(key, value);
-      /// check if the lottery type is capped or time
-      let lotteryType: any = {};
-      if ("capped" in input.params.LotteryType!) {
-        lotteryType = input.params.LotteryType.capped;
-      } else if ("time" in input.params.LotteryType!) {
-        lotteryType = input.params.LotteryType.time;
+      const { LotteryType } = input.params;
+      if (!LotteryType) throw new TRPCError({ code: "BAD_REQUEST" });
+      if (!input.params.maxTicketsForSale)
+        throw new TRPCError({ code: "BAD_REQUEST" });
+      let lotteryTypeKey, lotteryTypeValue;
+
+      if ("capped" in LotteryType) {
+        lotteryTypeKey = "capped";
+        lotteryTypeValue = LotteryType.capped;
+      } else if ("time" in LotteryType) {
+        lotteryTypeKey = "time";
+        lotteryTypeValue = LotteryType.time;
       } else {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -54,13 +58,14 @@ export const lotteryRouter = createTRPCRouter({
       const result = await methods.lottery
         .initializeLottery({
           params: {
+            // @ts-ignore
             lotteryType: {
-              ...lotteryType,
+              [lotteryTypeKey]: { ...lotteryTypeValue },
             },
-            maxTicketsForSale: input.params.maxTicketsForSale!,
+            maxTicketsForSale: input.params.maxTicketsForSale,
             ticketPrice: {
               sol: {
-                value: input.params.ticketPrice!,
+                value: input.params.ticketPrice,
               },
             },
           },
@@ -193,5 +198,21 @@ export const lotteryRouter = createTRPCRouter({
       });
       console.log(Number(adminLotteries[0]?.account.ticketPrice.sol?.value));
       return adminLotteries;
+    }),
+  isAdmin: publicProcedure
+    .input(
+      z.object({
+        admin: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const lotteryManagerAccount = pdas.lotteryPdas.getLotteryManagerPda(
+        input.admin
+      )[0];
+      const lotteryManagerData = await ctx.program.account.lotteryManager.fetch(
+        lotteryManagerAccount
+      );
     }),
 });
