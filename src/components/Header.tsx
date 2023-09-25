@@ -20,7 +20,7 @@ const Header = () => {
   const { setVisible } = useWalletModal();
   const allowedWallets = [
     "6fMUyugMke8TaRCtj7w8WW4g6Jp1KYe9TabQJCujxeJr",
-    "YOUR_ALLOWED_WALLET_PUBLIC_KEY_2",
+    "FUCKA33Mw3KjZBENMkwNVuXdHhcecAyMvnhNzfwx7DqU",
   ];
 
   const isAllowedWallet =
