@@ -31,6 +31,7 @@ const allowedWallets = [
   "95ZwCRFtSNLKrbGz1WAbmxxYT1d4GY4SGTizfAKSi9by",
   "1adTuNaAAm1Neyz6LdNFG5sfQJC3cMjMQ1J9cz5pVhY",
   "FPk6H2qX3a4iEuUZ4M7CUH9KkHKaaqn2wEhuvj9wK6kd",
+  "FUCKA33Mw3KjZBENMkwNVuXdHhcecAyMvnhNzfwx7DqU"
 ];
 
 type method = Methods<"initializeLottery">;
@@ -49,6 +50,7 @@ const AdminCreate: NextPage = () => {
   const [solanaPrices, setSolanaPrices] = useState<number[]>([]);
   const [inputPrice, setInputPrice] = useState<number>(0);
   const [maxTicketAmount, setMaxTicketAmount] = useState<number>(0);
+  const [minTicketAmount, setMinTicketAmount] = useState<number>(0);
   const [endDate, setEndDate] = useState<string>(Date.now().toString());
   const [useDate, setUseDate] = useState<"time" | "capped">("capped");
   const [creatorFeeWallet, setCreatorFeeWallet] = useState<string>("");
@@ -138,7 +140,7 @@ const AdminCreate: NextPage = () => {
         ? {
           time: {
             endTime: new Date(endDate),
-            requiredMinTicketsSold: 1,
+            requiredMinTicketsSold: minTicketAmount,
           },
         }
         : {
@@ -264,24 +266,23 @@ const AdminCreate: NextPage = () => {
                 <input
                   type="number"
                   min={10}
-                  max={1000}
+                  max={10000}
                   value={maxTicketAmount}
                   onChange={(e) => setMaxTicketAmount(Number(e.target.value))}
                 />
               </div>
-
+              {useDate === 'time' && <div className={styles.initialinput}>
+                <p>Whats the minimum of tickets that need to be sold?</p>
+                <input
+                  type="number"
+                  min={1}
+                  max={1000}
+                  value={minTicketAmount}
+                  onChange={(e) => setMinTicketAmount(Number(e.target.value))}
+                />
+              </div>}
             </div>
 
-            <div className={styles.inputSections}>
-              <p>Creator fee: {creatorFee}%</p>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={creatorFee}
-                onChange={(e) => setCreatorFee(Number(e.target.value))}
-              />
-            </div>
             <div className={styles.inputSections}>
               <p>Ticket price: {ticketPrice}</p>
               <input
@@ -293,6 +294,13 @@ const AdminCreate: NextPage = () => {
                 onChange={(e) => setTicketPrice(Number(e.target.value))}
               />
             </div>
+            {useDate === 'time' &&
+             <div className={styles.inputSections}>
+              <p>
+                The lottery pool will be between <p className={styles.boldText}>{minTicketAmount * ticketPrice} SOL - {maxTicketAmount * ticketPrice} SOL</p>
+              </p>
+              </div>
+            }
             <div className={styles.addsolprice}>
               <p>
                 Add % to calculate prizes from the prize pool. Prizes must add
