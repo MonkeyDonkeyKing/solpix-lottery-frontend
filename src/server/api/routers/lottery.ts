@@ -4,7 +4,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { PublicKey, TransactionMessage } from "@solana/web3.js";
 import { methods, pdas } from "@/lottery-program-build";
 import * as anchor from "@coral-xyz/anchor";
-import lottery from "@/lottery-program-build/lottery";
+import { TRPCError } from "@trpc/server";
 // convert the date into unix timestamp
 const CappedLotterySchema = z.object({
   autoAnnounceWinnersAfter: z
@@ -39,21 +39,28 @@ export const lotteryRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // const [key, value] = Object.entries(input.params.LotteryType!)[0];
       // console.log(key, value);
-      console.log(input.params.LotteryType!.time);
+      /// check if the lottery type is capped or time
+      let lotteryType: any = {};
+      if ("capped" in input.params.LotteryType!) {
+        lotteryType = input.params.LotteryType.capped;
+      } else if ("time" in input.params.LotteryType!) {
+        lotteryType = input.params.LotteryType.time;
+      } else {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+        });
+      }
+
       const result = await methods.lottery
         .initializeLottery({
           params: {
             lotteryType: {
-              time: {
-                endTime: input.params.LotteryType!.time.endTime,
-                requiredMinTicketsSold:
-                  input.params.LotteryType!.time.requiredMinTicketsSold,
-              },
+              ...lotteryType,
             },
             maxTicketsForSale: input.params.maxTicketsForSale!,
             ticketPrice: {
               sol: {
-                value: new anchor.BN(100),
+                value: input.params.ticketPrice!,
               },
             },
           },
@@ -121,6 +128,40 @@ export const lotteryRouter = createTRPCRouter({
         authority: input.authority,
         lottery: input.lottery,
         value: input.value,
+      });
+
+      const msg = new TransactionMessage({
+        instructions: [result.instruction],
+        payerKey: input.authority,
+        recentBlockhash: (await ctx.solanaRpc.getLatestBlockhash()).blockhash,
+      }).compileToV0Message();
+
+      return msg.serialize();
+    }),
+  startLottery: publicProcedure
+    .input(
+      z.object({
+        authority: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+        lottery: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+        name: z.string(),
+        symbol: z.string(),
+        uri: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await methods.lottery.startLottery({
+        authority: input.authority,
+        lottery: input.lottery,
+        program: ctx.program,
+        params: {
+          name: input.name,
+          symbol: input.symbol,
+          uri: input.uri,
+        },
       });
 
       const msg = new TransactionMessage({
