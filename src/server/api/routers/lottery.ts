@@ -196,7 +196,6 @@ export const lotteryRouter = createTRPCRouter({
           lotteryManagerAccount
         );
       });
-      console.log(Number(adminLotteries[0]?.account.ticketPrice.sol?.value));
       return adminLotteries;
     }),
   isAdmin: publicProcedure
@@ -211,8 +210,12 @@ export const lotteryRouter = createTRPCRouter({
       const lotteryManagerAccount = pdas.lotteryPdas.getLotteryManagerPda(
         input.admin
       )[0];
-      const lotteryManagerData = await ctx.program.account.lotteryManager.fetch(
-        lotteryManagerAccount
-      );
+      const lotteryManagerData = await ctx.program.account.lotteryManager
+        .fetch(lotteryManagerAccount)
+        .catch((err) => {
+          return null;
+        });
+
+      return lotteryManagerData !== null;
     }),
 });

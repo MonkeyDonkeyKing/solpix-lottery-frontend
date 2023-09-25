@@ -53,6 +53,14 @@ const AdminOverview: NextPage = () => {
       enabled: !!publicKey,
     }
   );
+  const isAdmin = api.lottery.isAdmin.useQuery(
+    {
+      admin: publicKey?.toBase58()!,
+    },
+    {
+      enabled: !!publicKey,
+    }
+  );
   const isAllowedWallet = lotteryData.isSuccess && lotteryData.data.length > 0;
 
   if (!isAllowedWallet) {
