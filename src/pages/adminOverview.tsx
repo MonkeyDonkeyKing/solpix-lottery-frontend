@@ -22,26 +22,6 @@ type LotteryOverviewProps = {
   status: "ongoing" | "finished";
 };
 
-const TestLotteries: LotteryOverviewProps[] = [
-  {
-    lotteryID: "001",
-    pricePool: 100,
-    creatorFee: 10,
-    status: "ongoing",
-  },
-  {
-    lotteryID: "002",
-    pricePool: 200,
-    creatorFee: 20,
-    status: "finished",
-  },
-  {
-    lotteryID: "003",
-    pricePool: 60,
-    creatorFee: 1,
-    status: "ongoing",
-  },
-];
 
 const AdminOverview: NextPage = () => {
   const { publicKey } = useWallet();
@@ -99,7 +79,7 @@ const AdminOverview: NextPage = () => {
               <tr>
                 <th>Lottery ID</th>
                 <th>Price pool</th>
-                <th>Creator fee</th>
+                <th>Ticket price</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -112,7 +92,7 @@ const AdminOverview: NextPage = () => {
                     {0} <span>SOL</span>
                   </td>
                   <td>
-                    {account.ticketPrice.sol?.value} <span>SOL</span>
+                    { parseInt(account.ticketPrice.sol?.value, 16) / 1000000000 } <span>SOL</span>
                   </td>
                   <td>{JSON.stringify(account.lotteryStatus)}</td>
                 </tr>
