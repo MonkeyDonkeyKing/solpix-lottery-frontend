@@ -31,12 +31,12 @@
   border-top-right-radius: var(--border-radius);
 }
 
-.table td {
+.table a td {
   padding: 10px;
   text-align: center;
   border: 1px solid var(--card-gray);
 }
 
-.table tbody {
+.table tbody a{
   margin-top: 1rem;
 }

@@ -73,29 +73,20 @@ const AdminOverview: NextPage = () => {
           heading="Admin Overview"
           paragraph="Create new lotteries and check ongoing ones"
         />
-         <section className={styles.table}>
-        <table>
-          <thead>
-            <tr>
-              <th>Lottery ID</th>
-              <th>Price pool</th>
-              <th>Ticket price</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lotteryData.data.map(({ account, publicKey }, index) => (
-              <Link
-                key={index}
-                href={`/adminAddPrizes?lotteryId=${account.lotteryId}&pricePool=${0}&ticketPrice=${parseInt(
-                  account.ticketPrice.sol?.value,
-                  16
-                ) / 1000000000}&status=${JSON.stringify(
-                  account.lotteryStatus
-                )}`}
-              >
-                <tr>
-                  {/* lottery ID */}
+        <section className={styles.table}>
+          <table>
+            <thead>
+              <tr>
+                <th>Lottery ID</th>
+                <th>Price pool</th>
+                <th>Ticket price</th>
+                <th>Status</th>
+                <th>Action</th> {/* New column for the button */}
+              </tr>
+            </thead>
+            <tbody>
+              {lotteryData.data.map(({ account, publicKey }, index) => (
+                <tr key={index}>
                   <td>{account.lotteryId}</td>
                   <td>
                     {0} <span>SOL</span>
@@ -106,12 +97,20 @@ const AdminOverview: NextPage = () => {
                     <span>SOL</span>
                   </td>
                   <td>{JSON.stringify(account.lotteryStatus)}</td>
+                  <td>
+                    <Link legacyBehavior href={`/adminAddPrizes?lotteryId=${account.lotteryId}&pricePool=${0}&ticketPrice=${parseInt(
+                      account.ticketPrice.sol?.value,
+                      16
+                    ) / 1000000000}&status=${JSON.stringify(
+                      account.lotteryStatus
+                    )}`}>add prizes
+                    </Link>
+                  </td>
                 </tr>
-              </Link>
-            ))}
-          </tbody>
-        </table>
-      </section>
+              ))}
+            </tbody>
+          </table>
+        </section>
         <div className={styles.container}>
           <Link href={"/adminCreate"}>Create Lottery Concept</Link>
         </div>
