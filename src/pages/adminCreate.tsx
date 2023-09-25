@@ -48,7 +48,7 @@ const AdminCreate: NextPage = () => {
   const [ticketPrice, setTicketPrice] = useState<number>(0);
   const [solanaPrices, setSolanaPrices] = useState<number[]>([]);
   const [inputPrice, setInputPrice] = useState<number>(0);
-  const [ticketAmount, setTicketAmount] = useState<number>(0);
+  const [maxTicketAmount, setMaxTicketAmount] = useState<number>(0);
   const [endDate, setEndDate] = useState<string>(Date.now().toString());
   const [useDate, setUseDate] = useState<"time" | "capped">("capped");
   const [creatorFeeWallet, setCreatorFeeWallet] = useState<string>("");
@@ -132,40 +132,28 @@ const AdminCreate: NextPage = () => {
   const todayFormatted = today.toISOString().split("T")[0];
 
   const handleSubmit = async () => {
-    if (!useDate) {
-      setEndDate("Max Tickets");
-    }
-    const formData = {
-      selectedNFTs,
-      creatorFee,
-      solanaPrices,
-      endDate,
-      ticketAmount,
-      creatorFeeWallet,
-    };
-    console.log(formData);
-    console.log("test: ", new Date(endDate));
+
     const type =
       useDate === "time"
         ? {
-            time: {
-              endTime: new Date(endDate),
-              requiredMinTicketsSold: 1,
-            },
-          }
+          time: {
+            endTime: new Date(endDate),
+            requiredMinTicketsSold: 1,
+          },
+        }
         : {
-            capped: {
-              autoAnnounceWinnersAfter: new Date(endDate),
-            },
-          };
-
+          capped: {
+            autoAnnounceWinnersAfter: new Date(endDate),
+          },
+        };
+    console.log(type)
     const instruction = await initLottery.mutateAsync({
       lotteryManagerPublicKey: publicKey?.toBase58() || "",
       params: {
         LotteryType: {
           ...type,
         },
-        maxTicketsForSale: ticketAmount,
+        maxTicketsForSale: maxTicketAmount,
         ticketPrice: ticketPrice,
       },
     });
@@ -193,7 +181,6 @@ const AdminCreate: NextPage = () => {
   }
 
   const handleSwitch = () => {
-    setTicketAmount(0);
     if (useDate === "time") {
       setUseDate("capped");
     } else {
@@ -243,9 +230,9 @@ const AdminCreate: NextPage = () => {
           <section className={styles.formContainer}>
             <div className={styles.initialinput}>
               <div className={styles.switchwrapper}>
-                <p>Choose Input:</p>
+                <p>What kind of lottery?</p>
                 <div className={styles.switchDesc}>
-                  <p>Max Tickets</p>
+                  <p>Ends after amount of tickets sold</p>
                   <label className={styles.switch}>
                     <input
                       type="checkbox"
@@ -254,53 +241,45 @@ const AdminCreate: NextPage = () => {
                     />
                     <span className={styles.slider}></span>
                   </label>
-                  <p>Pick Date</p>
+                  <p>Ends at a certain date</p>
                 </div>
               </div>
 
-              {useDate ? (
-                <div className={styles.initialinput}>
-                  <p>Enddate</p>
-                  <input
-                    id="start"
-                    type="date"
-                    value={endDate}
-                    min={todayFormatted}
-                    max={maxDateFormatted}
-                    onChange={(e) => setEndDate(e.target.value)}
-                  />
-                </div>
-              ) : (
-                <div className={styles.initialinput}>
-                  <p>Maximum Tickets sold</p>
-                  <input
-                    type="number"
-                    min={10}
-                    max={1000}
-                    value={ticketAmount}
-                    onChange={(e) => setTicketAmount(Number(e.target.value))}
-                  />
-                </div>
-              )}
+
+              <div className={styles.initialinput}>
+                {useDate === 'capped' ? <p>Finish lottery on certain date if all tickets are sold</p> :
+                  <p>When should the lottery end?</p>}
+                <input
+                  id="start"
+                  type="date"
+                  value={endDate}
+                  min={todayFormatted}
+                  max={maxDateFormatted}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+
+              <div className={styles.initialinput}>
+                <p>How many tickets should there be to sell?</p>
+                <input
+                  type="number"
+                  min={10}
+                  max={1000}
+                  value={maxTicketAmount}
+                  onChange={(e) => setMaxTicketAmount(Number(e.target.value))}
+                />
+              </div>
+
             </div>
 
             <div className={styles.inputSections}>
-              <p>Creator Fee: {creatorFee}%</p>
+              <p>Creator fee: {creatorFee}%</p>
               <input
                 type="range"
                 min={0}
                 max={100}
                 value={creatorFee}
                 onChange={(e) => setCreatorFee(Number(e.target.value))}
-              />
-            </div>
-            <div className={styles.inputSections}>
-              <p>Creator fee wallet: {creatorFeeWallet}</p>
-              <input
-                type="text"
-                placeholder="Wallet that receives the creator fee"
-                value={creatorFeeWallet}
-                onChange={(e) => setCreatorFeeWallet(e.target.value)}
               />
             </div>
             <div className={styles.inputSections}>
