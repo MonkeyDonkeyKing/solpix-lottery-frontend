@@ -73,33 +73,45 @@ const AdminOverview: NextPage = () => {
           heading="Admin Overview"
           paragraph="Create new lotteries and check ongoing ones"
         />
-        <section className={styles.table}>
-          <table>
-            <thead>
-              <tr>
-                <th>Lottery ID</th>
-                <th>Price pool</th>
-                <th>Ticket price</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lotteryData.data.map(({ account, publicKey }, index) => (
-                <tr key={index}>
+         <section className={styles.table}>
+        <table>
+          <thead>
+            <tr>
+              <th>Lottery ID</th>
+              <th>Price pool</th>
+              <th>Ticket price</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lotteryData.data.map(({ account, publicKey }, index) => (
+              <Link
+                key={index}
+                href={`/adminAddPrizes?lotteryId=${account.lotteryId}&pricePool=${0}&ticketPrice=${parseInt(
+                  account.ticketPrice.sol?.value,
+                  16
+                ) / 1000000000}&status=${JSON.stringify(
+                  account.lotteryStatus
+                )}`}
+              >
+                <tr>
                   {/* lottery ID */}
                   <td>{account.lotteryId}</td>
                   <td>
                     {0} <span>SOL</span>
                   </td>
                   <td>
-                    { parseInt(account.ticketPrice.sol?.value, 16) / 1000000000 } <span>SOL</span>
+                    {parseInt(account.ticketPrice.sol?.value, 16) /
+                      1000000000}{" "}
+                    <span>SOL</span>
                   </td>
                   <td>{JSON.stringify(account.lotteryStatus)}</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+              </Link>
+            ))}
+          </tbody>
+        </table>
+      </section>
         <div className={styles.container}>
           <Link href={"/adminCreate"}>Create Lottery Concept</Link>
         </div>

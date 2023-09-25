@@ -25,6 +25,8 @@ import { Methods } from "@/lottery-program-build/utilityTypes";
 import { InstructionParams } from "@/lottery-program-build";
 import { RouterInputs, api } from "@/utils/api";
 import { AppRouter } from "@/server/api/root";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 const allowedWallets = [
   "6fMUyugMke8TaRCtj7w8WW4g6Jp1KYe9TabQJCujxeJr",
@@ -47,7 +49,12 @@ const AdminAddPrizes: NextPage = () => {
   const [creatorFee, setCreatorFee] = useState<number>(0);
   const [solanaPrices, setSolanaPrices] = useState<number[]>([]);
   const [inputPrice, setInputPrice] = useState<number>(0);
+  const router = useRouter();
 
+  const lotteryId = router.query.lotteryId as string;
+  const pricePool = router.query.pricePool as string;
+  const ticketPrice = router.query.ticketPrice as string;
+  const status = router.query.status as string;
 
   const fetchJsonData = async (uri: string) => {
     try {
@@ -188,6 +195,14 @@ const AdminAddPrizes: NextPage = () => {
       </Head>
       <Layout>
         <Banner heading="Create Lottery" paragraph="Create a new lottery" />
+        <section className={styles.formContainer3}>
+          <div>
+              <p>Lottery ID: {lotteryId}</p>
+              <p>Price Pool: {pricePool}</p>
+              <p>Ticket Price: {ticketPrice} SOL</p>
+              <p>Status: {status}</p>
+            </div>
+          </section>
         <div className={styles.wrapper}>
           <section className={styles.nftcontainer}>
             {nfts.map((nft, index) => (
@@ -201,7 +216,8 @@ const AdminAddPrizes: NextPage = () => {
               />
             ))}
           </section>
-          <section className={styles.formContainer}>
+          
+          <section className={styles.formContainer2}>
             <div className={styles.addsolprice}>
               <p>
                 Add % to calculate prizes from the prize pool. Prizes must add
@@ -244,6 +260,9 @@ const AdminAddPrizes: NextPage = () => {
           <button onClick={addPrizesToLottery}>Add prizes to lottery</button>
           <button onClick={onGoLive}>GO LIVE</button>
         </section>
+        <div className={styles.container}>
+          <Link href={"/adminOverview"}>Back to overview</Link>
+        </div>
       </Layout>
     </>
   );

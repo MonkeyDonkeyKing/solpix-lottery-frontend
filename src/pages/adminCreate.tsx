@@ -25,6 +25,7 @@ import { Methods } from "@/lottery-program-build/utilityTypes";
 import { InstructionParams } from "@/lottery-program-build";
 import { RouterInputs, api } from "@/utils/api";
 import { AppRouter } from "@/server/api/root";
+import Link from "next/link";
 
 const allowedWallets = [
   "6fMUyugMke8TaRCtj7w8WW4g6Jp1KYe9TabQJCujxeJr",
@@ -65,75 +66,6 @@ const AdminCreate: NextPage = () => {
   const [params, setParams] = useState<InstructionParams<method>>();
 
 
-  const fetchJsonData = async (uri: string) => {
-    try {
-      const response = await fetch(uri);
-      const jsonData: { image: string; name: string } = await response.json();
-      return jsonData;
-    } catch (error) {
-      console.error("Error fetching JSON data:", error);
-      return null;
-    }
-  };
-
-  // Checks if Wallet is allowed
-  useEffect(() => {
-    if (isAdmin) {
-      fetchNFTs();
-    }
-  }, [isAdmin]);
-
-  const fetchNFTs = async () => {
-    try {
-      if (!publicKey) return;
-
-      const connection = new Connection(clusterApiUrl("devnet"));
-      const wallet = Keypair.generate();
-
-      const metaplex = Metaplex.make(connection)
-        .use(keypairIdentity(wallet))
-        .use(bundlrStorage());
-
-      const nfts = (await metaplex
-        .nfts()
-        .findAllByOwner({ owner: publicKey })) as Metadata[];
-
-      // Extract JSON and address from NFT metadata
-      const nftDataPromises = nfts.map(async (nft) => {
-        const { uri, mintAddress } = nft;
-
-        const jsonData = await fetchJsonData(uri);
-
-        if (jsonData) {
-          const { image, name } = jsonData;
-          return { mintAddress, image, name, uri };
-        }
-
-        return null;
-      });
-
-      const nftData = await Promise.all(nftDataPromises);
-
-      const filteredNftData = nftData.filter(
-        (data): data is any => data !== null
-      );
-      setNfts(filteredNftData);
-    } catch (error) {
-      console.error("Error fetching NFTs:", error);
-    }
-  };
-
-  const handleNFTSelect = (address: string) => {
-    setSelectedNFTs((prevSelected) => {
-      if (prevSelected.includes(address)) {
-        return prevSelected.filter(
-          (selectedAddress) => selectedAddress !== address
-        );
-      } else {
-        return [...prevSelected, address];
-      }
-    });
-  };
 
   const maxDate = new Date();
   maxDate.setMonth(maxDate.getMonth() + 3);
@@ -176,15 +108,6 @@ const AdminCreate: NextPage = () => {
     console.log("txid: ", txid);
   };
 
-  const removeSolPrice = (index: number) => {
-    solanaPrices.splice(index, 1);
-    setSolanaPrices([...solanaPrices]);
-  };
-
-  const addSolPrice = () => {
-    if (inputPrice > 100 || inputPrice <= 0) return;
-    setSolanaPrices([...solanaPrices, inputPrice]);
-  };
 
   function handleSolPriceInput(e: any) {
     setInputPrice(e.target.value);
@@ -223,20 +146,8 @@ const AdminCreate: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <Banner heading="Create Lottery" paragraph="Create a new lottery" />
+        <Banner heading="Create Lottery Concept" paragraph="Create a new lottery" />
         <div className={styles.wrapper}>
-          <section className={styles.nftcontainer}>
-            {nfts.map((nft, index) => (
-              <NFTCard
-                key={index}
-                nft={nft}
-                isSelected={selectedNFTs.includes(
-                  nft?.mintAddress.toBase58() || ""
-                )}
-                onSelect={handleNFTSelect}
-              />
-            ))}
-          </section>
           <section className={styles.formContainer}>
             <div className={styles.initialinput}>
               <div className={styles.switchwrapper}>
@@ -317,47 +228,14 @@ const AdminCreate: NextPage = () => {
                 </p>
               </div>
             )}
-            <div className={styles.addsolprice}>
-              <p>
-                Add % to calculate prizes from the prize pool. Prizes must add
-                up to 100 %
-              </p>
-              <input
-                type="number"
-                min={1}
-                max={100}
-                value={inputPrice}
-                onChange={handleSolPriceInput}
-              />
-              <button onClick={() => addSolPrice()}>Add % Price</button>
-            </div>
           </section>
         </div>
-        <section className={styles.table}>
-          <table>
-            <thead>
-              <tr>
-                <th>Solana Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {solanaPrices.map((price, index) => (
-                <tr key={index}>
-                  <td>
-                    {price} <span> %</span>
-                  </td>
-                  <td>
-                    <button onClick={() => removeSolPrice(index)}>X</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
         <section className={styles.actions}>
-          <button disabled={selectedNFTs.length == 0}>Add NFT(s)</button>
-          <button onClick={handleSubmit}>Create Lottery</button>
+          <button onClick={handleSubmit}>Create lottery concept</button>
         </section>
+        <div className={styles.container}>
+          <Link href={"/adminOverview"}>Back to overview</Link>
+        </div>
       </Layout>
     </>
   );
