@@ -1,30 +1,16 @@
 import Layout from "@/components/Layout";
-import NFTCard from "@/components/NFTCard";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
-  Connection,
-  Keypair,
   MessageV0,
-  TransactionMessage,
-  VersionedMessage,
   VersionedTransaction,
-  clusterApiUrl,
 } from "@solana/web3.js";
-import {
-  Metadata,
-  Metaplex,
-  bundlrStorage,
-  keypairIdentity,
-} from "@metaplex-foundation/js";
 import Head from "next/head";
 import { NextPage } from "next";
 import styles from "../components/AdminCreate.module.css";
 import Banner from "@/components/Banner";
 import { Methods } from "@/lottery-program-build/utilityTypes";
-import { InstructionParams } from "@/lottery-program-build";
 import { RouterInputs, api } from "@/utils/api";
-import { AppRouter } from "@/server/api/root";
 import Link from "next/link";
 
 const allowedWallets = [
@@ -50,22 +36,13 @@ const AdminCreate: NextPage = () => {
     }
   );
   const { connection } = useConnection();
-  const [nfts, setNfts] = useState<Metadata[]>([]);
-  const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
   const isAllowedWallet =
     publicKey && allowedWallets.includes(publicKey.toBase58());
-  const [creatorFee, setCreatorFee] = useState<number>(0);
   const [ticketPrice, setTicketPrice] = useState<number>(0);
-  const [solanaPrices, setSolanaPrices] = useState<number[]>([]);
-  const [inputPrice, setInputPrice] = useState<number>(0);
   const [maxTicketAmount, setMaxTicketAmount] = useState<number>(0);
   const [minTicketAmount, setMinTicketAmount] = useState<number>(0);
   const [endDate, setEndDate] = useState<string>(Date.now().toString());
   const [useDate, setUseDate] = useState<"time" | "capped">("capped");
-  const [creatorFeeWallet, setCreatorFeeWallet] = useState<string>("");
-  const [params, setParams] = useState<InstructionParams<method>>();
-
-
 
   const maxDate = new Date();
   maxDate.setMonth(maxDate.getMonth() + 3);
@@ -90,7 +67,7 @@ const AdminCreate: NextPage = () => {
           };
     console.log(type);
     const instruction = await initLottery.mutateAsync({
-      lotteryManagerPublicKey: publicKey?.toBase58() || "",
+      lotteryManagerPublicKey: publicKey?.toBase58() ?? "",
       params: {
         LotteryType: {
           ...type,
@@ -102,16 +79,12 @@ const AdminCreate: NextPage = () => {
     const messagev0 = MessageV0.deserialize(instruction);
     const transaction = new VersionedTransaction(messagev0);
     console.log("transaction: ", transaction);
-    const txid = await sendTransaction!(transaction, connection, {
+    const txid = await sendTransaction(transaction, connection, {
       skipPreflight: true,
     });
     console.log("txid: ", txid);
   };
 
-
-  function handleSolPriceInput(e: any) {
-    setInputPrice(e.target.value);
-  }
 
   const handleSwitch = () => {
     if (useDate === "time") {
@@ -231,7 +204,7 @@ const AdminCreate: NextPage = () => {
           </section>
         </div>
         <section className={styles.actions}>
-          <button onClick={handleSubmit}>Create lottery concept</button>
+          <button onClick={() => handleSubmit}>Create lottery concept</button>
         </section>
         <div className={styles.container}>
           <Link href={"/adminOverview"}>Back to overview</Link>
