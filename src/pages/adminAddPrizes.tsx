@@ -22,32 +22,29 @@ import { NextPage } from "next";
 import styles from "../components/AdminCreate.module.css";
 import Banner from "@/components/Banner";
 import { Methods } from "@/lottery-program-build/utilityTypes";
-import { InstructionParams } from "@/lottery-program-build";
 import { RouterInputs, api } from "@/utils/api";
-import { AppRouter } from "@/server/api/root";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-const allowedWallets = [
-  "6fMUyugMke8TaRCtj7w8WW4g6Jp1KYe9TabQJCujxeJr",
-  "95ZwCRFtSNLKrbGz1WAbmxxYT1d4GY4SGTizfAKSi9by",
-  "1adTuNaAAm1Neyz6LdNFG5sfQJC3cMjMQ1J9cz5pVhY",
-  "FPk6H2qX3a4iEuUZ4M7CUH9KkHKaaqn2wEhuvj9wK6kd",
-  "FUCKA33Mw3KjZBENMkwNVuXdHhcecAyMvnhNzfwx7DqU"
-];
-
-type method = Methods<"initializeLottery">;
-type lotteryInput = RouterInputs["lottery"]["initializeLottery"]["params"];
+type method = Methods<"addNftPrize">;
+type lotteryInput = RouterInputs["lottery"]["addNftPrice"];
 
 const AdminAddPrizes: NextPage = () => {
   const { publicKey, sendTransaction, signTransaction } = useWallet();
   const { connection } = useConnection();
   const [nfts, setNfts] = useState<Metadata[]>([]);
-  const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
-  const isAllowedWallet =
-    publicKey && allowedWallets.includes(publicKey.toBase58());
-  const [creatorFee, setCreatorFee] = useState<number>(0);
-  const [solanaPrices, setSolanaPrices] = useState<number[]>([]);
+  const [selectedNFT, setSelectedNFT] = useState<string | null>(null);
+  const addNFTPrize = api.lottery.addNftPrice.useMutation();
+
+    const { data: isAdmin } = api.lottery.isAdmin.useQuery(
+      {
+        admin: publicKey?.toBase58()!,
+      },
+      {
+        enabled: !!publicKey,
+      }
+    );
+  const [solanaPrizesTable, setSolanaPrizesTable] = useState<number[]>([]);
   const [inputPrice, setInputPrice] = useState<number>(0);
   const router = useRouter();
 
@@ -69,10 +66,10 @@ const AdminAddPrizes: NextPage = () => {
 
   // Checks if Wallet is allowed
   useEffect(() => {
-    if (isAllowedWallet) {
+    if (isAdmin) {
       fetchNFTs();
     }
-  }, [isAllowedWallet]);
+  }, [isAdmin]);
 
   const fetchNFTs = async () => {
     try {
@@ -115,47 +112,17 @@ const AdminAddPrizes: NextPage = () => {
   };
 
   const handleNFTSelect = (address: string) => {
-    setSelectedNFTs((prevSelected) => {
-      if (prevSelected.includes(address)) {
-        return prevSelected.filter(
-          (selectedAddress) => selectedAddress !== address
-        );
-      } else {
-        return [...prevSelected, address];
-      }
-    });
-  };
-
-
-  const addPrizesToLottery = async () => {
-    
-    // const instruction = await initLottery.mutateAsync({
-    //   lotteryManagerPublicKey: publicKey?.toBase58() || "",
-    //   params: {
-    //     LotteryType: {
-    //       ...type,
-    //     },
-    //     maxTicketsForSale: maxTicketAmount,
-    //     ticketPrice: ticketPrice,
-    //   },
-    // });
-    // const messagev0 = MessageV0.deserialize(instruction);
-    // const transaction = new VersionedTransaction(messagev0);
-    // console.log("transaction: ", transaction);
-    // const txid = await sendTransaction!(transaction, connection, {
-    //   skipPreflight: true,
-    // });
-    // console.log("txid: ", txid);
+    setSelectedNFT(address);
   };
 
   const removeSolPrice = (index: number) => {
-    solanaPrices.splice(index, 1);
-    setSolanaPrices([...solanaPrices]);
+    solanaPrizesTable.splice(index, 1);
+    setSolanaPrizesTable([...solanaPrizesTable]);
   };
 
   const addSolPrice = () => {
     if (inputPrice > 100 || inputPrice <= 0) return;
-    setSolanaPrices([...solanaPrices, inputPrice]);
+    setSolanaPrizesTable([...solanaPrizesTable, inputPrice]);
   };
 
   function handleSolPriceInput(e: any) {
@@ -165,12 +132,26 @@ const AdminAddPrizes: NextPage = () => {
   function onGoLive() {
 
   }
-  function addNFTPrize() {
+  async function addNFTPrizeToLottery() {
+    const instruction = await addNFTPrize.mutateAsync({
+      authority: publicKey?.toBase58() ?? "",
+      lottery: '',
+      mint: selectedNFT!
+    });
+    const messagev0 = MessageV0.deserialize(instruction);
+    const transaction = new VersionedTransaction(messagev0);
+    console.log("transaction: ", transaction);
+    const txid = await sendTransaction!(transaction, connection, {
+      skipPreflight: true,
+    });
+    console.log("txid: ", txid);
+  }
+  function addSOLPrizesToLottery() {
 
   }
 
   // NOT ALLOWED
-  if (!isAllowedWallet) {
+  if (!isAdmin) {
     return (
       <>
         <Head>
@@ -194,24 +175,22 @@ const AdminAddPrizes: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <Banner heading="Create Lottery" paragraph="Create a new lottery" />
+      <Banner heading="Create Lottery" paragraph="Create a new lottery" />
         <section className={styles.formContainer3}>
           <div>
-              <p>Lottery ID: {lotteryId}</p>
-              <p>Price Pool: {pricePool}</p>
-              <p>Ticket Price: {ticketPrice} SOL</p>
-              <p>Status: {status}</p>
-            </div>
-          </section>
+            <p>Lottery ID: {lotteryId}</p>
+            <p>Price Pool: {pricePool}</p>
+            <p>Ticket Price: {ticketPrice} SOL</p>
+            <p>Status: {status}</p>
+          </div>
+        </section>
         <div className={styles.wrapper}>
           <section className={styles.nftcontainer}>
             {nfts.map((nft, index) => (
               <NFTCard
                 key={index}
                 nft={nft}
-                isSelected={selectedNFTs.includes(
-                  nft?.mintAddress.toBase58() || ""
-                )}
+                isSelected={selectedNFT === nft?.mintAddress.toBase58()}
                 onSelect={handleNFTSelect}
               />
             ))}
@@ -232,9 +211,7 @@ const AdminAddPrizes: NextPage = () => {
               />
               <button onClick={() => addSolPrice()}>Add % Price</button>
             </div>
-          </section>
-        </div>
-        <section className={styles.table}>
+          <section className={styles.table}>
           <table>
             <thead>
               <tr>
@@ -242,7 +219,7 @@ const AdminAddPrizes: NextPage = () => {
               </tr>
             </thead>
             <tbody>
-              {solanaPrices.map((price, index) => (
+              {solanaPrizesTable.map((price, index) => (
                 <tr key={index}>
                   <td>
                     {price} <span> %</span>
@@ -255,11 +232,19 @@ const AdminAddPrizes: NextPage = () => {
             </tbody>
           </table>
         </section>
+          </section>
+        </div>
+       
         <section className={styles.actions}>
-          <button disabled={selectedNFTs.length == 0} onClick={addNFTPrize}>Add NFT(s)</button>
-          <button onClick={addPrizesToLottery}>Add prizes to lottery</button>
+          <button disabled={!selectedNFT} onClick={addNFTPrizeToLottery}>
+            Add NFT to lottery
+          </button>
+          <button onClick={addSOLPrizesToLottery}>
+            Add SOL prizes to lottery
+          </button>
           <button onClick={onGoLive}>GO LIVE</button>
         </section>
+
         <div className={styles.container}>
           <Link href={"/adminOverview"}>Back to overview</Link>
         </div>

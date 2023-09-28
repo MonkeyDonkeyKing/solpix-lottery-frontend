@@ -5,22 +5,8 @@ import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "../components/AdminOverview.module.css";
-import { useState } from "react";
 import { api } from "@/utils/api";
-import { PublicKey } from "@solana/web3.js";
 
-const allowedWallets = [
-  "6fMUyugMke8TaRCtj7w8WW4g6Jp1KYe9TabQJCujxeJr",
-  "95ZwCRFtSNLKrbGz1WAbmxxYT1d4GY4SGTizfAKSi9by",
-  "1adTuNaAAm1Neyz6LdNFG5sfQJC3cMjMQ1J9cz5pVhY",
-];
-
-type LotteryOverviewProps = {
-  lotteryID: string;
-  pricePool: number;
-  creatorFee: number;
-  status: "ongoing" | "finished";
-};
 
 
 const AdminOverview: NextPage = () => {
@@ -41,9 +27,8 @@ const AdminOverview: NextPage = () => {
       enabled: !!publicKey,
     }
   );
-  const isAllowedWallet = lotteryData.isSuccess && lotteryData.data.length > 0;
 
-  if (!isAllowedWallet) {
+  if (!isAdmin) {
     // NOT ALLOWED
     return (
       <>
@@ -58,7 +43,6 @@ const AdminOverview: NextPage = () => {
       </>
     );
   }
-  console.log(lotteryData?.data[0]?.account.ticketPrice);
 
   // ALLOWED
   return (
@@ -85,7 +69,7 @@ const AdminOverview: NextPage = () => {
               </tr>
             </thead>
             <tbody>
-              {lotteryData.data.map(({ account, publicKey }, index) => (
+              {lotteryData.data?.map(({ account, publicKey }, index) => (
                 <tr key={index}>
                   <td>{account.lotteryId}</td>
                   <td>
