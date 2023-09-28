@@ -34,21 +34,15 @@ const AdminAddPrizes: NextPage = () => {
   const { connection } = useConnection();
   const [nfts, setNfts] = useState<Metadata[]>([]);
   const [selectedNFT, setSelectedNFT] = useState<string | null>(null);
-  const [lotteryId, setLotteryId] = useState<string>('');
-  const [prizePool, setPrizePool] = useState<string>('');
-  const [ticketPrice, setTicketPrice] = useState<string>('');
-  const [lotteryStatus, setLotteryStatus] = useState<string>('');
   const addNFTPrize = api.lottery.addNftPrice.useMutation();
-  const getLotteryData = api.lottery.getLotteryData.useMutation();
-
-    const { data: isAdmin } = api.lottery.isAdmin.useQuery(
-      {
-        admin: publicKey?.toBase58()!,
-      },
-      {
-        enabled: !!publicKey,
-      }
-    );
+  const { data: isAdmin } = api.lottery.isAdmin.useQuery(
+    {
+      admin: publicKey?.toBase58()!,
+    },
+    {
+      enabled: !!publicKey,
+    }
+  );
   const [solanaPrizesTable, setSolanaPrizesTable] = useState<number[]>([]);
   const [inputPrice, setInputPrice] = useState<number>(0);
   const router = useRouter();
@@ -145,7 +139,7 @@ const AdminAddPrizes: NextPage = () => {
       authority: publicKey?.toBase58() ?? "",
       lottery: lotteryPublicKey,
       mint: selectedNFT!
-    }).then(lotteryData.refetch(lotteryPublicKey.toString()));
+    });
     const messagev0 = MessageV0.deserialize(instruction);
     const transaction = new VersionedTransaction(messagev0);
     console.log("transaction: ", transaction);
