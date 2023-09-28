@@ -65,7 +65,7 @@ const AdminOverview: NextPage = () => {
                 <th>Price pool</th>
                 <th>Ticket price</th>
                 <th>Status</th>
-                <th>Action</th> {/* New column for the button */}
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -82,13 +82,7 @@ const AdminOverview: NextPage = () => {
                   </td>
                   <td>{JSON.stringify(account.lotteryStatus)}</td>
                   <td>
-                    <Link legacyBehavior href={`/adminAddPrizes?lotteryId=${account.lotteryId}&pricePool=${0}&ticketPrice=${parseInt(
-                      account.ticketPrice.sol?.value,
-                      16
-                    ) / 1000000000}&status=${JSON.stringify(
-                      account.lotteryStatus
-                    )}`}>add prizes
-                    </Link>
+                    <Link legacyBehavior href={`/adminAddPrizes?lotterPublicKey=${publicKey}`}>add prizes</Link>
                   </td>
                 </tr>
               ))}

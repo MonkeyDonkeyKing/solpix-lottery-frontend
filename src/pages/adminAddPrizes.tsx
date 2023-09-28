@@ -34,7 +34,12 @@ const AdminAddPrizes: NextPage = () => {
   const { connection } = useConnection();
   const [nfts, setNfts] = useState<Metadata[]>([]);
   const [selectedNFT, setSelectedNFT] = useState<string | null>(null);
+  const [lotteryId, setLotteryId] = useState<string>('');
+  const [prizePool, setPrizePool] = useState<string>('');
+  const [ticketPrice, setTicketPrice] = useState<string>('');
+  const [lotteryStatus, setLotteryStatus] = useState<string>('');
   const addNFTPrize = api.lottery.addNftPrice.useMutation();
+  const getLotteryData = api.lottery.getLotteryData.useMutation();
 
     const { data: isAdmin } = api.lottery.isAdmin.useQuery(
       {
@@ -48,10 +53,7 @@ const AdminAddPrizes: NextPage = () => {
   const [inputPrice, setInputPrice] = useState<number>(0);
   const router = useRouter();
 
-  const lotteryId = router.query.lotteryId as string;
-  const pricePool = router.query.pricePool as string;
-  const ticketPrice = router.query.ticketPrice as string;
-  const status = router.query.status as string;
+  const lotteryPublicKey = router.query.lotterPublicKey as string;
 
   const fetchJsonData = async (uri: string) => {
     try {
@@ -70,6 +72,12 @@ const AdminAddPrizes: NextPage = () => {
       fetchNFTs();
     }
   }, [isAdmin]);
+
+  const lotteryData = api.lottery.getLotteryData.useQuery(
+    {
+      lottery: lotteryPublicKey
+    }
+  );
 
   const fetchNFTs = async () => {
     try {
@@ -135,9 +143,9 @@ const AdminAddPrizes: NextPage = () => {
   async function addNFTPrizeToLottery() {
     const instruction = await addNFTPrize.mutateAsync({
       authority: publicKey?.toBase58() ?? "",
-      lottery: '',
+      lottery: lotteryPublicKey,
       mint: selectedNFT!
-    });
+    }).then(lotteryData.refetch(lotteryPublicKey.toString()));
     const messagev0 = MessageV0.deserialize(instruction);
     const transaction = new VersionedTransaction(messagev0);
     console.log("transaction: ", transaction);
@@ -178,10 +186,11 @@ const AdminAddPrizes: NextPage = () => {
       <Banner heading="Create Lottery" paragraph="Create a new lottery" />
         <section className={styles.formContainer3}>
           <div>
-            <p>Lottery ID: {lotteryId}</p>
-            <p>Price Pool: {pricePool}</p>
-            <p>Ticket Price: {ticketPrice} SOL</p>
-            <p>Status: {status}</p>
+            <p>Lottery ID: {lotteryData.data?.lotteryId}</p>
+            <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
+            <p>Ticket Price: {parseInt(lotteryData.data?.ticketPrice.sol?.value, 16) /
+                      1000000000}{" "} SOL</p>
+            {/* <p>Status: {lotteryData.data?.lotteryStatus.concepting}</p> */}
           </div>
         </section>
         <div className={styles.wrapper}>
