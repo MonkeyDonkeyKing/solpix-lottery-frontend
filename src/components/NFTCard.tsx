@@ -4,14 +4,14 @@ import styles from "./NFTCard.module.css";
 
 type NFTCardProps = {
   nft: Metadata;
-  isSelected: boolean;
-  onSelect: (address: string) => void;
+  isSelected?: boolean;
+  onSelect?: (address: string) => void;
 };
 
 const NFTCard: React.FC<NFTCardProps> = ({ nft, isSelected, onSelect }) => {
   const handleClick = () => {
-    if (nft) {
-      onSelect(nft.mintAddress.toBase58());
+    if (nft && isSelected != undefined) {
+      onSelect!(nft.mintAddress.toBase58());
     }
   };
 

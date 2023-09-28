@@ -13,6 +13,7 @@
   padding: 1rem;
   flex-basis: 202%;
   flex-wrap: wrap;
+  align-content: flex-start;
 }
 
 .formContainer {
@@ -136,6 +137,11 @@ input:checked + .slider:before {
   height: 30px;
   font-weight: bold;
   margin-top: 1rem;
+}
+
+.error {
+  color: red;
+  padding: 1rem 0rem;
 }
 
 .addsolprice {
