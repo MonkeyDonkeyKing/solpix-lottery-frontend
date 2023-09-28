@@ -218,4 +218,19 @@ export const lotteryRouter = createTRPCRouter({
 
       return lotteryManagerData !== null;
     }),
+  getLotteryData: publicProcedure
+    .input(
+      z.object({
+        lottery: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const lotteryData = await ctx.program.account.lottery.fetch(
+        input.lottery
+      );
+
+      return lotteryData;
+    }),
 });
