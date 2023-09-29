@@ -69,8 +69,6 @@ const AdminAddPrizes: NextPage = () => {
     ),
   ]);
 
-  console.log("lotteryNfts: ", lotteryNfts.data);
-
   const lotteryData = api.lottery.getLotteryData.useQuery(
     {
       lottery: lotteryPublicKey,
@@ -84,6 +82,7 @@ const AdminAddPrizes: NextPage = () => {
       },
     }
   );
+  console.log("lotteryNfts: ", lotteryData.data);
 
   const handleNFTSelect = (address: string) => {
     setSelectedNFT(address);
@@ -222,13 +221,16 @@ const AdminAddPrizes: NextPage = () => {
             {lotteryNfts.data?.map((nft, index) => (
               <NFTCard key={index} nft={nft} />
             ))}
-            {solanaPrizesTable.map((price, index) => (
-              <PrizeCard
-                key={index}
-                price={price}
-                onRemove={() => removePrize(index)}
-              />
-            ))}
+            {lotteryData.data?.prizes.map((price, index) => {
+              if (price.pool)
+                return (
+                  <PrizeCard
+                    key={index}
+                    price={price.pool.value}
+                    onRemove={() => removePrize(index)}
+                  />
+                );
+            })}
           </section>
 
           <section className={styles.formContainer2}>
