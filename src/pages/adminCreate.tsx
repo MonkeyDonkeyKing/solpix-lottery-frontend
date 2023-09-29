@@ -165,7 +165,7 @@ const AdminCreate: NextPage = () => {
           <button onClick={handleSubmit}>Create lottery concept</button>
         </section>
         <div className={styles.container}>
-          <Link href={"/adminOverview"}>Back to overview</Link>
+          <Link href={"/adminOverview"} className={styles.link}>Back to overview</Link>
         </div>
       </Layout>
     </>

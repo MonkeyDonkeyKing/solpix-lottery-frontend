@@ -14,9 +14,6 @@ const NFTCard: React.FC<NFTCardProps> = ({ nft, isSelected, onSelect }) => {
       onSelect!(nft.mintAddress as unknown as string);
     }
   };
-
-  console.log(nft);
-
   return (
     <div
       className={`${styles.card} ${isSelected ? styles.selected : ""}`}

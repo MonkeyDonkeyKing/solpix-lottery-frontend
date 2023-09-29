@@ -90,7 +90,7 @@ const AdminOverview: NextPage = () => {
           </table>
         </section>
         <div className={styles.container}>
-          <Link href={"/adminCreate"}>Create Lottery Concept</Link>
+          <Link href={"/adminCreate"} className={styles.link}>Create Lottery Concept</Link>
         </div>
       </Layout>
     </>

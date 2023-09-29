@@ -14,7 +14,8 @@ body {
   --color-text-light: white;
   --color-text-dark: black;
   --color-text-grey: #565656;
-
+  --color-table: #3c3c3c;
+  --color-primary: #efefef;
   --border-radius: 30px;
 }
 

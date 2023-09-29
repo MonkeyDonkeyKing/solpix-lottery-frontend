@@ -1,37 +1,22 @@
 import Layout from "@/components/Layout";
 import NFTCard from "@/components/NFTCard";
-import { useState, useEffect, ChangeEventHandler } from "react";
+import { useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
-  Connection,
-  Keypair,
   MessageV0,
   PublicKey,
-  TransactionMessage,
-  VersionedMessage,
   VersionedTransaction,
-  clusterApiUrl,
 } from "@solana/web3.js";
-import {
-  Metadata,
-  Metaplex,
-  bundlrStorage,
-  keypairIdentity,
-} from "@metaplex-foundation/js";
 import Head from "next/head";
 import { NextPage } from "next";
-import styles from "../components/AdminCreate.module.css";
+import styles from "../components/AdminAddPrize.module.css";
 import Banner from "@/components/Banner";
-import { Methods } from "@/lottery-program-build/utilityTypes";
-import { RouterInputs, api } from "@/utils/api";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import PrizeCard from "@/components/PrizeCard";
-import { lotteryPdas } from "@/lottery-program-build/pdas";
 import { env } from "@/env.mjs";
+import { api } from "@/utils/api";
 
-type method = Methods<"addNftPrize">;
-type lotteryInput = RouterInputs["lottery"]["addNftPrice"];
 
 const AdminAddPrizes: NextPage = () => {
   const { publicKey, sendTransaction, signTransaction } = useWallet();
@@ -82,7 +67,6 @@ const AdminAddPrizes: NextPage = () => {
       },
     }
   );
-  console.log("lotteryNfts: ", lotteryData.data);
 
   const handleNFTSelect = (address: string) => {
     setSelectedNFT(address);
@@ -142,29 +126,6 @@ const AdminAddPrizes: NextPage = () => {
     }
   }
 
-  // async function addSOLPrizesToLottery(prize: number) {
-  //   try {
-
-  //       const instruction = await addSolPrize.mutateAsync({
-  //         authority: publicKey?.toBase58() ?? "",
-  //         lottery: lotteryPublicKey,
-  //         value: prize
-  //       });
-
-  //       const messagev0 = MessageV0.deserialize(instruction);
-  //       const transaction = new VersionedTransaction(messagev0);
-  //       const txid = await sendTransaction!(transaction, connection, {
-  //         skipPreflight: true,
-  //       });
-
-  //       console.log(`Transaction for ${prize}% completed. TXID: ${txid}`);
-
-  //     setError(null);
-  //   } catch (error) {
-  //     setError((error.message) as string);
-  //   }
-  // }
-
   // NOT ALLOWED
   if (!isAdmin) {
     return (
@@ -191,8 +152,9 @@ const AdminAddPrizes: NextPage = () => {
       </Head>
       <Layout>
         <Banner heading="Create Lottery" paragraph="Create a new lottery" />
+        <div className={styles.toprow}>
         <section className={styles.formContainer3}>
-          <div>
+          <div >
             <p>Lottery ID: {lotteryData.data?.lotteryId}</p>
             <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
             <p>
@@ -204,34 +166,6 @@ const AdminAddPrizes: NextPage = () => {
             {/* <p>Status: {lotteryData.data?.lotteryStatus.concepting}</p> */}
           </div>
         </section>
-        <div className={styles.wrapper}>
-          <section className={styles.nftcontainer}>
-            <h3>Your Wallet</h3>
-            {userNfts.data?.map((nft, index) => (
-              <NFTCard
-                key={index}
-                nft={nft}
-                isSelected={selectedNFT === nft?.mintAddress}
-                onSelect={handleNFTSelect}
-              />
-            ))}
-          </section>
-          <section className={styles.nftcontainer}>
-            <h3>Lottery Wallet</h3>
-            {lotteryNfts.data?.map((nft, index) => (
-              <NFTCard key={index} nft={nft} />
-            ))}
-            {lotteryData.data?.prizes.map((price, index) => {
-              if (price.pool)
-                return (
-                  <PrizeCard
-                    key={index}
-                    price={price.pool.value}
-                  />
-                );
-            })}
-          </section>
-
           <section className={styles.formContainer2}>
             <div className={styles.addsolprice}>
               <p>
@@ -248,6 +182,39 @@ const AdminAddPrizes: NextPage = () => {
               <button onClick={() => addPrize(inputPrice)}>Add % Price</button>
             </div>
           </section>
+
+        </div>
+        <div className={styles.wrapper}>
+          <section className={styles.nftcontainer}>
+            <h3>Your Wallet</h3>
+            <div className={styles.nftcontainerNoBorder}>
+            {userNfts.data?.map((nft, index) => (
+              <NFTCard
+                key={index}
+                nft={nft}
+                isSelected={selectedNFT === nft?.mintAddress}
+                onSelect={handleNFTSelect}
+              />
+            ))}
+            </div>
+          </section>
+          <section className={styles.nftcontainer}>
+            <h3>Lottery Wallet</h3>
+            <div className={styles.nftcontainerNoBorder}>
+            {lotteryNfts.data?.map((nft, index) => (
+              <NFTCard key={index} nft={nft} />
+            ))}
+            {lotteryData.data?.prizes.map((price, index) => {
+              if (price.pool)
+                return (
+                  <PrizeCard
+                    key={index}
+                    price={price.pool.value}
+                  />
+                );
+            })}
+            </div>
+          </section>
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
@@ -262,7 +229,7 @@ const AdminAddPrizes: NextPage = () => {
         </section>
 
         <div className={styles.container}>
-          <Link href={"/adminOverview"}>Back to overview</Link>
+          <Link href={"/adminOverview"} className={styles.link}>Back to overview</Link>
         </div>
       </Layout>
     </>
