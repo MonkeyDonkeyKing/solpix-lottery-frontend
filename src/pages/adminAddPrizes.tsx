@@ -27,6 +27,8 @@ import { RouterInputs, api } from "@/utils/api";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import PrizeCard from "@/components/PrizeCard";
+import { lotteryPdas } from "@/lottery-program-build/pdas";
+import { env } from "@/env.mjs";
 
 type method = Methods<"addNftPrize">;
 type lotteryInput = RouterInputs["lottery"]["addNftPrice"];
@@ -58,10 +60,16 @@ const AdminAddPrizes: NextPage = () => {
       // { enabled: false }
     ),
     t.fetching.fetchAddressNfts(
-      { address: lotteryPublicKey }
+      {
+        address: getPrizeVaultPda(
+          new PublicKey(lotteryPublicKey)
+        )[0].toBase58(),
+      }
       // { enabled: false }
     ),
   ]);
+
+  console.log("lotteryNfts: ", lotteryNfts.data);
 
   const lotteryData = api.lottery.getLotteryData.useQuery(
     {
@@ -261,3 +269,19 @@ const AdminAddPrizes: NextPage = () => {
 };
 
 export default AdminAddPrizes;
+
+const getPrizeVaultPda = (lottery: PublicKey): [PublicKey, number] => {
+  return PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("lottery"),
+      LOTTERY_PROGRAM_ID.toBuffer(),
+      lottery.toBuffer(),
+      Buffer.from("vault"),
+    ],
+    LOTTERY_PROGRAM_ID
+  );
+};
+
+export const LOTTERY_PROGRAM_ID = new PublicKey(
+  env.NEXT_PUBLIC_LOTTERY_PROGRAM_ID!
+);
