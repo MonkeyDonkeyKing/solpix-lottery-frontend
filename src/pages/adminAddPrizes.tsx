@@ -227,7 +227,6 @@ const AdminAddPrizes: NextPage = () => {
                   <PrizeCard
                     key={index}
                     price={price.pool.value}
-                    onRemove={() => removePrize(index)}
                   />
                 );
             })}
