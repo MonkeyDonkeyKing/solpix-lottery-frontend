@@ -11,12 +11,17 @@ type NFTCardProps = {
 const NFTCard: React.FC<NFTCardProps> = ({ nft, isSelected, onSelect }) => {
   const handleClick = () => {
     if (nft && isSelected != undefined) {
-      onSelect!(nft.mintAddress.toBase58());
+      onSelect!(nft.mintAddress as unknown as string);
     }
   };
 
+  console.log(nft);
+
   return (
-    <div className={`${styles.card} ${isSelected ? styles.selected : ""}`} onClick={handleClick}>
+    <div
+      className={`${styles.card} ${isSelected ? styles.selected : ""}`}
+      onClick={handleClick}
+    >
       {nft?.image && <img src={nft.image} alt={`NFT ${nft.name}`} />}
       <p className={styles.name}>{nft?.name}</p>
     </div>

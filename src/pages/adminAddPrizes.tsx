@@ -34,8 +34,6 @@ type lotteryInput = RouterInputs["lottery"]["addNftPrice"];
 const AdminAddPrizes: NextPage = () => {
   const { publicKey, sendTransaction, signTransaction } = useWallet();
   const { connection } = useConnection();
-  const [nfts, setNfts] = useState<Metadata[]>([]);
-  const [nftsLottery, setNftsLottery] = useState<Metadata[]>([]);
   const [selectedNFT, setSelectedNFT] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const addNFTPrize = api.lottery.addNftPrice.useMutation();
@@ -56,12 +54,12 @@ const AdminAddPrizes: NextPage = () => {
 
   const [userNfts, lotteryNfts] = api.useQueries((t) => [
     t.fetching.fetchAddressNfts(
-      { address: publicKey!.toBase58() },
-      { enabled: false }
+      { address: publicKey!.toBase58() }
+      // { enabled: false }
     ),
     t.fetching.fetchAddressNfts(
-      { address: lotteryPublicKey },
-      { enabled: false }
+      { address: lotteryPublicKey }
+      // { enabled: false }
     ),
   ]);
 
@@ -72,8 +70,8 @@ const AdminAddPrizes: NextPage = () => {
     {
       enabled: isAdmin,
       select(data) {
-        userNfts.refetch();
-        lotteryNfts.refetch();
+        // userNfts.refetch();
+        // lotteryNfts.refetch();
         return data;
       },
     }
@@ -202,18 +200,18 @@ const AdminAddPrizes: NextPage = () => {
         <div className={styles.wrapper}>
           <section className={styles.nftcontainer}>
             <h3>Your Wallet</h3>
-            {nfts.map((nft, index) => (
+            {userNfts.data?.map((nft, index) => (
               <NFTCard
                 key={index}
                 nft={nft}
-                isSelected={selectedNFT === nft?.mintAddress.toBase58()}
+                isSelected={selectedNFT === nft?.mintAddress}
                 onSelect={handleNFTSelect}
               />
             ))}
           </section>
           <section className={styles.nftcontainer}>
             <h3>Lottery Wallet</h3>
-            {nftsLottery.map((nft, index) => (
+            {lotteryNfts.data?.map((nft, index) => (
               <NFTCard key={index} nft={nft} />
             ))}
             {solanaPrizesTable.map((price, index) => (
