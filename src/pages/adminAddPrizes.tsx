@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
 import NFTCard from "@/components/NFTCard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEventHandler } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
   Connection,
@@ -26,6 +26,7 @@ import { Methods } from "@/lottery-program-build/utilityTypes";
 import { RouterInputs, api } from "@/utils/api";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import PrizeCard from "@/components/PrizeCard";
 
 type method = Methods<"addNftPrize">;
 type lotteryInput = RouterInputs["lottery"]["addNftPrice"];
@@ -122,7 +123,7 @@ const AdminAddPrizes: NextPage = () => {
     try {
       const metaplex = Metaplex.make(connection);
       const mintAddresses = lotteryData.data?.prizes.map(
-        (prize) => new PublicKey(prize.nft!.mint as string)
+        (prize) => new PublicKey(prize.nft!.mint.toBase58())
       );
       console.log("HIERHIERHIER",mintAddresses)
       const nftDataPromises = mintAddresses!.map(async (mintAddress, index) => {
@@ -152,18 +153,36 @@ const AdminAddPrizes: NextPage = () => {
     setSelectedNFT(address);
   };
 
-  const removeSolPrice = (index: number) => {
-    solanaPrizesTable.splice(index, 1);
-    setSolanaPrizesTable([...solanaPrizesTable]);
-  };
-
-  const addSolPrice = () => {
+  const addPrize = async() => {
     if (inputPrice > 100 || inputPrice <= 0) return;
-    setSolanaPrizesTable([...solanaPrizesTable, inputPrice]);
+    try {
+      const instruction = await addSolPrize.mutateAsync({
+        authority: publicKey?.toBase58() ?? "",
+        lottery: lotteryPublicKey,
+        value: inputPrice
+      });
+      const messagev0 = MessageV0.deserialize(instruction);
+      const transaction = new VersionedTransaction(messagev0);
+      const txid = await sendTransaction(transaction, connection, {
+        skipPreflight: true,
+      });
+
+      console.log(`Transaction for ${inputPrice}% completed. TXID: ${txid}`);
+      setSolanaPrizesTable([...solanaPrizesTable, inputPrice]);
+    }
+    catch (error){
+      console.log(error)
+    }
   };
 
-  function handleSolPriceInput(e: any) {
-    setInputPrice(e.target.value);
+  const removePrize = (index: number) => {
+    const updatedPrizes = [...solanaPrizesTable];
+    updatedPrizes.splice(index, 1);
+    setSolanaPrizesTable(updatedPrizes);
+  };
+
+  function handleSolPriceInput(e) {
+    setInputPrice(Number(e.target.value));
   }
 
   function onGoLive() {
@@ -192,35 +211,28 @@ const AdminAddPrizes: NextPage = () => {
     }
   }
 
-  async function addSOLPrizesToLottery(prizes: number[]) {
-    try {
-      const totalPrize = prizes.reduce((sum, prize) => sum + prize, 0);
+  // async function addSOLPrizesToLottery(prize: number) {
+  //   try {
+
+  //       const instruction = await addSolPrize.mutateAsync({
+  //         authority: publicKey?.toBase58() ?? "",
+  //         lottery: lotteryPublicKey,
+  //         value: prize
+  //       });
   
-      if (totalPrize !== 100) {
-        throw new Error("Prizes must add up to 100%");
-      }
+  //       const messagev0 = MessageV0.deserialize(instruction);
+  //       const transaction = new VersionedTransaction(messagev0);
+  //       const txid = await sendTransaction!(transaction, connection, {
+  //         skipPreflight: true,
+  //       });
   
-      for (const prize of prizes) {
-        const instruction = await addSolPrize.mutateAsync({
-          authority: publicKey?.toBase58() ?? "",
-          lottery: lotteryPublicKey,
-          value: prize
-        });
+  //       console.log(`Transaction for ${prize}% completed. TXID: ${txid}`);
   
-        const messagev0 = MessageV0.deserialize(instruction);
-        const transaction = new VersionedTransaction(messagev0);
-        const txid = await sendTransaction!(transaction, connection, {
-          skipPreflight: true,
-        });
-  
-        console.log(`Transaction for ${prize}% completed. TXID: ${txid}`);
-      }
-  
-      setError(null);
-    } catch (error) {
-      setError((error.message) as string);
-    }
-  }
+  //     setError(null);
+  //   } catch (error) {
+  //     setError((error.message) as string);
+  //   }
+  // }
 
   // NOT ALLOWED
   if (!isAdmin) {
@@ -277,45 +289,31 @@ const AdminAddPrizes: NextPage = () => {
                 nft={nft}
               />
             ))}
+             {solanaPrizesTable.map((price, index) => (
+              <PrizeCard
+                key={index}
+                price={price}
+                onRemove={() => removePrize(index)}
+              />
+            ))}
           </section>
 
           <section className={styles.formContainer2}>
-            <div className={styles.addsolprice}>
-              <p>
-                Add % to calculate prizes from the prize pool. Prizes must add
-                up to 100 %
-              </p>
-              <input
-                type="number"
-                min={1}
-                max={100}
-                value={inputPrice}
-                onChange={handleSolPriceInput}
-              />
-              <button onClick={() => addSolPrice()}>Add % Price</button>
-            </div>
-            <section className={styles.table}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Solana Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {solanaPrizesTable.map((price, index) => (
-                    <tr key={index}>
-                      <td>
-                        {price} <span> %</span>
-                      </td>
-                      <td>
-                        <button onClick={() => removeSolPrice(index)}>X</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </section>
-          </section>
+          <div className={styles.addsolprice}>
+            <p>
+              Add % to calculate prizes from the prize pool. Prizes must add
+              up to 100 %
+            </p>
+            <input
+              type="number"
+              min={1}
+              max={100}
+              value={inputPrice}
+              onChange={handleSolPriceInput}
+            />
+            <button onClick={() => addPrize(inputPrice)}>Add % Price</button>
+          </div>
+        </section>
         </div>
 
           {error && <div className={styles.error}>{error}</div>}
@@ -323,9 +321,9 @@ const AdminAddPrizes: NextPage = () => {
           <button disabled={!selectedNFT} onClick={addNFTPrizeToLottery}>
             Add NFT to lottery
           </button>
-          <button onClick={() => addSOLPrizesToLottery(solanaPrizesTable)}>
+          {/* <button onClick={() => addSOLPrizesToLottery(solanaPrizesTable)}>
             Add SOL prizes to lottery
-          </button>
+          </button> */}
           <button onClick={onGoLive}>GO LIVE</button>
         </section>
 
