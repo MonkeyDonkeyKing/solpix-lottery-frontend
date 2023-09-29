@@ -50,116 +50,46 @@ const AdminAddPrizes: NextPage = () => {
   );
   const [solanaPrizesTable, setSolanaPrizesTable] = useState<number[]>([]);
   const [inputPrice, setInputPrice] = useState<number>(0);
-  const router = useRouter();
 
+  const router = useRouter();
   const lotteryPublicKey = router.query.lotterPublicKey as string;
 
+  const [userNfts, lotteryNfts] = api.useQueries((t) => [
+    t.fetching.fetchAddressNfts(
+      { address: publicKey!.toBase58() },
+      { enabled: false }
+    ),
+    t.fetching.fetchAddressNfts(
+      { address: lotteryPublicKey },
+      { enabled: false }
+    ),
+  ]);
 
   const lotteryData = api.lottery.getLotteryData.useQuery(
     {
-      lottery: lotteryPublicKey
+      lottery: lotteryPublicKey,
+    },
+    {
+      enabled: isAdmin,
+      select(data) {
+        userNfts.refetch();
+        lotteryNfts.refetch();
+        return data;
+      },
     }
   );
-
-  useEffect(() => {
-    if (isAdmin) {
-      fetchNFTs();
-      fetchNFTsForLottery();
-    }
-  }, [isAdmin]);
-
-  const fetchJsonData = async (uri: string) => {
-    try {
-      const response = await fetch(uri);
-      const jsonData: { image: string; name: string } = await response.json();
-      return jsonData;
-    } catch (error) {
-      console.error("Error fetching JSON data:", error);
-      return null;
-    }
-  };
-
-  const fetchNFTs = async () => {
-    try {
-      if (!publicKey) return;
-
-      const connection = new Connection(clusterApiUrl("devnet"));
-      const wallet = Keypair.generate();
-
-      const metaplex = Metaplex.make(connection)
-        .use(keypairIdentity(wallet))
-        .use(bundlrStorage());
-
-      const nfts = (await metaplex
-        .nfts()
-        .findAllByOwner({ owner: publicKey })) as Metadata[];
-
-      // Extract JSON and address from NFT metadata
-      const nftDataPromises = nfts.map(async (nft) => {
-        const { uri, mintAddress } = nft;
-
-        const jsonData = await fetchJsonData(uri);
-
-        if (jsonData) {
-          const { image, name } = jsonData;
-          return { mintAddress, image, name, uri };
-        }
-
-        return null;
-      });
-
-      const nftData = await Promise.all(nftDataPromises);
-
-      const filteredNftData = nftData.filter(
-        (data): data is any => data !== null
-      );
-      setNfts(filteredNftData);
-    } catch (error) {
-      console.error("Error fetching NFTs:", error);
-    }
-  };
-
-  const fetchNFTsForLottery = async () => {
-    try {
-      const metaplex = Metaplex.make(connection);
-      const mintAddresses = lotteryData.data?.prizes.map(
-        (prize) => new PublicKey(prize.nft!.mint.toBase58())
-      );
-      console.log("HIERHIERHIER",mintAddresses)
-      const nftDataPromises = mintAddresses!.map(async (mintAddress, index) => {
-        const nft = await metaplex.nfts().findByMint({ mintAddress });
-        const uri = nft.uri;
-        const jsonData = await fetchJsonData(uri);
-
-        if (jsonData) {
-          const { image, name } = jsonData;
-          return { mintAddress, image, name, uri };
-        }
-        return null;
-      });
-
-      const nftData = await Promise.all(nftDataPromises);
-
-      const filteredNftData = nftData.filter(
-        (data): data is any => data !== null
-      );
-      setNftsLottery(filteredNftData);
-    } catch (error) {
-      console.error("Error fetching NFTs:", error);
-    }
-  };
 
   const handleNFTSelect = (address: string) => {
     setSelectedNFT(address);
   };
 
-  const addPrize = async() => {
+  const addPrize = async () => {
     if (inputPrice > 100 || inputPrice <= 0) return;
     try {
       const instruction = await addSolPrize.mutateAsync({
         authority: publicKey?.toBase58() ?? "",
         lottery: lotteryPublicKey,
-        value: inputPrice
+        value: inputPrice,
       });
       const messagev0 = MessageV0.deserialize(instruction);
       const transaction = new VersionedTransaction(messagev0);
@@ -169,9 +99,8 @@ const AdminAddPrizes: NextPage = () => {
 
       console.log(`Transaction for ${inputPrice}% completed. TXID: ${txid}`);
       setSolanaPrizesTable([...solanaPrizesTable, inputPrice]);
-    }
-    catch (error){
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -187,16 +116,14 @@ const AdminAddPrizes: NextPage = () => {
 
   function onGoLive() {
     console.log();
-
   }
 
   async function addNFTPrizeToLottery() {
     try {
-
       const instruction = await addNFTPrize.mutateAsync({
         authority: publicKey?.toBase58() ?? "",
         lottery: lotteryPublicKey,
-        mint: selectedNFT!
+        mint: selectedNFT!,
       });
       const messagev0 = MessageV0.deserialize(instruction);
       const transaction = new VersionedTransaction(messagev0);
@@ -205,8 +132,7 @@ const AdminAddPrizes: NextPage = () => {
         skipPreflight: true,
       });
       console.log("txid: ", txid);
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
     }
   }
@@ -219,15 +145,15 @@ const AdminAddPrizes: NextPage = () => {
   //         lottery: lotteryPublicKey,
   //         value: prize
   //       });
-  
+
   //       const messagev0 = MessageV0.deserialize(instruction);
   //       const transaction = new VersionedTransaction(messagev0);
   //       const txid = await sendTransaction!(transaction, connection, {
   //         skipPreflight: true,
   //       });
-  
+
   //       console.log(`Transaction for ${prize}% completed. TXID: ${txid}`);
-  
+
   //     setError(null);
   //   } catch (error) {
   //     setError((error.message) as string);
@@ -264,8 +190,12 @@ const AdminAddPrizes: NextPage = () => {
           <div>
             <p>Lottery ID: {lotteryData.data?.lotteryId}</p>
             <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
-            <p>Ticket Price: {parseInt(lotteryData.data?.ticketPrice.sol?.value, 16) /
-              1000000000}{" "} SOL</p>
+            <p>
+              Ticket Price:{" "}
+              {parseInt(lotteryData.data?.ticketPrice.sol?.value, 16) /
+                1000000000}{" "}
+              SOL
+            </p>
             {/* <p>Status: {lotteryData.data?.lotteryStatus.concepting}</p> */}
           </div>
         </section>
@@ -284,12 +214,9 @@ const AdminAddPrizes: NextPage = () => {
           <section className={styles.nftcontainer}>
             <h3>Lottery Wallet</h3>
             {nftsLottery.map((nft, index) => (
-              <NFTCard
-                key={index}
-                nft={nft}
-              />
+              <NFTCard key={index} nft={nft} />
             ))}
-             {solanaPrizesTable.map((price, index) => (
+            {solanaPrizesTable.map((price, index) => (
               <PrizeCard
                 key={index}
                 price={price}
@@ -299,24 +226,24 @@ const AdminAddPrizes: NextPage = () => {
           </section>
 
           <section className={styles.formContainer2}>
-          <div className={styles.addsolprice}>
-            <p>
-              Add % to calculate prizes from the prize pool. Prizes must add
-              up to 100 %
-            </p>
-            <input
-              type="number"
-              min={1}
-              max={100}
-              value={inputPrice}
-              onChange={handleSolPriceInput}
-            />
-            <button onClick={() => addPrize(inputPrice)}>Add % Price</button>
-          </div>
-        </section>
+            <div className={styles.addsolprice}>
+              <p>
+                Add % to calculate prizes from the prize pool. Prizes must add
+                up to 100 %
+              </p>
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={inputPrice}
+                onChange={handleSolPriceInput}
+              />
+              <button onClick={() => addPrize(inputPrice)}>Add % Price</button>
+            </div>
+          </section>
         </div>
 
-          {error && <div className={styles.error}>{error}</div>}
+        {error && <div className={styles.error}>{error}</div>}
         <section className={styles.actions}>
           <button disabled={!selectedNFT} onClick={addNFTPrizeToLottery}>
             Add NFT to lottery
