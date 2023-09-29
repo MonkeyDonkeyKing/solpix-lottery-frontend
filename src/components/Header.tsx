@@ -14,17 +14,20 @@ import {
   faScrewdriverWrench,
 } from "@fortawesome/free-solid-svg-icons";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { api } from "@/utils/api";
 
 const Header = () => {
   const { publicKey, disconnect} = useWallet();
   const { setVisible } = useWalletModal();
-  const allowedWallets = [
-    "6fMUyugMke8TaRCtj7w8WW4g6Jp1KYe9TabQJCujxeJr",
-    "FUCKA33Mw3KjZBENMkwNVuXdHhcecAyMvnhNzfwx7DqU",
-  ];
-
-  const isAllowedWallet =
-    publicKey && allowedWallets.includes(publicKey.toBase58());
+  
+  const { data: isAdmin } = api.lottery.isAdmin.useQuery(
+    {
+      admin: publicKey?.toBase58()!,
+    },
+    {
+      enabled: !!publicKey,
+    }
+  );
 
   return (
     <div className={styles.navigation}>
@@ -44,7 +47,7 @@ const Header = () => {
           <FontAwesomeIcon icon={faHandshake} />
           <Link href={"/collaborate"}>Collaborate</Link>
         </li>
-        {isAllowedWallet && (
+        {isAdmin && (
           <li>
             <FontAwesomeIcon icon={faScrewdriverWrench} />
             <Link href={"/adminOverview"}>Admin</Link>
