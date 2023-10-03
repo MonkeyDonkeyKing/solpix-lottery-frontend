@@ -32,7 +32,22 @@ interface CreateLotteryArgs {
 
 const Home: NextPage = () => {
   const [date, setDate] = React.useState(new Date());
-  const lotteryData = api.lottery.getAllLotteries.useQuery({});
+  const lotteryData = api.lottery.getAllLotteries.useQuery(
+    {},
+    {
+      select(data) {
+        return data.map(({ account, publicKey }) => ({
+          account: {
+            ...account,
+            associatedLotteryManager: new web3.PublicKey(
+              account.associatedLotteryManager
+            ),
+          },
+          publicKey: new web3.PublicKey(publicKey),
+        }));
+      },
+    }
+  );
 
   // const testData = {
   //   name: "Big Bad Bonanza",
@@ -80,11 +95,7 @@ const Home: NextPage = () => {
           paragraph="built by Solpix, an exclusive DAO dedicated to the empowerment of the Solana community"
         />
         {lotteryData.data?.map(({ account, publicKey }, index) => (
-          <CardMain
-            key={index}
-            address={publicKey}
-            lotteryData={account}
-          />
+          <CardMain key={index} address={publicKey} lotteryData={account} />
         ))}
 
         <InfoSection></InfoSection>

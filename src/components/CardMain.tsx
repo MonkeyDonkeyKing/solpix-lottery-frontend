@@ -10,12 +10,13 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { RouterOutputs } from "@/utils/api";
 
 const CardMain = ({
   lotteryData,
   address,
 }: {
-
+  lotteryData: RouterOutputs["lottery"]["getAllLotteries"][number]["account"];
   address: PublicKey;
 }) => {
   const user = useWallet();
