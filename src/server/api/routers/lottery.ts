@@ -198,6 +198,12 @@ export const lotteryRouter = createTRPCRouter({
       });
       return adminLotteries;
     }),
+  getAllLotteries: publicProcedure
+    .input(z.object({}))
+    .query(async ({ ctx, input }) => {
+      const lotteries = await ctx.program.account.lottery.all();
+      return lotteries;
+    }),
   isAdmin: publicProcedure
     .input(
       z.object({
