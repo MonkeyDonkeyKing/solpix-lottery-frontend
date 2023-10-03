@@ -224,6 +224,34 @@ export const lotteryRouter = createTRPCRouter({
 
       return lotteryManagerData !== null;
     }),
+  buyTicket: publicProcedure
+    .input(
+      z.object({
+        buyer: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+        lottery: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+        quantity: z.number().min(1).max(3),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await methods.lottery.buyTicket({
+        buyer: input.buyer,
+        lottery: input.lottery,
+        program: ctx.program,
+        amount: input.quantity,
+      });
+
+      const msg = new TransactionMessage({
+        instructions: result.instructions,
+        payerKey: input.buyer,
+        recentBlockhash: (await ctx.solanaRpc.getLatestBlockhash()).blockhash,
+      }).compileToV0Message();
+
+      return msg.serialize();
+    }),
   getLotteryData: publicProcedure
     .input(
       z.object({
