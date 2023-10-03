@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import PrizeCard from "@/components/PrizeCard";
 import { env } from "@/env.mjs";
 import { api } from "@/utils/api";
+import startLottery from "@/lottery-program-build/lottery/startLottery";
 
 
 const AdminAddPrizes: NextPage = () => {
@@ -25,6 +26,7 @@ const AdminAddPrizes: NextPage = () => {
   const [error, setError] = useState<string | null>(null);
   const addNFTPrize = api.lottery.addNftPrice.useMutation();
   const addSolPrize = api.lottery.addPoolPrize.useMutation();
+  const startLottery = api.lottery.startLottery.useMutation();
   const { data: isAdmin } = api.lottery.isAdmin.useQuery(
     {
       admin: publicKey?.toBase58()!,
@@ -103,8 +105,25 @@ const AdminAddPrizes: NextPage = () => {
     setInputPrice(Number(e.target.value));
   }
 
-  function onGoLive() {
-    console.log();
+  async function onGoLive() {
+    try {
+      const instruction = await startLottery.mutateAsync({
+        authority: publicKey?.toBase58() ?? "",
+        lottery: lotteryPublicKey,
+        symbol: 'LTRY',
+        name: `${lotteryData.data?.lotteryId}`,
+        uri: 'https://arweave.net/FPw7Wcv-8BL9EYuethi6Fj8JJRt8OFcKab-Uk0aIvgU'
+      });
+      const messagev0 = MessageV0.deserialize(instruction);
+      const transaction = new VersionedTransaction(messagev0);
+      const txid = await sendTransaction(transaction, connection, {
+        skipPreflight: true,
+      });
+
+      console.log(`Transaction for Go LIVE completed. TXID: ${txid}`);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async function addNFTPrizeToLottery() {

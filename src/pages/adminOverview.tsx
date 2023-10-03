@@ -80,10 +80,12 @@ const AdminOverview: NextPage = () => {
                       1000000000}{" "}
                     <span>SOL</span>
                   </td>
-                  <td>{JSON.stringify(account.lotteryStatus)}</td>
-                  <td>
+                  <td>{Object.keys(account.lotteryStatus)[0]}</td>
+
+                  {Object.keys(account.lotteryStatus)[0] === 'concepting' && <td>
                     <Link legacyBehavior href={`/adminAddPrizes?lotterPublicKey=${publicKey}`}>add prizes</Link>
-                  </td>
+                  </td>}
+
                 </tr>
               ))}
             </tbody>
