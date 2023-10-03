@@ -83,7 +83,7 @@ const Home: NextPage = () => {
           <CardMain
             key={index}
             address={publicKey}
-            lotteryData={account.ticketPrice}
+            lotteryData={account}
           />
         ))}
 
