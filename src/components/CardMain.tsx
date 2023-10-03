@@ -21,7 +21,7 @@ const CardMain = ({
 }) => {
   const user = useWallet();
   // const program = useProgram();
-  const endTime = new Date(lotteryData.lotteryType.time?.endTime);
+  
   // const ticketPrice = parseInt(lotteryData.ticketPrice.toString()) / 1e7;
   const ticketPrice = parseInt(lotteryData.ticketPrice);
 
@@ -32,6 +32,14 @@ const CardMain = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(Number(e.target.value));
   };
+
+  const hexToReadableDate = (hexTime) => {
+    const unixTime = parseInt(hexTime, 16) * 1000; // Convert to milliseconds
+    const date = new Date(unixTime);
+    return date.toLocaleString(); // Customize the date format as needed
+  };
+  console.log(lotteryData.lotteryType.time?.endTime);
+  const endTime = hexToReadableDate((lotteryData.lotteryType.time?.endTime));
 
   // const handleBuy = async () => {
   //   const vaultPda = getVaultPda(address);
@@ -73,6 +81,7 @@ const CardMain = ({
   //   return txId;
   // };
 
+
   return (
     <>
       <section className={styles.card}>
@@ -86,9 +95,9 @@ const CardMain = ({
               className={styles.ticketlabel}
               style={{ textTransform: "uppercase" }}
             >
-              {endTime.toDateString()}
+              {endTime}
             </span>
-            <div>{lotteryData.lotteryId}</div>
+            <div>Lottery ID: {lotteryData.lotteryId}</div>
           </section>
           <Divider orientation="vertical" flexItem />
           <section>
