@@ -16,7 +16,6 @@ import React from "react";
 
 
 const Home: NextPage = () => {
-  const [date, setDate] = React.useState(new Date());
   const lotteryData = api.lottery.getAllLotteries.useQuery(
     {},
     {
@@ -34,37 +33,6 @@ const Home: NextPage = () => {
     }
   );
 
-  // const testData = {
-  //   name: "Big Bad Bonanza",
-  //   associatedLotteryMaster: "string",
-  //   id: 1,
-  //   numberOfTickets: 150,
-  //   ticketPrice: "1000000",
-  //   possibleWinners: 3,
-  //   distribution: "test",
-  //   winners: [
-  //     {
-  //       ticketId: 123456,
-  //       priceClaimed: false,
-  //     },
-  //   ],
-  //   endTime: "2023-10-10T23:59:59.999Z",
-  //   nextTicketId: 15,
-  //   solPrizes: [20, 30, 40, 50, 60],
-  //   nfts: [
-  //     {
-  //       name: "Nft# 1",
-  //       image:
-  //         "https://cvps3ivzzq2rrksudc57cswvbydhhdg4lm7tf6osgtjinza4g4ya.arweave.net/FV8tornMNRiqVBi78UrVDgZzjNxbPzL50jTShuQcNzA?ext=png",
-  //     },
-  //     {
-  //       name: "Nft# 2",
-  //       image:
-  //         "https://cvps3ivzzq2rrksudc57cswvbydhhdg4lm7tf6osgtjinza4g4ya.arweave.net/FV8tornMNRiqVBi78UrVDgZzjNxbPzL50jTShuQcNzA?ext=png",
-  //     },
-  //   ],
-  // } as any;
-
   return (
     <>
       <Head>
@@ -79,10 +47,9 @@ const Home: NextPage = () => {
           heading="Solana Lottery"
           paragraph="built by Solpix, an exclusive DAO dedicated to the empowerment of the Solana community"
         />
-        {lotteryData.data?.map(({ account, publicKey }, index) => (
+        {lotteryData.data?.filter(item => Object.keys(item.account.lotteryStatus)[0] === 'live').map(({ account, publicKey }, index) => (
           <CardMain key={index} address={publicKey} lotteryData={account} />
         ))}
-
         <InfoSection></InfoSection>
       </Layout>
     </>
