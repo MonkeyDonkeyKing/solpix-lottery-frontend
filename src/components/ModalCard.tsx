@@ -3,46 +3,42 @@ import styles from "./ModalCard.module.css";
 import { RouterOutputs, api } from "@/utils/api";
 import { LOTTERY_PROGRAM_ID } from "@/pages/adminAddPrizes";
 
+const ModalCard = ({
+  prizes,
+  publicKey,
+}: {
+  prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"];
+  publicKey: PublicKey;
+}) => {
+  const lotteryNfts = api.fetching.fetchAddressNfts.useQuery({
+    address: getPrizeVaultPda(new PublicKey(publicKey))[0].toBase58(),
+  });
 
-const ModalCard = ({ prizes, publicKey }:{prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"],publicKey: PublicKey}) => {
+  console.log(lotteryNfts.data);
 
-  const lotteryNfts = api.useQueries((t) => [
-    t.fetching.fetchAddressNfts(
-      {
-        address: getPrizeVaultPda(
-          new PublicKey(publicKey)
-        )[0].toBase58(),
-      }
-      // { enabled: false }
-    ),
-  ]);
-
-  console.log(lotteryNfts[0].data);
-
-
-  
   return (
-    <><div className={styles.wrapper}>
-      {prizes[0]?.nft &&
-        <div className={styles.container} >
-          {lotteryNfts[0].data?.map((nft, index) => (
-            <div className={styles.card} key={index}>
-               <img src={nft.image} alt={`NFT ${nft.name}`} />
-               <p className={styles.name}>{nft.name}</p>
-            </div>
-          ))}
-        </div>
-      }
-      {prizes[0]?.pool &&
-        <div className={styles.container} >
-          {prizes.map((prize, index) => (
-            <div className={styles.card} key={index} >
-              <p className={styles.name}>{prize.pool?.value} %</p>
-            </div>
-          ))}
-        </div>
-      }
-    </div>
+    <>
+      <div className={styles.wrapper}>
+        {prizes[0]?.nft && (
+          <div className={styles.container}>
+            {lotteryNfts.data?.map((nft, index) => (
+              <div className={styles.card} key={index}>
+                <img src={nft.image} alt={`NFT ${nft.name}`} />
+                <p className={styles.name}>{nft.name}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        {prizes[0]?.pool && (
+          <div className={styles.container}>
+            {prizes.map((prize, index) => (
+              <div className={styles.card} key={index}>
+                <p className={styles.name}>{prize.pool?.value} %</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </>
   );
 };
