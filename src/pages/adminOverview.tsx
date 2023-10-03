@@ -82,9 +82,9 @@ const AdminOverview: NextPage = () => {
                   </td>
                   <td>{Object.keys(account.lotteryStatus)[0]}</td>
 
-                  {Object.keys(account.lotteryStatus)[0] === 'concepting' && <td>
+                  {Object.keys(account.lotteryStatus)[0] === 'concepting' ? <td>
                     <Link legacyBehavior href={`/adminAddPrizes?lotterPublicKey=${publicKey}`}>add prizes</Link>
-                  </td>}
+                  </td> : <td>No actions</td>}
 
                 </tr>
               ))}
