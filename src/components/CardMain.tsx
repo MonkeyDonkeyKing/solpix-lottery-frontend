@@ -83,7 +83,7 @@ const CardMain = ({
     <>
       <section className={styles.card}>
         <div className={styles.iconwrapper}>
-          <PrizeIcon prizes={lotteryData.prizes} />
+          <PrizeIcon prizes={lotteryData.prizes} publicKey={address}/>
           <TimeBox isoProp={lotteryData.lotteryType.time?.endTime} />
         </div>
         <div id={styles["card-layout"]}>

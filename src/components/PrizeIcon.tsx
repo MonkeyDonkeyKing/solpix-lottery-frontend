@@ -4,9 +4,10 @@ import styles from "./PrizeIcon.module.css";
 import Image from "next/image";
 import ModalCard from "./ModalCard";
 import { RouterOutputs } from "@/utils/api";
+import { PublicKey } from "@solana/web3.js";
 
 
-const PrizeIcon = ({prizes}:{prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"]}) => {
+const PrizeIcon = ({prizes, publicKey}:{prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"],publicKey: PublicKey}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -24,7 +25,7 @@ const PrizeIcon = ({prizes}:{prizes: RouterOutputs["lottery"]["getAllLotteries"]
               <h1>Solana Prices & NFT(s)</h1>
             <section>
               <div className={styles.imagecontainer}>
-                <ModalCard prizes={prizes} ></ModalCard>
+                <ModalCard prizes={prizes} publicKey={publicKey}></ModalCard>
               </div>
             </section>
           </div>

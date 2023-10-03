@@ -1,22 +1,34 @@
 import { PublicKey } from "@solana/web3.js";
 import styles from "./ModalCard.module.css";
-import { RouterOutputs } from "@/utils/api";
+import { RouterOutputs, api } from "@/utils/api";
+import { LOTTERY_PROGRAM_ID } from "@/pages/adminAddPrizes";
 
 
-const ModalCard = ({ prizes }:{prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"]}) => {
-  console.log(prizes)
+const ModalCard = ({ prizes, publicKey }:{prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"],publicKey: PublicKey}) => {
 
-  
+  const lotteryNfts = api.useQueries((t) => [
+    t.fetching.fetchAddressNfts(
+      {
+        address: getPrizeVaultPda(
+          new PublicKey(publicKey)
+        )[0].toBase58(),
+      }
+      // { enabled: false }
+    ),
+  ]);
+
+  console.log(lotteryNfts[0].data);
+
+
   
   return (
     <><div className={styles.wrapper}>
       {prizes[0]?.nft &&
         <div className={styles.container} >
-          {prizes.map((prize, index) => (
+          {lotteryNfts[0].data?.map((nft, index) => (
             <div className={styles.card} key={index}>
-              {/* <img src={nft.image} alt={`NFT ${prize.nft?.mint}`} /> */}
-              <p className={styles.name}>{prize.nft?.mint.toString()}</p>
-              <p>TEST</p>
+               <img src={nft.image} alt={`NFT ${nft.name}`} />
+               <p className={styles.name}>{nft.name}</p>
             </div>
           ))}
         </div>
@@ -36,3 +48,15 @@ const ModalCard = ({ prizes }:{prizes: RouterOutputs["lottery"]["getAllLotteries
 };
 
 export default ModalCard;
+
+const getPrizeVaultPda = (lottery: PublicKey): [PublicKey, number] => {
+  return PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("lottery"),
+      LOTTERY_PROGRAM_ID.toBuffer(),
+      lottery.toBuffer(),
+      Buffer.from("vault"),
+    ],
+    LOTTERY_PROGRAM_ID
+  );
+};

@@ -13,22 +13,7 @@ import Banner from "@/components/Banner";
 import InfoSection from "@/components/InfoSection";
 import React from "react";
 
-interface CreateLotteryArgs {
-  distribution: number;
-  endTime: number;
-  numberOfTickets: number;
-  possibleWinners: number;
-  ticketPrice: number;
-}
 
-// const lotteryArgs: CreateLotteryArgs = {
-//   distribution: 0.5,
-//   endTime: Math.floor(new Date().getTime() / 1000) + 7200,
-//   numberOfTickets: 200,
-//   possibleWinners: 10,
-//   ticketPrice: 1000000000,
-// };
-///
 
 const Home: NextPage = () => {
   const [date, setDate] = React.useState(new Date());
