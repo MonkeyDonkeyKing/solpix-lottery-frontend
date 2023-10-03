@@ -16,8 +16,6 @@ import { useRouter } from "next/router";
 import PrizeCard from "@/components/PrizeCard";
 import { env } from "@/env.mjs";
 import { api } from "@/utils/api";
-import startLottery from "@/lottery-program-build/lottery/startLottery";
-
 
 const AdminAddPrizes: NextPage = () => {
   const { publicKey, sendTransaction, signTransaction } = useWallet();
@@ -40,6 +38,12 @@ const AdminAddPrizes: NextPage = () => {
 
   const router = useRouter();
   const lotteryPublicKey = router.query.lotterPublicKey as string;
+
+  const hexToReadableDate = (hexTime) => {
+    const unixTime = parseInt(hexTime, 16) * 1000; // Convert to milliseconds
+    const date = new Date(unixTime);
+    return date.toLocaleString(); // Customize the date format as needed
+  };
 
   const [userNfts, lotteryNfts] = api.useQueries((t) => [
     t.fetching.fetchAddressNfts(
@@ -111,8 +115,8 @@ const AdminAddPrizes: NextPage = () => {
         authority: publicKey?.toBase58() ?? "",
         lottery: lotteryPublicKey,
         symbol: 'LTRY',
-        name: `${lotteryData.data?.lotteryId}`,
-        uri: 'https://arweave.net/FPw7Wcv-8BL9EYuethi6Fj8JJRt8OFcKab-Uk0aIvgU'
+        name: `Lottery ID: ${lotteryData.data?.lotteryId}`,
+        uri: 'https://ipfs.io/ipfs/bafkreibavp3ud47wyte5c73mb7fynieczuyjp43uy4kclwwblu4lpiq3lq/'
       });
       const messagev0 = MessageV0.deserialize(instruction);
       const transaction = new VersionedTransaction(messagev0);
@@ -182,7 +186,8 @@ const AdminAddPrizes: NextPage = () => {
                 1000000000}{" "}
               SOL
             </p>
-            {/* <p>Status: {lotteryData.data?.lotteryStatus.concepting}</p> */}
+            <p>Min Tickets: {lotteryData.data?.lotteryType.time?.requiredMinTicketsSold}</p>
+            <p>EndTime: {hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime)}</p>
           </div>
         </section>
           <section className={styles.formContainer2}>
