@@ -3,9 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./TimeBox.module.css";
 import { useState, useEffect } from "react";
 
-// 2023-10-10T23:59:59.999Z
 interface TimeBoxProps {
-  isoProp: Date | null;
+  isoProp: string | null; // Updated to accept the new input format
 }
 
 const TimeBox = ({ isoProp }: TimeBoxProps) => {
@@ -18,9 +17,9 @@ const TimeBox = ({ isoProp }: TimeBoxProps) => {
   useEffect(() => {
     if (isoProp) {
       const interval = setInterval(() => {
-        const endDate = new Date(isoProp).getTime();
+        const targetTimestamp = parseInt(isoProp, 16) * 1000; // Convert hex to milliseconds
         const now = Date.now();
-        const remainingTime = Math.max(0, endDate - now);
+        const remainingTime = Math.max(0, targetTimestamp - now);
 
         if (remainingTime === 0) {
           setEnded(true);

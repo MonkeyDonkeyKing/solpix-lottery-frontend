@@ -78,7 +78,7 @@ const CardMain = ({
       <section className={styles.card}>
         <div className={styles.iconwrapper}>
           {/* <PrizeIcon sol={lotteryData.solPrizes} nfts={lotteryData.nfts} /> */}
-          <TimeBox isoProp={endTime} />
+          <TimeBox isoProp={lotteryData.lotteryType.time?.endTime} />
         </div>
         <div id={styles["card-layout"]}>
           <section className={styles.cardcolumn}>
