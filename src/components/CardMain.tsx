@@ -23,8 +23,6 @@ const CardMain = ({
   // const program = useProgram();
   
   // const ticketPrice = parseInt(lotteryData.ticketPrice.toString()) / 1e7;
-  const ticketPrice = parseInt(lotteryData.ticketPrice);
-
   const { connection } = useConnection();
   const [value, setValue] = useState(0);
   // const buyTicket = api.lottery.buyTicket.useMutation();
@@ -106,9 +104,10 @@ const CardMain = ({
                 className={styles.ticketlabel}
                 style={{ textTransform: "uppercase" }}
               >
-                Ticket price:{" "}
+                Ticket price: 
               </span>
-              <span>{Number(ticketPrice)} SOL</span>
+              <span>{parseInt(lotteryData.ticketPrice.sol?.value, 16) /
+                1000000000}{" "} SOL</span>
             </div>
             <div className={styles.cardcolumn}>
               <span
@@ -118,7 +117,7 @@ const CardMain = ({
                 Remaining:{" "}
               </span>
               <span>
-                {lotteryData.nextTicketId} / {lotteryData.numberOfTickets}
+                {lotteryData.ticketsSold} / {lotteryData.maxTicketsForSale}
               </span>
             </div>
           </section>
@@ -138,13 +137,14 @@ const CardMain = ({
             </div>
             <div className={styles.buybutton}>
               <button style={{ textTransform: "uppercase" }}>
-                Buy for {(value * Number(ticketPrice)).toFixed(2)} SOL
+                Buy for {(value * parseInt(lotteryData.ticketPrice.sol?.value, 16) /
+                1000000000).toFixed(2)} SOL
               </button>
               <span
                 className={styles.buychance}
                 style={{ textTransform: "uppercase" }}
               >
-                {((value / lotteryData.numberOfTickets) * 100).toFixed(0)} % WIN{" "}
+                {((value / lotteryData.maxTicketsForSale) * 100).toFixed(0)} % WIN{" "}
               </span>
             </div>
           </section>
