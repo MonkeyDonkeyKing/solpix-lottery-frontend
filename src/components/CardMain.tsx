@@ -20,8 +20,9 @@ const CardMain = ({
 }) => {
   const user = useWallet();
   // const program = useProgram();
-  const endTime = new Date(lotteryData.endTime);
-  const ticketPrice = parseInt(lotteryData.ticketPrice.toString()) / 1e7;
+  const endTime = new Date(lotteryData.lotteryType.time?.endTime);
+  // const ticketPrice = parseInt(lotteryData.ticketPrice.toString()) / 1e7;
+  const ticketPrice = parseInt(lotteryData.ticketPrice);
 
   const { connection } = useConnection();
   const [value, setValue] = useState(0);
@@ -75,7 +76,7 @@ const CardMain = ({
     <>
       <section className={styles.card}>
         <div className={styles.iconwrapper}>
-          <PrizeIcon sol={lotteryData.solPrizes} nfts={lotteryData.nfts} />
+          {/* <PrizeIcon sol={lotteryData.solPrizes} nfts={lotteryData.nfts} /> */}
           <TimeBox isoProp={endTime} />
         </div>
         <div id={styles["card-layout"]}>
@@ -86,7 +87,7 @@ const CardMain = ({
             >
               {endTime.toDateString()}
             </span>
-            <div>{lotteryData.name}</div>
+            <div>{lotteryData.lotteryId}</div>
           </section>
           <Divider orientation="vertical" flexItem />
           <section>
@@ -97,7 +98,7 @@ const CardMain = ({
               >
                 Ticket price:{" "}
               </span>
-              <span>{Number(ticketPrice).toFixed(2)} SOL</span>
+              <span>{Number(ticketPrice)} SOL</span>
             </div>
             <div className={styles.cardcolumn}>
               <span
@@ -118,12 +119,12 @@ const CardMain = ({
                 type="number"
                 value={value}
                 min={0}
-                max={lotteryData.numberOfTickets}
+                max={3}
                 onChange={handleInputChange}
               />
-              <button onClick={() => setValue(5)}>5</button>
-              <button onClick={() => setValue(10)}>10</button>
-              <button onClick={() => setValue(20)}>20</button>
+              <button onClick={() => setValue(1)}>1</button>
+              <button onClick={() => setValue(2)}>2</button>
+              <button onClick={() => setValue(3)}>3</button>
             </div>
             <div className={styles.buybutton}>
               <button style={{ textTransform: "uppercase" }}>
