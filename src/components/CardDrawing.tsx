@@ -6,29 +6,34 @@ import { PublicKey } from "@solana/web3.js";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-interface CardDrawingProps {
-  lotteryData: RouterOutputs["lottery"]["getLotteries"][number]["account"];
-  address: PublicKey;
-}
 
-const CardDrawing: React.FC<CardDrawingProps> = ({ lotteryData, address }) => {
+
+const CardDrawing = ({ lotteryData }: {
+  lotteryData: RouterOutputs["lottery"]["getAllLotteries"][number]["account"];
+}) => {
   const router = useRouter();
-  const endTime = new Date(lotteryData.endTime);
+
+  const hexToReadableDate = (hexTime) => {
+    const unixTime = parseInt(hexTime, 16) * 1000; 
+    const date = new Date(unixTime);
+    return date; 
+  };
+
+  const endTime = hexToReadableDate(lotteryData.lotteryType.time?.endTime);
   const isEndTimePassed = Date.now() >= endTime.getTime();
+
   const ticketPrice = (
-    parseInt(lotteryData.ticketPrice.toString(), 16) / 1e9
-  ).toFixed(2);
+    parseInt(lotteryData.ticketPrice.sol?.value, 16) / 1000000000);
 
   const handleViewDetails = () => {
     router.push({
       pathname: "/drawingDetail",
       query: {
-        id: lotteryData.id,
-        endTime: lotteryData.endTime,
-        numberOfTicketsSold: lotteryData.possibleWinners,
-        numberOfTickets: lotteryData.numberOfTickets,
+        id: lotteryData.lotteryId,
+        endTime: lotteryData.lotteryType.time?.endTime,
+        numberOfTicketsSold: lotteryData.ticketsSold,
+        numberOfTickets: lotteryData.maxTicketsForSale,
         ticketPrice: ticketPrice,
-        name: "Test Lottery Name",
       },
     });
   };
@@ -37,7 +42,7 @@ const CardDrawing: React.FC<CardDrawingProps> = ({ lotteryData, address }) => {
     <>
       <div className={styles.card}>
         <div className={styles.iconwrapper}>
-          <TimeBox isoProp={endTime} />
+          <TimeBox isoProp={lotteryData.lotteryType.time?.endTime} />
         </div>
         <div id={styles["card-layout"]}>
           <section className={styles.cardcolumn}>
@@ -45,10 +50,9 @@ const CardDrawing: React.FC<CardDrawingProps> = ({ lotteryData, address }) => {
               className={styles.ticketlabel}
               style={{ textTransform: "uppercase" }}
             >
-              {endTime.toDateString()}
+              {endTime.toLocaleDateString()}
             </span>
-            {/* <div>{lotteryData.name}</div> */}
-            <div>{"lottery name"}</div>
+            <div>Lottery ID: {lotteryData.lotteryId}</div>
           </section>
           <section className={styles.middlesection}>
             <div className={styles.cardcolumn}>
@@ -58,7 +62,10 @@ const CardDrawing: React.FC<CardDrawingProps> = ({ lotteryData, address }) => {
               >
                 Ticket price:{" "}
               </span>
-              <span>{Number(ticketPrice)} SOL</span>
+              <span>
+                {parseInt(lotteryData.ticketPrice.sol?.value, 16) / 1000000000}{" "}
+                SOL
+              </span>
             </div>
             <div className={styles.cardcolumn}>
               <span
@@ -68,7 +75,7 @@ const CardDrawing: React.FC<CardDrawingProps> = ({ lotteryData, address }) => {
                 Remaining:{" "}
               </span>
               <span>
-                {lotteryData.nextTicketId} / {lotteryData.numberOfTickets}
+                {lotteryData.ticketsSold} / {lotteryData.maxTicketsForSale}
               </span>
             </div>
           </section>

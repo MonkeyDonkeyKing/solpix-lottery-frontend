@@ -22,63 +22,20 @@ const CardMain = ({
 }) => {
   const user = useWallet();
   const buyTicket = api.lottery.buyTicket.useMutation();
-  // const program = useProgram();
 
-  // const ticketPrice = parseInt(lotteryData.ticketPrice.toString()) / 1e7;
   const { connection } = useConnection();
   const [value, setValue] = useState(0);
-  // const buyTicket = api.lottery.buyTicket.useMutation();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(Number(e.target.value));
   };
 
   const hexToReadableDate = (hexTime) => {
-    const unixTime = parseInt(hexTime, 16) * 1000; // Convert to milliseconds
+    const unixTime = parseInt(hexTime, 16) * 1000; 
     const date = new Date(unixTime);
-    return date.toLocaleDateString(); // Use toLocaleDateString for date only
+    return date.toLocaleDateString(); 
   };
   const endTime = hexToReadableDate(lotteryData.lotteryType.time?.endTime);
-
-  // const handleBuy = async () => {
-  //   const vaultPda = getVaultPda(address);
-  //   if (!user || !user.publicKey) return;
-  //   let ixs = [] as any;
-  //   for (let i = 0, len = value; i < len; i++) {
-  //     const ticketPda = getTicketPda(lotteryData.nextTicketId + i, address);
-  //     const { instructions } = await buyTicket({
-  //       accounts: {
-  //         LotteryAccountPda: address,
-  //         lotteryTicketPda: ticketPda,
-  //         lotteryVaultPda: vaultPda,
-  //         payer: user.publicKey,
-  //       },
-  //       program: program,
-  //     });
-  //     console.log("instructions: ", instructions);
-  //     ixs = [...ixs, ...instructions];
-  //   }
-  // const message = new TransactionMessage({
-  //   instructions: ixs,
-  //   recentBlockhash: (await connection.getLatestBlockhash()).blockhash,
-  //   payerKey: user.publicKey,
-  // }).compileToV0Message();
-  // let transaction = new VersionedTransaction(message);
-  // transaction = await user.signTransaction!(transaction);
-  // const txId = await connection.sendTransaction(transaction);
-  //   const blockhash = await connection.getLatestBlockhashAndContext();
-  //   const confirmedTx = await connection.confirmTransaction({
-  //     blockhash: blockhash.value.blockhash,
-  //     lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
-  //     minContextSlot: blockhash.context.slot,
-  //     signature: txId,
-  //   });
-  //   if (confirmedTx.value.err) {
-  //     throw new Error(`${confirmedTx.value.err}`);
-  //   }
-  //   console.log("transaction succesfull: ", txId);
-  //   return txId;
-  // };
 
   const buyTickets = async () => {
     try {

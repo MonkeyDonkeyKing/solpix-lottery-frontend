@@ -54,7 +54,6 @@ const DrawingDetail: NextPage = () => {
     numberOfTicketsSold,
     numberOfTickets,
     ticketPrice,
-    name,
   } = router.query;
   const lotteryId = queryId as string;
   const parsedEndTime = new Date(endTime as string);

@@ -5,24 +5,49 @@ import Head from "next/head";
 import styles from "@/components/DrawingPage.module.css";
 import Banner from "@/components/Banner";
 import CardDrawing from "@/components/CardDrawing";
-import { drawingMockData } from "../utils/mockData";
 import { web3 } from "@coral-xyz/anchor";
 import Link from "next/link";
+import { api } from "@/utils/api";
 
 const Drawing: NextPage = () => {
   const [sortingOption, setSortingOption] = useState<
     "all" | "current" | "previous"
   >("all");
 
+  const lotteryData = api.lottery.getAllLotteries.useQuery(
+    {},
+    {
+      select(data) {
+        return data.map(({ account, publicKey }) => ({
+          account: {
+            ...account,
+            associatedLotteryManager: new web3.PublicKey(
+              account.associatedLotteryManager
+            ),
+          },
+          publicKey: new web3.PublicKey(publicKey),
+        }));
+      },
+    }
+  );
+  const hexToReadableDate = (hexTime) => {
+    const unixTime = parseInt(hexTime, 16) * 1000; 
+    const date = new Date(unixTime);
+    return date; 
+  };
+
+
   const filteredLotteries =
     sortingOption === "all"
-      ? drawingMockData
+      ? lotteryData.data
       : sortingOption === "current"
-      ? drawingMockData.filter(
-          (lotteryData) => new Date(lotteryData.endTime) > new Date()
+        ? lotteryData.data?.filter(
+          (lottery) =>
+            hexToReadableDate(lottery.account.lotteryType.time?.endTime) > new Date()
         )
-      : drawingMockData.filter(
-          (lotteryData) => new Date(lotteryData.endTime) <= new Date()
+        : lotteryData.data?.filter(
+          (lottery) =>
+            hexToReadableDate(lottery.account.lotteryType.time?.endTime) <= new Date()
         );
 
   return (
@@ -60,16 +85,8 @@ const Drawing: NextPage = () => {
           </button>
         </div>
         <div className={styles.cardcontainer}>
-          {filteredLotteries.map((lotteryData, index) => (
-            <CardDrawing
-              key={index}
-              lotteryData={lotteryData}
-              address={
-                new web3.PublicKey(
-                  "HEYAeTSbf6ojSoMatSoG8HSLmgC2berjphRrSd4XUyf8"
-                )
-              }
-            />
+          {filteredLotteries?.filter(item => Object.keys(item.account.lotteryStatus)[0] === 'live').map(({ account, publicKey }, index) => (
+            <CardDrawing key={index} lotteryData={account} />
           ))}
         </div>
         <div className={styles.container}>
