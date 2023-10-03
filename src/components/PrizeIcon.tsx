@@ -3,17 +3,14 @@ import { Portal } from "./Portal";
 import styles from "./PrizeIcon.module.css";
 import Image from "next/image";
 import ModalCard from "./ModalCard";
+import { RouterOutputs } from "@/utils/api";
 
 type NFT = {
   name: string,
   image: string,
 }
 
-type PrizeIconProps = {
-  sol: number[],
-  nfts: NFT[]
-}
-const PrizeIcon: React.FC<PrizeIconProps> = (prizes) => {
+const PrizeIcon = ({prizes}:{prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"][0]}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -31,7 +28,7 @@ const PrizeIcon: React.FC<PrizeIconProps> = (prizes) => {
               <h1>Solana Prices & NFT(s)</h1>
             <section>
               <div className={styles.imagecontainer}>
-                <ModalCard sol={prizes.sol} nfts={prizes.nfts}></ModalCard>
+                <ModalCard sol={prizes.pool} nfts={prizes.nft}></ModalCard>
               </div>
             </section>
           </div>

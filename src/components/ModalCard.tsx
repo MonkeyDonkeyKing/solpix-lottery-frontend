@@ -1,8 +1,8 @@
+import { PublicKey } from "@solana/web3.js";
 import styles from "./ModalCard.module.css";
 
 type NFT = {
-  name: string,
-  image: string,
+  mint?: PublicKey,
 }
 
 type ModalCardProps = {
