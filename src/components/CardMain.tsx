@@ -36,7 +36,7 @@ const CardMain = ({
   const hexToReadableDate = (hexTime) => {
     const unixTime = parseInt(hexTime, 16) * 1000; // Convert to milliseconds
     const date = new Date(unixTime);
-    return date.toLocaleString(); // Customize the date format as needed
+    return date.toLocaleDateString(); // Use toLocaleDateString for date only
   };
   const endTime = hexToReadableDate(lotteryData.lotteryType.time?.endTime);
 

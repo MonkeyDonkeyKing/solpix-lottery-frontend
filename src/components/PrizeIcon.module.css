@@ -35,6 +35,8 @@
   background: hsla(0, 0%, 38.4%, 0.80);
   border-radius: var(--border-radius);
   border: 2px solid var(--card-gray);
+  min-width: 50rem;
+  min-height: 27rem;
 }
 
 .card h1 {

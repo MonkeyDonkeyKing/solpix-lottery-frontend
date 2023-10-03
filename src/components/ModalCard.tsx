@@ -19,7 +19,6 @@ const ModalCard = ({
   return (
     <>
       <div className={styles.wrapper}>
-        {prizes[0]?.nft && (
           <div className={styles.container}>
             {lotteryNfts.data?.map((nft, index) => (
               <div className={styles.card} key={index}>
@@ -28,7 +27,7 @@ const ModalCard = ({
               </div>
             ))}
           </div>
-        )}
+
         {prizes[0]?.pool && (
           <div className={styles.container}>
             {prizes.map((prize, index) => (
