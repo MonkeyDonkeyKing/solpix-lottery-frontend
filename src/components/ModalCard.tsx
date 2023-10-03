@@ -1,34 +1,31 @@
 import { PublicKey } from "@solana/web3.js";
 import styles from "./ModalCard.module.css";
+import { RouterOutputs } from "@/utils/api";
 
-type NFT = {
-  mint?: PublicKey,
-}
 
-type ModalCardProps = {
-  nfts: NFT[],
-  sol: number[]
-};
+const ModalCard = ({ prizes }:{prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"]}) => {
+  console.log(prizes)
 
-const ModalCard: React.FC<ModalCardProps> = ({ sol, nfts }) => {
+  
+  
   return (
     <><div className={styles.wrapper}>
-      {nfts &&
+      {prizes[0]?.nft &&
         <div className={styles.container} >
-          {nfts.map((nft,index) => (
+          {prizes.map((prize, index) => (
             <div className={styles.card} key={index}>
-              <img src={nft.image} alt={`NFT ${nft.name}`} />
-              <p className={styles.name}>{nft.name}</p>
+              {/* <img src={nft.image} alt={`NFT ${prize.nft?.mint}`} /> */}
+              <p className={styles.name}>{prize.nft?.mint.toString()}</p>
               <p>TEST</p>
             </div>
           ))}
         </div>
       }
-      {sol &&
+      {prizes[0]?.pool &&
         <div className={styles.container} >
-          {sol.map((prizeSingle, index) => (
+          {prizes.map((prize, index) => (
             <div className={styles.card} key={index} >
-              <p className={styles.name}>{prizeSingle} SOL</p>
+              <p className={styles.name}>{prize.pool?.value} %</p>
             </div>
           ))}
         </div>

@@ -5,12 +5,8 @@ import Image from "next/image";
 import ModalCard from "./ModalCard";
 import { RouterOutputs } from "@/utils/api";
 
-type NFT = {
-  name: string,
-  image: string,
-}
 
-const PrizeIcon = ({prizes}:{prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"][0]}) => {
+const PrizeIcon = ({prizes}:{prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"]}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -28,7 +24,7 @@ const PrizeIcon = ({prizes}:{prizes: RouterOutputs["lottery"]["getAllLotteries"]
               <h1>Solana Prices & NFT(s)</h1>
             <section>
               <div className={styles.imagecontainer}>
-                <ModalCard sol={prizes.pool} nfts={prizes.nft}></ModalCard>
+                <ModalCard prizes={prizes} ></ModalCard>
               </div>
             </section>
           </div>

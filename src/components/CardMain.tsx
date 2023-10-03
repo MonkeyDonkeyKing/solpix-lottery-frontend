@@ -36,7 +36,6 @@ const CardMain = ({
     const date = new Date(unixTime);
     return date.toLocaleString(); // Customize the date format as needed
   };
-  console.log(lotteryData.lotteryType.time?.endTime);
   const endTime = hexToReadableDate((lotteryData.lotteryType.time?.endTime));
 
   // const handleBuy = async () => {
@@ -84,7 +83,7 @@ const CardMain = ({
     <>
       <section className={styles.card}>
         <div className={styles.iconwrapper}>
-          <PrizeIcon sol={lotteryData.prizes} nfts={lotteryData.nfts} />
+          <PrizeIcon prizes={lotteryData.prizes} />
           <TimeBox isoProp={lotteryData.lotteryType.time?.endTime} />
         </div>
         <div id={styles["card-layout"]}>
