@@ -19,10 +19,11 @@ const LotteryDetails: NextPage = () => {
   });
 
   const hexToReadableDate = (hexTime) => {
-    const unixTime = parseInt(hexTime, 16) * 1000; // Convert to milliseconds
+    const unixTime = parseInt(hexTime, 16) * 1000; 
     const date = new Date(unixTime);
-    return date.toLocaleString(); // Customize the date format as needed
+    return date.toLocaleString(); 
   };
+  const bannerHeading = `Lottery ID: ${lotteryData.data?.lotteryId}`
   return (
     <>
       <Head>
@@ -31,7 +32,7 @@ const LotteryDetails: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-      <Banner heading="Lottery Details" paragraph="Check out if you won and claim your prize & rent" />
+      <Banner heading={bannerHeading} paragraph="Check out if you won and claim your prize & rent" />
       <section className={styles.container}>
           <div >
             <p>Lottery ID: {lotteryData.data?.lotteryId}</p>
