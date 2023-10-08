@@ -11,6 +11,7 @@ import styles from "../../components/LotteryDetails.module.css";
 const LotteryDetails: NextPage = () => {
   const router = useRouter();
   const userkey = useWallet().publicKey!;
+
   if (!userkey) return <p>Not connected</p>;
   const key = new PublicKey(router.query.lottery as string);
 
@@ -25,7 +26,6 @@ const LotteryDetails: NextPage = () => {
     userAddress: userkey.toBase58(),
   });
   console.log(tickets.data);
-  return <p>Lottery: {JSON.stringify(lotteryData.data, null, 2)}</p>;
 
   const hexToReadableDate = (hexTime: string) => {
     const unixTime = parseInt(hexTime, 16) * 1000;
@@ -49,6 +49,7 @@ const LotteryDetails: NextPage = () => {
           <div>
             <p>Lottery ID: {lotteryData.data?.lotteryId}</p>
             <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
+            <p>Tickets sold: {lotteryData.data?.ticketsSold}</p>
             <p>
               Ticket Price:{" "}
               {parseInt(lotteryData.data?.ticketPrice.sol?.value, 16) /
@@ -63,6 +64,14 @@ const LotteryDetails: NextPage = () => {
               EndTime:{" "}
               {hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime)}
             </p>
+          </div>
+        </section>
+        <section className={styles.container}>
+          <div>
+            <p>Tickets:</p>
+            {tickets.data?.map((ticket, index) => {
+              return (<p key={index}>{ticket.address.toString()}</p>)
+            })}
           </div>
         </section>
       </Layout>
