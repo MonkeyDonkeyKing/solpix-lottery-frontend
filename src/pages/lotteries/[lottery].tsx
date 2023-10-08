@@ -1,8 +1,12 @@
+import Banner from "@/components/Banner";
+import Layout from "@/components/Layout";
 import { api } from "@/utils/api";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { NextPage } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
+import styles from "../../components/LotteryDetails.module.css";
 
 const LotteryDetails: NextPage = () => {
   const router = useRouter();
@@ -22,6 +26,48 @@ const LotteryDetails: NextPage = () => {
   });
   console.log(tickets.data);
   return <p>Lottery: {JSON.stringify(lotteryData.data, null, 2)}</p>;
+
+  const hexToReadableDate = (hexTime: string) => {
+    const unixTime = parseInt(hexTime, 16) * 1000;
+    const date = new Date(unixTime);
+    return date.toLocaleString();
+  };
+  const bannerHeading = `Lottery ID: ${lotteryData.data?.lotteryId}`;
+  return (
+    <>
+      <Head>
+        <title>Lottery Details</title>
+        <meta name="description" content="Solpix Lottery" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Layout>
+        <Banner
+          heading={bannerHeading}
+          paragraph="Check out if you won and claim your prize & rent"
+        />
+        <section className={styles.container}>
+          <div>
+            <p>Lottery ID: {lotteryData.data?.lotteryId}</p>
+            <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
+            <p>
+              Ticket Price:{" "}
+              {parseInt(lotteryData.data?.ticketPrice.sol?.value, 16) /
+                1000000000}{" "}
+              SOL
+            </p>
+            <p>
+              Min Tickets:{" "}
+              {lotteryData.data?.lotteryType.time?.requiredMinTicketsSold}
+            </p>
+            <p>
+              EndTime:{" "}
+              {hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime)}
+            </p>
+          </div>
+        </section>
+      </Layout>
+    </>
+  );
 };
 
 export default LotteryDetails;
