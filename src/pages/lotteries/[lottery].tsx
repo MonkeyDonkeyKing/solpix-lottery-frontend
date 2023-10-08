@@ -70,7 +70,7 @@ const LotteryDetails: NextPage = () => {
           <div>
             <p>Tickets:</p>
             {tickets.data?.map((ticket, index) => {
-              return (<p key={index}>{ticket.address.toString()}</p>)
+              return (<p key={index}>{ticket.mintAddress.toString()}</p>)
             })}
           </div>
         </section>
