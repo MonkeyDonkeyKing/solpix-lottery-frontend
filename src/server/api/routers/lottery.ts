@@ -6,6 +6,8 @@ import { methods, pdas } from "@/lottery-program-build";
 
 import { TRPCError } from "@trpc/server";
 import { BN } from "@coral-xyz/anchor";
+import { lotteryPdas } from "@/lottery-program-build/pdas";
+import { Metaplex } from "@metaplex-foundation/js";
 // convert the date into unix timestamp
 
 const CappedLotterySchema = z.object({
@@ -266,5 +268,60 @@ export const lotteryRouter = createTRPCRouter({
       );
 
       return lotteryData;
+    }),
+  getLotteryTicketsByUser: publicProcedure
+    .input(
+      z.object({
+        userAddress: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+        lotteryAddress: z.string().transform((key) => {
+          return new PublicKey(key);
+        }),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { userAddress, lotteryAddress } = input;
+      const [lotteryPdaAuthority] = lotteryPdas.getAuthorityPda(lotteryAddress);
+      const [collectionMint] = lotteryPdas.getLotteryMint(lotteryAddress);
+      const [lotteryPrizeVault] = lotteryPdas.getPrizeVaultPda(lotteryAddress);
+      const mplx = Metaplex.make(ctx.program.provider.connection);
+      const signerNfts = await mplx.nfts().findAllByOwner({
+        owner: userAddress,
+      });
+      const lotteryData = await ctx.program.account.lottery.fetch(
+        lotteryAddress
+      );
+      const winnerTicketAddresses = lotteryData.winningTickets.map((ticket) => {
+        return {
+          ticketId: ticket.ticketId,
+          address: lotteryPdas.getLotteryTicketMint(
+            lotteryAddress,
+            ticket.ticketId
+          )[0],
+        };
+      });
+      const prizeArray = [...lotteryData.prizes];
+      const ticketsByOwner = signerNfts.filter(
+        (nft) =>
+          nft.collection?.verified &&
+          nft.collection.address.equals(collectionMint)
+      );
+      const tickets = ticketsByOwner.map((nft) => {
+        const ticket = {
+          ...nft,
+          prize: null,
+        };
+        const indexof = lotteryData.winningTickets.findIndex((index) =>
+          ticket?.mintAddress?.equals(index.mint)
+        );
+        if (indexof !== -1) {
+          const prize = prizeArray[indexof];
+          ticket.prize = prize;
+        }
+        return ticket;
+      });
+
+      return tickets;
     }),
 });
