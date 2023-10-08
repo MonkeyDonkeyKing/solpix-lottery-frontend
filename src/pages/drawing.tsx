@@ -86,7 +86,7 @@ const Drawing: NextPage = () => {
         </div>
         <div className={styles.cardcontainer}>
           {filteredLotteries?.filter(item => Object.keys(item.account.lotteryStatus)[0] === 'live').map(({ account, publicKey }, index) => (
-            <CardDrawing key={index} lotteryData={account} />
+            <CardDrawing key={index} lotteryData={account} publicKey={publicKey}/>
           ))}
         </div>
         <div className={styles.container}>

@@ -8,8 +8,9 @@ import { useRouter } from "next/router";
 
 
 
-const CardDrawing = ({ lotteryData }: {
-  lotteryData: RouterOutputs["lottery"]["getAllLotteries"][number]["account"];
+const CardDrawing = ({ lotteryData, publicKey }: {
+  lotteryData: RouterOutputs["lottery"]["getAllLotteries"][number]["account"],
+  publicKey: PublicKey
 }) => {
   const router = useRouter();
 
@@ -34,6 +35,7 @@ const CardDrawing = ({ lotteryData }: {
         numberOfTicketsSold: lotteryData.ticketsSold,
         numberOfTickets: lotteryData.maxTicketsForSale,
         ticketPrice: ticketPrice,
+        lotteryPublicKey: publicKey.toBase58()
       },
     });
   };

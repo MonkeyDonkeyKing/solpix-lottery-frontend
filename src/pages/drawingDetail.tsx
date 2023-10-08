@@ -15,6 +15,7 @@ import {
 import SlotCounter, { type SlotCounterRef } from "react-slot-counter";
 import Banner from "@/components/Banner";
 import { useRouter } from "next/router";
+import { api } from "@/utils/api";
 
 // For Testing: Will get 2 Arrays with Tickets / WinningTickets for the lottery
 // Winner will then be drawn with an amount
@@ -54,6 +55,7 @@ const DrawingDetail: NextPage = () => {
     numberOfTicketsSold,
     numberOfTickets,
     ticketPrice,
+    lotteryPublicKey
   } = router.query;
   const lotteryId = queryId as string;
   const parsedEndTime = new Date(endTime as string);
@@ -63,14 +65,31 @@ const DrawingDetail: NextPage = () => {
   const parsedLotteryName = name as string;
   const prizePool = parsedTicketPrice * parsedNumberOfTicketsSold;
 
+
+  const lotteryData = api.lottery.getLotteryData.useQuery(
+    {
+      lottery: lotteryPublicKey!.toString(),
+    },
+    {
+      select(data) {
+        // userNfts.refetch();
+        // lotteryNfts.refetch();
+        return data;
+      },
+    }
+  );
+
+
   const [ticketsWon, setTicketsWon] = useState<Ticket[]>([]);
   const [winningTicket, setWinningTicket] = useState<string>(
     "HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH"
   );
   const [availableWinners, setAvailableWinners] =
     useState<Ticket[]>(initialWinners);
+
   const [availableTickets, setAvailableTickets] =
     useState<Ticket[]>(initialTickets);
+
   const [winningAmount, setWinningAmount] = useState<number>(10);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [isDrawingAll, setIsDrawingAll] = useState<boolean>(false);
@@ -142,24 +161,6 @@ const DrawingDetail: NextPage = () => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // Format the time as "00 h 03 min 30 sec" string
-  const formatTime = (time: Date | null): string => {
-    if (!time) return "";
-
-    const now = new Date();
-    const remainingTime = Math.max(0, time.getTime() - now.getTime());
-    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
-    const minutes = Math.floor(
-      (remainingTime % (1000 * 60 * 60)) / (1000 * 60)
-    );
-    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-
-    return `${String(hours).padStart(2, "0")} h ${String(minutes).padStart(
-      2,
-      "0"
-    )} min ${String(seconds).padStart(2, "0")} sec`;
-  };
-
   const formatPricePool = (pricePool: number | null): string => {
     if (!pricePool) return "";
     return `${String(pricePool)} SOL`;
@@ -175,7 +176,7 @@ const DrawingDetail: NextPage = () => {
       <Layout>
         <Banner
           heading={parsedLotteryName}
-          subHeaderDraw="Epic Draw Event: Witness the Excitement Unfold Live!"
+          subHeaderDraw="Epic Draw Event: Witness the Excitement Unfold!"
           id={lotteryId}
           prizePool={formatPricePool(prizePool)}
           maxTickets={parsedNumberOfTickets}
