@@ -32,7 +32,9 @@ const AdminCreate: NextPage = () => {
   const [ticketPrice, setTicketPrice] = useState<number>(0);
   const [maxTicketAmount, setMaxTicketAmount] = useState<number>(0);
   const [minTicketAmount, setMinTicketAmount] = useState<number>(0);
-  const [endDate, setEndDate] = useState<string>(Date.now().toString());
+  const [endDateTime, setEndDateTime] = useState<string>(
+    new Date().toISOString().split('T')[0] + 'T12:00' // Default date and time
+  );
   const [useDate, setUseDate] = useState<"time" | "capped">("time");
 
   const maxDate = new Date();
@@ -49,7 +51,7 @@ const AdminCreate: NextPage = () => {
       params: {
         LotteryType: {
           time: {
-            endTime: new Date(endDate),
+            endTime: new Date(endDateTime),
             requiredMinTicketsSold: minTicketAmount,
           },
         },
@@ -104,12 +106,11 @@ const AdminCreate: NextPage = () => {
                   <p>When should the lottery end?</p>
                 )}
                 <input
-                  id="start"
-                  type="date"
-                  value={endDate}
-                  min={todayFormatted}
-                  max={maxDateFormatted}
-                  onChange={(e) => setEndDate(e.target.value)}
+                  type="datetime-local"
+                  value={endDateTime}
+                  min={todayFormatted + 'T00:00'} // Minimum date and time
+                  max={maxDateFormatted + 'T23:59'} // Maximum date and time
+                  onChange={(e) => setEndDateTime(e.target.value)}
                 />
               </div>
 
