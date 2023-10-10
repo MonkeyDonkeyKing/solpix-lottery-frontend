@@ -1,31 +1,34 @@
 import Banner from "@/components/Banner";
 import Layout from "@/components/Layout";
 import { api } from "@/utils/api";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { MessageV0, PublicKey, VersionedTransaction } from "@solana/web3.js";
 import { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import styles from "../../components/LotteryDetails.module.css";
+import { useState } from "react";
 
 const LotteryDetails: NextPage = () => {
   const router = useRouter();
   const userkey = useWallet().publicKey!;
-
+  
   if (!userkey) return <p>Not connected</p>;
   const key = new PublicKey(router.query.lottery as string);
-
+  
   if (!key) return <p>Invalid solana address</p>;
   if (PublicKey.isOnCurve(key)) return <p>Not a PDA</p>;
-
+  const user = useWallet();
+  const { connection } = useConnection();
+  const [value, setValue] = useState(0);
   const lotteryData = api.lottery.getLotteryData.useQuery({
     lottery: key.toBase58(),
   });
+  
   const tickets = api.lottery.getLotteryTicketsByUser.useQuery({
     lotteryAddress: key.toBase58(),
     userAddress: userkey.toBase58(),
   });
-  console.log(tickets.data);
 
   const hexToReadableDate = (hexTime: string) => {
     const unixTime = parseInt(hexTime, 16) * 1000;
@@ -33,6 +36,37 @@ const LotteryDetails: NextPage = () => {
     return date.toLocaleString();
   };
   const bannerHeading = `Lottery ID: ${lotteryData.data?.lotteryId}`;
+
+  const buyTicket = api.lottery.buyTicket.useMutation();
+  const buyTickets = async () => {
+    try {
+      const instruction = await buyTicket.mutateAsync({
+        buyer: userkey.toBase58() ?? "",
+        lottery: key.toBase58(),
+        quantity: +value,
+      });
+      const messagev0 = MessageV0.deserialize(instruction);
+      const transaction = new VersionedTransaction(messagev0);
+      const txid = await user.sendTransaction(transaction, connection, {
+        skipPreflight: true,
+      });
+
+      console.log(
+        `Transaction for lottery address: ${key.toBase58()}% completed. TXID: ${txid}
+        Bought ${value} tickets for ${(
+          (value * parseInt(lotteryData.data?.ticketPrice.sol?.value, 16)) /
+          1000000000
+        ).toFixed(2)} SOL`
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(Number(e.target.value));
+  };
+
   return (
     <>
       <Head>
@@ -52,7 +86,7 @@ const LotteryDetails: NextPage = () => {
             <p>Tickets sold: {lotteryData.data?.ticketsSold}</p>
             <p>
               Ticket Price:{" "}
-              {parseInt(lotteryData.data?.ticketPrice.sol?.value, 16) /
+              {parseInt(lotteryData.data?.ticketPrice.sol?.value as string, 16) /
                 1000000000}{" "}
               SOL
             </p>
@@ -62,15 +96,40 @@ const LotteryDetails: NextPage = () => {
             </p>
             <p>
               EndTime:{" "}
-              {hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime)}
+              {hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime as string)}
             </p>
+          </div>
+          <div className={styles.buysection}>
+              <input
+                type="number"
+                value={value}
+                min={0}
+                max={3}
+                onChange={handleInputChange}
+              />
+              <button onClick={() => setValue(1)}>1</button>
+              <button onClick={() => setValue(2)}>2</button>
+              <button onClick={() => setValue(3)}>3</button>
+            </div>
+          <div className={styles.buybutton}>
+            <button
+              style={{ textTransform: "uppercase" }}
+              onClick={buyTickets}
+            >
+              Buy for{" "}
+              {(
+                (value * parseInt(lotteryData.data?.ticketPrice.sol?.value, 16)) /
+                1000000000
+              ).toFixed(2)}{" "}
+              SOL
+            </button>
           </div>
         </section>
         <section className={styles.container}>
           <div>
             <p>Tickets:</p>
             {tickets.data?.map((ticket, index) => {
-              return (<p key={index}>{ticket.mintAddress.toString()}</p>)
+              return (<p key={index}>{(ticket.mintAddress).toString()}</p>)
             })}
           </div>
         </section>
