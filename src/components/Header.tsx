@@ -36,10 +36,6 @@ const Header = () => {
           <h3>LOTTERY</h3>
         </Link>
         <li>
-          <FontAwesomeIcon icon={faTicket} />
-          <Link href={"/tickets"}>Tickets</Link>
-        </li>
-        <li>
           <FontAwesomeIcon icon={faPencil} />
           <Link href={"/drawing"}>Drawing</Link>
         </li>
