@@ -5,6 +5,7 @@ import TimeBox from "./TimeBox";
 import { PublicKey } from "@solana/web3.js";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 
 
@@ -54,7 +55,7 @@ const CardDrawing = ({ lotteryData, publicKey }: {
             >
               {endTime.toLocaleDateString()}
             </span>
-            <div>Lottery ID: {lotteryData.lotteryId}</div>
+            <Link href={`/lotteries/${publicKey.toBase58()}`}>Lottery ID:  {lotteryData.lotteryId}</Link>
           </section>
           <section className={styles.middlesection}>
             <div className={styles.cardcolumn}>

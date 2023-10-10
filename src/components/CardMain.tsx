@@ -12,6 +12,7 @@ import {
 } from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { RouterOutputs, api } from "@/utils/api";
+import Link from "next/link";
 
 const CardMain = ({
   lotteryData,
@@ -46,7 +47,7 @@ const CardMain = ({
       });
       const messagev0 = MessageV0.deserialize(instruction);
       const transaction = new VersionedTransaction(messagev0);
-      const txid = await user.sendTransaction!(transaction, connection, {
+      const txid = await user.sendTransaction(transaction, connection, {
         skipPreflight: true,
       });
 
@@ -77,7 +78,7 @@ const CardMain = ({
             >
               {endTime}
             </span>
-            <div>Lottery ID: {lotteryData.lotteryId}</div>
+            <Link href={`/lotteries/${address.toBase58()}`}>Lottery ID:  {lotteryData.lotteryId}</Link>
           </section>
           <Divider orientation="vertical" flexItem />
           <section>

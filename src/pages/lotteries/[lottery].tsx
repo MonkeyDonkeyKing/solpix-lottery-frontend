@@ -18,6 +18,7 @@ const LotteryDetails: NextPage = () => {
   
   if (!key) return <p>Invalid solana address</p>;
   if (PublicKey.isOnCurve(key)) return <p>Not a PDA</p>;
+  // needs to be here because react throws errors for misusage of hooks
   const user = useWallet();
   const { connection } = useConnection();
   const [value, setValue] = useState(0);
