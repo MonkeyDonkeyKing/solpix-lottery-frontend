@@ -1,16 +1,19 @@
 import Banner from "@/components/Banner";
 import Layout from "@/components/Layout";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "../components/AdminOverview.module.css";
 import { api } from "@/utils/api";
+import { MessageV0, PublicKey, VersionedTransaction } from "@solana/web3.js";
 
 
 
 const AdminOverview: NextPage = () => {
-  const { publicKey } = useWallet();
+  const { publicKey, sendTransaction } = useWallet();
+  const { connection } = useConnection();
+
   const lotteryData = api.lottery.getLotteriesByAdmin.useQuery(
     {
       admin: publicKey?.toBase58()!,
@@ -27,6 +30,8 @@ const AdminOverview: NextPage = () => {
       enabled: !!publicKey,
     }
   );
+  const drawWinnersMutation = api.lottery.drawWinners.useMutation();
+
 
   if (!isAdmin) {
     // NOT ALLOWED
@@ -42,6 +47,31 @@ const AdminOverview: NextPage = () => {
         </Layout>
       </>
     );
+  }
+
+  // const drawWinners = await methods.lottery.drawWinners({
+  //   lottery: new PublicKey(createLottery.accounts.lottery!),
+  //   program,
+  // });
+
+  async function drawWinners(lottery: PublicKey) {
+    try {
+      const instruction = await drawWinnersMutation.mutateAsync({
+        admin: publicKey?.toBase58() ?? "",
+        lottery: lottery.toString(),
+      });
+      const messagev0 = MessageV0.deserialize(instruction);
+      const transaction = new VersionedTransaction(messagev0);
+      console.log("transaction: ", transaction);
+      
+      const txid = await sendTransaction(transaction, connection, {
+        skipPreflight: true,
+      });
+
+      console.log("txid: ", txid);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   // ALLOWED
@@ -76,16 +106,25 @@ const AdminOverview: NextPage = () => {
                     {0} <span>SOL</span>
                   </td>
                   <td>
-                    {parseInt(account.ticketPrice.sol?.value, 16) /
-                      1000000000}{" "}
+                    {parseInt(account.ticketPrice.sol?.value, 16) / 1000000000}{" "}
                     <span>SOL</span>
                   </td>
                   <td>{Object.keys(account.lotteryStatus)[0]}</td>
 
-                  {Object.keys(account.lotteryStatus)[0] === 'concepting' ? <td>
-                    <Link legacyBehavior href={`/adminAddPrizes?lotterPublicKey=${publicKey}`}>add prizes</Link>
-                  </td> : <td>No actions</td>}
-
+                  <td>
+                    {Object.keys(account.lotteryStatus)[0] === "concepting" ? (
+                      <Link
+                        legacyBehavior
+                        href={`/adminAddPrizes?lotterPublicKey=${publicKey}`}
+                      >
+                        add prizes
+                      </Link>
+                    ) : Object.keys(account.lotteryStatus)[0] === "live" ? (
+                      <button onClick={() => drawWinners(publicKey)}>Draw Winners</button>
+                    ) : (
+                      "No actions"
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
