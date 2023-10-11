@@ -12,10 +12,10 @@ import { useState } from "react";
 const LotteryDetails: NextPage = () => {
   const router = useRouter();
   const userkey = useWallet().publicKey!;
-  
+
   if (!userkey) return <p>Not connected</p>;
   const key = new PublicKey(router.query.lottery as string);
-  
+
   if (!key) return <p>Invalid solana address</p>;
   if (PublicKey.isOnCurve(key)) return <p>Not a PDA</p>;
   // needs to be here because react throws errors for misusage of hooks
@@ -25,7 +25,7 @@ const LotteryDetails: NextPage = () => {
   const lotteryData = api.lottery.getLotteryData.useQuery({
     lottery: key.toBase58(),
   });
-  
+
   const tickets = api.lottery.getLotteryTicketsByUser.useQuery({
     lotteryAddress: key.toBase58(),
     userAddress: userkey.toBase58(),
@@ -82,7 +82,7 @@ const LotteryDetails: NextPage = () => {
         />
         <section className={styles.container}>
           <div>
-            <p>Lottery ID: {lotteryData.data?.lotteryId}</p>
+            <h3 >Lottery ID: {lotteryData.data?.lotteryId}</h3>
             <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
             <p>Tickets sold: {lotteryData.data?.ticketsSold}</p>
             <p>
@@ -100,18 +100,19 @@ const LotteryDetails: NextPage = () => {
               {hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime as string)}
             </p>
           </div>
+          <h3>Wanna buy some more tickets?</h3>
           <div className={styles.buysection}>
-              <input
-                type="number"
-                value={value}
-                min={0}
-                max={3}
-                onChange={handleInputChange}
-              />
-              <button onClick={() => setValue(1)}>1</button>
-              <button onClick={() => setValue(2)}>2</button>
-              <button onClick={() => setValue(3)}>3</button>
-            </div>
+            <input
+              type="number"
+              value={value}
+              min={0}
+              max={3}
+              onChange={handleInputChange}
+            />
+            <button onClick={() => setValue(1)}>1</button>
+            <button onClick={() => setValue(2)}>2</button>
+            <button onClick={() => setValue(3)}>3</button>
+          </div>
           <div className={styles.buybutton}>
             <button
               style={{ textTransform: "uppercase" }}
@@ -128,10 +129,19 @@ const LotteryDetails: NextPage = () => {
         </section>
         <section className={styles.container}>
           <div>
-            <p>Tickets:</p>
-            {tickets.data?.map((ticket, index) => {
-              return (<p key={index}>{(ticket.mintAddress).toString()}</p>)
-            })}
+            <h3>Your tickets for this lottery:</h3>
+            <section>
+              {tickets.data?.map((ticket, index) => {
+                return (
+                  <>
+                    <div>
+                      <p key={index}>{(ticket.mintAddress).toString()}</p>
+                      <button key={index+1}>Claim ticket</button>
+                    </div>
+                  </>
+                )
+              })}
+            </section>
           </div>
         </section>
       </Layout>

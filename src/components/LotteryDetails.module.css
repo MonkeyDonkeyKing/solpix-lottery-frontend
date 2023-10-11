@@ -45,3 +45,20 @@
   font-weight: bold;
   margin-top: 1rem;
 }
+
+.container section div {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.container section div button {
+  background-color: white;
+  color: var(--color-text-dark);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  width: 100px;
+  height: 40px;
+  font-weight: bold;
+}
