@@ -45,7 +45,7 @@ const AdminCreate: NextPage = () => {
   const todayFormatted = today.toISOString().split("T")[0];
 
   const handleSubmit = async () => {
-   
+
     const instruction = await initLottery.mutateAsync({
       lotteryManagerPublicKey: publicKey?.toBase58() ?? "",
       params: {
@@ -100,11 +100,9 @@ const AdminCreate: NextPage = () => {
           <section className={styles.formContainer}>
             <div className={styles.initialinput}>
               <div className={styles.initialinput}>
-                {useDate === "capped" ? (
-                  <p>Finish lottery on certain date if all tickets are sold</p>
-                ) : (
-                  <p>When should the lottery end?</p>
-                )}
+
+                <p>When should the lottery end?</p>
+
                 <input
                   type="datetime-local"
                   value={endDateTime}
@@ -124,18 +122,18 @@ const AdminCreate: NextPage = () => {
                   onChange={(e) => setMaxTicketAmount(Number(e.target.value))}
                 />
               </div>
-              {useDate === "time" && (
-                <div className={styles.initialinput}>
-                  <p>Whats the minimum of tickets that need to be sold?</p>
-                  <input
-                    type="number"
-                    min={1}
-                    max={1000}
-                    value={minTicketAmount}
-                    onChange={(e) => setMinTicketAmount(Number(e.target.value))}
-                  />
-                </div>
-              )}
+
+              <div className={styles.initialinput}>
+                <p>Whats the minimum of tickets that need to be sold?</p>
+                <input
+                  type="number"
+                  min={1}
+                  max={1000}
+                  value={minTicketAmount}
+                  onChange={(e) => setMinTicketAmount(Number(e.target.value))}
+                />
+              </div>
+
             </div>
 
             <div className={styles.inputSections}>
@@ -154,8 +152,8 @@ const AdminCreate: NextPage = () => {
                 <p>
                   The lottery pool will be between{" "}
                   <p className={styles.boldText}>
-                    {minTicketAmount * ticketPrice} SOL -{" "}
-                    {maxTicketAmount * ticketPrice} SOL
+                    {(minTicketAmount * ticketPrice).toFixed(2)} SOL -{" "}
+                    {(maxTicketAmount * ticketPrice).toFixed(2)} SOL
                   </p>
                 </p>
               </div>
