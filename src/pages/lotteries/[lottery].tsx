@@ -12,22 +12,21 @@ import PrizeIcon from "@/components/PrizeIcon";
 
 const LotteryDetails: NextPage = () => {
   const router = useRouter();
-  const userkey = useWallet().publicKey!;
-  const lotteryAdress = router.query.lottery
-
-  if (!userkey) return <h2>Please connect your wallet first</h2>;
-  const key = new PublicKey(lotteryAdress as string);
-
-  if (!key) return <p>Invalid solana address</p>;
-  if (PublicKey.isOnCurve(key)) return <p>Not a PDA</p>;
-  // needs to be here because react throws errors for misusage of hooks
-  const user = useWallet();
+  const { publicKey: userkey, sendTransaction } = useWallet();
+  const lotteryAdress = router.query.lottery;
   const { connection } = useConnection();
   const [value, setValue] = useState(0);
+
+  if (!userkey) return <h2>Please connect your wallet first</h2>;
+
+  const key = new PublicKey(lotteryAdress as string);
+
+  if (PublicKey.isOnCurve(key)) return <p>Not a PDA</p>;
+
+
   const lotteryData = api.lottery.getLotteryData.useQuery({
     lottery: key.toBase58(),
   });
-
 
   const tickets = api.lottery.getLotteryTicketsByUser.useQuery({
     lotteryAddress: key.toBase58(),
@@ -39,17 +38,24 @@ const LotteryDetails: NextPage = () => {
     const date = new Date(unixTime);
     return date.toLocaleString();
   };
-  const hexToReadableDate = (hexTime) => {
+
+  const hexToReadableDate = (hexTime: string) => {
     const unixTime = parseInt(hexTime, 16) * 1000;
     const date = new Date(unixTime);
     return date;
   };
-  const endTime = hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime);
+
+  const endTime = hexToReadableDate(
+    lotteryData.data?.lotteryType.time?.endTime as string
+  );
+
   const isEndTimePassed = Date.now() >= endTime.getTime();
+
   const bannerHeading = `Lottery ID: ${lotteryData.data?.lotteryId}`;
-  const prizes = lotteryData.data?.prizes
+  const prizes = lotteryData.data?.prizes;
 
   const buyTicket = api.lottery.buyTicket.useMutation();
+
   const buyTickets = async () => {
     try {
       const instruction = await buyTicket.mutateAsync({
@@ -59,14 +65,18 @@ const LotteryDetails: NextPage = () => {
       });
       const messagev0 = MessageV0.deserialize(instruction);
       const transaction = new VersionedTransaction(messagev0);
-      const txid = await user.sendTransaction(transaction, connection, {
+      const txid = await sendTransaction(transaction, connection, {
         skipPreflight: true,
       });
 
       console.log(
         `Transaction for lottery address: ${key.toBase58()}% completed. TXID: ${txid}
         Bought ${value} tickets for ${(
-          (value * parseInt(lotteryData.data?.ticketPrice.sol?.value, 16)) /
+          (value *
+            parseInt(
+              lotteryData.data?.ticketPrice.sol?.value as string,
+              16
+            )) /
           1000000000
         ).toFixed(2)} SOL`
       );
@@ -76,11 +86,14 @@ const LotteryDetails: NextPage = () => {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(Number(e.target.value));
+    setValue((prevValue) => Number(e.target.value));
   };
 
-  const ticketPrice = (
-    parseInt(lotteryData.data?.ticketPrice.sol?.value, 16) / 1000000000);
+  const ticketPrice =
+    (parseInt(
+      lotteryData.data?.ticketPrice.sol?.value as string,
+      16
+    ) / 1000000000);
 
   const handleWatchDrawing = () => {
     void router.push({
@@ -91,10 +104,9 @@ const LotteryDetails: NextPage = () => {
         numberOfTicketsSold: lotteryData.data.ticketsSold,
         numberOfTickets: lotteryData.data.maxTicketsForSale,
         ticketPrice: ticketPrice,
-        lotteryPublicKey: key.toBase58()
+        lotteryPublicKey: key.toBase58(),
       },
     });
-
   };
 
   return (
@@ -112,14 +124,13 @@ const LotteryDetails: NextPage = () => {
         <div className={styles.gridwrapper}>
           <section className={styles.container}>
             <div>
-              <h3 >Lottery ID: {lotteryData.data?.lotteryId}</h3>
+              <h3>Lottery ID: {lotteryData.data?.lotteryId}</h3>
+              {/* <p>Lottery Status: {Object.keys(lotteryData.data?.lotteryStatus)[0]}</p> */}
               <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
               <p>Tickets sold: {lotteryData.data?.ticketsSold}</p>
               <p>
                 Ticket Price:{" "}
-                {parseInt(lotteryData.data?.ticketPrice.sol?.value as string, 16) /
-                  1000000000}{" "}
-                SOL
+                {ticketPrice} SOL
               </p>
               <p>
                 Min Tickets:{" "}
@@ -127,7 +138,9 @@ const LotteryDetails: NextPage = () => {
               </p>
               <p>
                 EndTime:{" "}
-                {hexToReadableString(lotteryData.data?.lotteryType.time?.endTime as string)}
+                {hexToReadableString(
+                  lotteryData.data?.lotteryType.time?.endTime as string
+                )}
               </p>
             </div>
           </section>
@@ -152,8 +165,7 @@ const LotteryDetails: NextPage = () => {
               >
                 Buy for{" "}
                 {(
-                  (value * parseInt(lotteryData.data?.ticketPrice.sol?.value, 16)) /
-                  1000000000
+                  (value * ticketPrice)
                 ).toFixed(2)}{" "}
                 SOL
               </button>
@@ -171,16 +183,12 @@ const LotteryDetails: NextPage = () => {
           <section className={styles.container2}>
             <h3>Your tickets for this lottery:</h3>
             <section>
-              {tickets.data?.map((ticket, index) => {
-                return (
-                  <>
-                    <div key={index}>
-                      <p >{(ticket.mintAddress).toString()}</p>
-                      <button disabled={!isEndTimePassed}>Claim ticket</button>
-                    </div>
-                  </>
-                )
-              })}
+              {tickets.data?.map((ticket, index) => (
+                <div key={index}>
+                  <p>{ticket.mintAddress.toString()}</p>
+                  <button disabled={!isEndTimePassed}>Redeem ticket</button>
+                </div>
+              ))}
             </section>
           </section>
         </div>
