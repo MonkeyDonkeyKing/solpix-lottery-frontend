@@ -74,6 +74,10 @@ const AdminOverview: NextPage = () => {
     }
   }
 
+  function ticketPriceReadable(price: string) {
+      return parseInt(price, 16) / 1000000000;
+  }
+
   // ALLOWED
   return (
     <>
@@ -101,12 +105,12 @@ const AdminOverview: NextPage = () => {
             <tbody>
               {lotteryData.data?.map(({ account, publicKey }, index) => (
                 <tr key={index}>
-                  <td>{account.lotteryId}</td>
+                  <td><Link href={`/lotteries/${publicKey}`}>Lottery ID:  {account.lotteryId}</Link></td>
                   <td>
-                    {0} <span>SOL</span>
+                    {ticketPriceReadable(account.ticketPrice.sol?.value) * account.ticketsSold} <span>SOL</span>
                   </td>
                   <td>
-                    {parseInt(account.ticketPrice.sol?.value, 16) / 1000000000}{" "}
+                    {ticketPriceReadable(account.ticketPrice.sol?.value)}{" "}
                     <span>SOL</span>
                   </td>
                   <td>{Object.keys(account.lotteryStatus)[0]}</td>

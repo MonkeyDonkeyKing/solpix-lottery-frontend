@@ -193,8 +193,7 @@ const AdminAddPrizes: NextPage = () => {
           <section className={styles.formContainer2}>
             <div className={styles.addsolprice}>
               <p>
-                Add % to calculate prizes from the prize pool. Prizes must add
-                up to 100 %
+                Add % to calculate prizes from the prize pool.
               </p>
               <input
                 type="number"

@@ -17,34 +17,20 @@ import Banner from "@/components/Banner";
 import { useRouter } from "next/router";
 import { api } from "@/utils/api";
 
-// For Testing: Will get 2 Arrays with Tickets / WinningTickets for the lottery
-// Winner will then be drawn with an amount
-
-interface Ticket {
-  walletID: string;
+interface TicketNew {
+  ticketID: string;
+  claimed?: boolean;
+  verified?: boolean;
   amount?: number;
 }
 
-const initialTickets: Ticket[] = [
-  { walletID: "HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH" },
-  { walletID: "24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p" },
-  { walletID: "3333hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p" },
-  { walletID: "4433hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR44" },
-  { walletID: "5533hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR55" },
-  { walletID: "6633hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR66" },
-  { walletID: "7733hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR77" },
-  { walletID: "8833hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR88" },
-  { walletID: "9933hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR99" },
-  { walletID: "1033hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR10" },
-];
-
-const initialWinners: Ticket[] = [
-  { walletID: "HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH", amount: 5 },
-  { walletID: "24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p", amount: 10 },
-  { walletID: "7733hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR77", amount: 20 },
-  { walletID: "3333hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p", amount: 30 },
-  { walletID: "1033hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR10", amount: 50 },
-  { walletID: "9933hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR99", amount: 100 },
+const initialWinners: TicketNew[] = [
+  { ticketID: "HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH", amount: 5 },
+  { ticketID: "24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p", amount: 10 },
+  { ticketID: "7733hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR77", amount: 20 },
+  { ticketID: "3333hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p", amount: 30 },
+  { ticketID: "1033hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR10", amount: 50 },
+  { ticketID: "9933hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR99", amount: 100 },
 ];
 
 const DrawingDetail: NextPage = () => {
@@ -58,37 +44,22 @@ const DrawingDetail: NextPage = () => {
     lotteryPublicKey
   } = router.query;
   const lotteryId = queryId as string;
-  const parsedEndTime = new Date(endTime as string);
   const parsedNumberOfTicketsSold = Number(numberOfTicketsSold as string);
   const parsedNumberOfTickets = Number(numberOfTickets as string);
   const parsedTicketPrice = Number(ticketPrice as string);
-  const parsedLotteryName = name as string;
   const prizePool = parsedTicketPrice * parsedNumberOfTicketsSold;
 
 
-  const lotteryData = api.lottery.getLotteryData.useQuery(
-    {
-      lottery: lotteryPublicKey!.toString(),
-    },
-    {
-      select(data) {
-        // userNfts.refetch();
-        // lotteryNfts.refetch();
-        return data;
-      },
-    }
-  );
+  const lotteryData = api.lottery.getLotteryData.useQuery({
+    lottery: lotteryPublicKey as string,
+  });
 
-
-  const [ticketsWon, setTicketsWon] = useState<Ticket[]>([]);
+  const [ticketsWon, setTicketsWon] = useState<TicketNew[]>([]);
   const [winningTicket, setWinningTicket] = useState<string>(
     "HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH"
   );
   const [availableWinners, setAvailableWinners] =
-    useState<Ticket[]>(initialWinners);
-
-  const [availableTickets, setAvailableTickets] =
-    useState<Ticket[]>(initialTickets);
+    useState<TicketNew[]>(initialWinners);
 
   const [winningAmount, setWinningAmount] = useState<number>(10);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
@@ -128,24 +99,20 @@ const DrawingDetail: NextPage = () => {
     const winnerIndex = Math.floor(Math.random() * availableWinners.length);
     const winner = availableWinners[winnerIndex]!;
 
-    setWinningTicket(winner.walletID);
+    setWinningTicket(winner.ticketID);
     setWinningAmount(winner.amount!);
 
     await delay(2200);
     ticketsWon.push(winner);
 
-    removeWinner(winner.walletID);
+    removeWinner(winner.ticketID);
   }
 
   function removeWinner(wallet: string) {
     const newWinners = availableWinners.filter(
-      (ticket) => ticket.walletID !== wallet
-    );
-    const newAvailableTickets = availableTickets.filter(
-      (ticket) => ticket.walletID !== wallet
+      (ticket) => ticket.ticketID !== wallet
     );
     setAvailableWinners(newWinners);
-    setAvailableTickets(newAvailableTickets);
   }
 
   const formatTicketOwningWallet = (wallet: string | undefined) => {
@@ -175,7 +142,7 @@ const DrawingDetail: NextPage = () => {
       </Head>
       <Layout>
         <Banner
-          heading={parsedLotteryName}
+          heading={"Lottery ID: " + lotteryId}
           subHeaderDraw="Epic Draw Event: Witness the Excitement Unfold!"
           id={lotteryId}
           prizePool={formatPricePool(prizePool)}
@@ -214,7 +181,7 @@ const DrawingDetail: NextPage = () => {
                 {ticketsWon.map((owner, index) => (
                   <TableRow key={index}>
                     <TableCell>
-                      {formatTicketOwningWallet(owner.walletID)}{" "}
+                      {formatTicketOwningWallet(owner.ticketID)}{" "}
                       <p>{owner.amount} SOL</p>
                     </TableCell>
                   </TableRow>

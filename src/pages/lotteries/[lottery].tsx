@@ -13,9 +13,10 @@ import PrizeIcon from "@/components/PrizeIcon";
 const LotteryDetails: NextPage = () => {
   const router = useRouter();
   const userkey = useWallet().publicKey!;
+  const lotteryAdress = router.query.lottery
 
-  if (!userkey) return <p>Not connected</p>;
-  const key = new PublicKey(router.query.lottery as string);
+  if (!userkey) return <h2>Please connect your wallet first</h2>;
+  const key = new PublicKey(lotteryAdress as string);
 
   if (!key) return <p>Invalid solana address</p>;
   if (PublicKey.isOnCurve(key)) return <p>Not a PDA</p>;

@@ -14,8 +14,6 @@ const ModalCard = ({
     address: getPrizeVaultPda(new PublicKey(publicKey))[0].toBase58(),
   });
 
-  console.log(lotteryNfts.data);
-
   return (
     <>
       <div className={styles.wrapper}>
