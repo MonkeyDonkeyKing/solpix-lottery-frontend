@@ -17,20 +17,18 @@ import Banner from "@/components/Banner";
 import { useRouter } from "next/router";
 import { api } from "@/utils/api";
 
-interface TicketNew {
+interface Ticket {
   ticketID: string;
-  claimed?: boolean;
-  verified?: boolean;
-  amount?: number;
+  value: number | string;
 }
 
-const initialWinners: TicketNew[] = [
-  { ticketID: "HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH", amount: 5 },
-  { ticketID: "24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p", amount: 10 },
-  { ticketID: "7733hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR77", amount: 20 },
-  { ticketID: "3333hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p", amount: 30 },
-  { ticketID: "1033hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR10", amount: 50 },
-  { ticketID: "9933hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR99", amount: 100 },
+const initialWinners: Ticket[] = [
+  { ticketID: "HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH", value: 5 },
+  { ticketID: "24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p", value: 10 },
+  { ticketID: "7733hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR77", value: 20 },
+  { ticketID: "3333hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p", value: 30 },
+  { ticketID: "1033hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR10", value: 50 },
+  { ticketID: "9933hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR99", value: 100 },
 ];
 
 const DrawingDetail: NextPage = () => {
@@ -53,13 +51,33 @@ const DrawingDetail: NextPage = () => {
   const lotteryData = api.lottery.getLotteryData.useQuery({
     lottery: lotteryPublicKey as string,
   });
+  const prizeArray = lotteryData.data?.prizes;
+  const winnersArray = lotteryData.data?.winningTickets;
 
-  const [ticketsWon, setTicketsWon] = useState<TicketNew[]>([]);
+  const [ticketsWon, setTicketsWon] = useState<Ticket[]>([]);
   const [winningTicket, setWinningTicket] = useState<string>(
     "HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH"
   );
+  let mergedArray;
+  if (prizeArray) {
+    mergedArray = prizeArray.map((prize, index) => {
+      if (!winnersArray) return;
+      const winner = winnersArray[index]!;
+      if (prize.pool) {
+        return {
+          value: prize.pool.value,
+          ticketID: winner.ticketId,
+        };
+      } else if (prize.nft) {
+        return {
+          value: prize.nft.mint,
+          ticketID: winner.ticketId,
+        };
+      }
+    });
+  }
   const [availableWinners, setAvailableWinners] =
-    useState<TicketNew[]>(initialWinners);
+    useState(mergedArray ?? []);
 
   const [winningAmount, setWinningAmount] = useState<number>(10);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
@@ -67,6 +85,8 @@ const DrawingDetail: NextPage = () => {
 
   const slotWalletRef = useRef<SlotCounterRef>(null);
   const slotAmountRef = useRef<SlotCounterRef>(null);
+
+ 
 
   async function drawWinner() {
     if (availableWinners.length > 0) {
@@ -100,7 +120,7 @@ const DrawingDetail: NextPage = () => {
     const winner = availableWinners[winnerIndex]!;
 
     setWinningTicket(winner.ticketID);
-    setWinningAmount(winner.amount!);
+    setWinningAmount(winner.value!);
 
     await delay(2200);
     ticketsWon.push(winner);
@@ -182,7 +202,7 @@ const DrawingDetail: NextPage = () => {
                   <TableRow key={index}>
                     <TableCell>
                       {formatTicketOwningWallet(owner.ticketID)}{" "}
-                      <p>{owner.amount} SOL</p>
+                      <p>{owner.value} SOL</p>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -194,7 +214,7 @@ const DrawingDetail: NextPage = () => {
           <button
             className={styles.button}
             onClick={drawWinner}
-            disabled={isDrawing || isDrawingAll || availableWinners.length == 0}
+            disabled={isDrawing || isDrawingAll || availableWinners?.length == 0}
           >
             Draw one
           </button>
