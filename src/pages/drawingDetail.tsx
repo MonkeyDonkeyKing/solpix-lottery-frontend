@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Layout from "@/components/Layout";
 import type { NextPage } from "next";
 import Head from "next/head";
@@ -21,15 +21,6 @@ interface Ticket {
   ticketID: string;
   value: number | string;
 }
-
-const initialWinners: Ticket[] = [
-  { ticketID: "HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH", value: 5 },
-  { ticketID: "24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p", value: 10 },
-  { ticketID: "7733hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR77", value: 20 },
-  { ticketID: "3333hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p", value: 30 },
-  { ticketID: "1033hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR10", value: 50 },
-  { ticketID: "9933hTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR99", value: 100 },
-];
 
 const DrawingDetail: NextPage = () => {
   const router = useRouter();
@@ -55,29 +46,29 @@ const DrawingDetail: NextPage = () => {
   const winnersArray = lotteryData.data?.winningTickets;
 
   const [ticketsWon, setTicketsWon] = useState<Ticket[]>([]);
-  const [winningTicket, setWinningTicket] = useState<string>(
-    "HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH"
-  );
-  let mergedArray;
-  if (prizeArray) {
-    mergedArray = prizeArray.map((prize, index) => {
-      if (!winnersArray) return;
-      const winner = winnersArray[index]!;
-      if (prize.pool) {
-        return {
-          value: prize.pool.value,
-          ticketID: winner.ticketId,
-        };
-      } else if (prize.nft) {
-        return {
-          value: prize.nft.mint,
-          ticketID: winner.ticketId,
-        };
-      }
-    });
-  }
-  const [availableWinners, setAvailableWinners] =
-    useState(mergedArray ?? []);
+  const [winningTicket, setWinningTicket] = useState<string>("001");
+  const [availableWinners, setAvailableWinners] = useState<Ticket[]>([]);
+
+  useEffect(() => {
+    if (prizeArray && winnersArray) {
+      const mergedArray = prizeArray.map((prize, index) => {
+        const winner = winnersArray[index];
+        if (prize.pool) {
+          return {
+            value: prize.pool.value,
+            ticketID: winner?.ticketId ?? '',
+          };
+        } else if (prize.nft) {
+          return {
+            value: prize.nft.mint,
+            ticketID: winner?.ticketId ?? '',
+          };
+        }
+        return null; // Handle other cases or return a default value if needed
+      });
+      setAvailableWinners(mergedArray.filter(Boolean) as Ticket[]);
+    }
+  }, [prizeArray, winnersArray]);
 
   const [winningAmount, setWinningAmount] = useState<number>(10);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
@@ -117,32 +108,32 @@ const DrawingDetail: NextPage = () => {
 
   async function getWinningTicket() {
     const winnerIndex = Math.floor(Math.random() * availableWinners.length);
-    const winner = availableWinners[winnerIndex]!;
-
-    setWinningTicket(winner.ticketID);
-    setWinningAmount(winner.value!);
-
+    const winner = availableWinners[winnerIndex];
+  
+    setWinningTicket((winner?.ticketID)?.toString() ?? '');
+    setWinningAmount(winner?.value ?? 0);
+  
     await delay(2200);
-    ticketsWon.push(winner);
-
-    removeWinner(winner.ticketID);
+    setTicketsWon([...ticketsWon, winner]);
+  
+    removeWinner(winner?.ticketID ?? '');
   }
 
-  function removeWinner(wallet: string) {
+  function removeWinner(ticketID: any) {
     const newWinners = availableWinners.filter(
-      (ticket) => ticket.ticketID !== wallet
+      (ticket) => ticket.ticketID !== ticketID
     );
     setAvailableWinners(newWinners);
   }
 
-  const formatTicketOwningWallet = (wallet: string | undefined) => {
-    if (wallet === undefined) {
-      return "";
-    }
-    const firstFour = wallet.substring(0, 4);
-    const lastFour = wallet.substring(wallet.length - 4);
-    return `${firstFour}...${lastFour}`;
-  };
+  // const formatTicketOwningWallet = (wallet: string | undefined) => {
+  //   if (wallet === undefined) {
+  //     return "";
+  //   }
+  //   const firstFour = wallet.substring(0, 4);
+  //   const lastFour = wallet.substring(wallet.length - 4);
+  //   return `${firstFour}...${lastFour}`;
+  // };
 
   function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -173,7 +164,7 @@ const DrawingDetail: NextPage = () => {
         <div className={styles.containerD}>
           <div className={styles.drawingColumn}>
             <SlotCounter
-              value={formatTicketOwningWallet(winningTicket)}
+              value={winningTicket}
               dummyCharacters={"Solpix".split("")}
               ref={slotWalletRef}
               autoAnimationStart={false}
@@ -193,7 +184,7 @@ const DrawingDetail: NextPage = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>
-                    WINNERS TABLE <span>AMOUNT SOL</span>
+                    WINNERS TABLE <span>PRIZE</span>
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -201,8 +192,8 @@ const DrawingDetail: NextPage = () => {
                 {ticketsWon.map((owner, index) => (
                   <TableRow key={index}>
                     <TableCell>
-                      {formatTicketOwningWallet(owner.ticketID)}{" "}
-                      <p>{owner.value} SOL</p>
+                      {owner.ticketID}{" "}
+                      <p>{owner.value} %</p>
                     </TableCell>
                   </TableRow>
                 ))}
