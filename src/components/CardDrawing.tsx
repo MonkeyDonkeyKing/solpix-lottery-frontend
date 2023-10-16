@@ -28,7 +28,12 @@ const CardDrawing = ({ lotteryData, publicKey }: {
     parseInt(lotteryData.ticketPrice.sol?.value, 16) / 1000000000);
 
   const handleViewDetails = () => {
-    router.push({
+    const publicKeyBase58 = publicKey.toBase58();
+    void router.push(`/lotteries/${publicKeyBase58}`);
+  };
+
+  const handleWatchDrawing = () => {
+    void router.push({
       pathname: "/drawingDetail",
       query: {
         id: lotteryData.lotteryId,
@@ -39,6 +44,7 @@ const CardDrawing = ({ lotteryData, publicKey }: {
         lotteryPublicKey: publicKey.toBase58()
       },
     });
+
   };
 
   return (
@@ -95,9 +101,15 @@ const CardDrawing = ({ lotteryData, publicKey }: {
               <button
                 style={{ textTransform: "uppercase" }}
                 onClick={handleViewDetails}
-                disabled={!isEndTimePassed}
               >
                 View Details
+              </button>
+              <button
+                style={{ textTransform: "uppercase" }}
+                disabled={!isEndTimePassed}
+                onClick={handleWatchDrawing}
+              >
+                Watch Drawing
               </button>
             </div>
           </section>
@@ -108,3 +120,7 @@ const CardDrawing = ({ lotteryData, publicKey }: {
 };
 
 export default CardDrawing;
+{/* <div className={styles.buybutton}>
+<Link href={`/lotteries/${publicKey.toBase58()}`}>View Details</Link>
+<Link href={`/lotteries/${publicKey.toBase58()}`}>View Details</Link>
+</div> */}

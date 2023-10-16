@@ -44,7 +44,10 @@
   justify-content: space-around;
 }
 
-
+.buybutton {
+  display: flex;
+  gap: 1rem;
+}
 .buybutton button {
   background-color: white;
   color: var(--color-text-dark);
@@ -55,6 +58,9 @@
   height: 40px;
   font-weight: bold;
   margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .buybutton button:disabled {

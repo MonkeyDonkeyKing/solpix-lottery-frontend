@@ -8,6 +8,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import styles from "../../components/LotteryDetails.module.css";
 import { useState } from "react";
+import PrizeIcon from "@/components/PrizeIcon";
 
 const LotteryDetails: NextPage = () => {
   const router = useRouter();
@@ -26,17 +27,26 @@ const LotteryDetails: NextPage = () => {
     lottery: key.toBase58(),
   });
 
+
   const tickets = api.lottery.getLotteryTicketsByUser.useQuery({
     lotteryAddress: key.toBase58(),
     userAddress: userkey.toBase58(),
   });
 
-  const hexToReadableDate = (hexTime: string) => {
+  const hexToReadableString = (hexTime: string) => {
     const unixTime = parseInt(hexTime, 16) * 1000;
     const date = new Date(unixTime);
     return date.toLocaleString();
   };
+  const hexToReadableDate = (hexTime) => {
+    const unixTime = parseInt(hexTime, 16) * 1000;
+    const date = new Date(unixTime);
+    return date;
+  };
+  const endTime = hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime);
+  const isEndTimePassed = Date.now() >= endTime.getTime();
   const bannerHeading = `Lottery ID: ${lotteryData.data?.lotteryId}`;
+  const prizes = lotteryData.data?.prizes
 
   const buyTicket = api.lottery.buyTicket.useMutation();
   const buyTickets = async () => {
@@ -68,6 +78,24 @@ const LotteryDetails: NextPage = () => {
     setValue(Number(e.target.value));
   };
 
+  const ticketPrice = (
+    parseInt(lotteryData.data?.ticketPrice.sol?.value, 16) / 1000000000);
+
+  const handleWatchDrawing = () => {
+    void router.push({
+      pathname: "/drawingDetail",
+      query: {
+        id: lotteryData.data?.lotteryId,
+        endTime: lotteryData.data?.lotteryType.time?.endTime,
+        numberOfTicketsSold: lotteryData.data.ticketsSold,
+        numberOfTickets: lotteryData.data.maxTicketsForSale,
+        ticketPrice: ticketPrice,
+        lotteryPublicKey: key.toBase58()
+      },
+    });
+
+  };
+
   return (
     <>
       <Head>
@@ -80,70 +108,81 @@ const LotteryDetails: NextPage = () => {
           heading={bannerHeading}
           paragraph="Check out if you won and claim your prize & rent"
         />
-        <section className={styles.container}>
-          <div>
-            <h3 >Lottery ID: {lotteryData.data?.lotteryId}</h3>
-            <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
-            <p>Tickets sold: {lotteryData.data?.ticketsSold}</p>
-            <p>
-              Ticket Price:{" "}
-              {parseInt(lotteryData.data?.ticketPrice.sol?.value as string, 16) /
-                1000000000}{" "}
-              SOL
-            </p>
-            <p>
-              Min Tickets:{" "}
-              {lotteryData.data?.lotteryType.time?.requiredMinTicketsSold}
-            </p>
-            <p>
-              EndTime:{" "}
-              {hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime as string)}
-            </p>
-          </div>
-          <h3>Wanna buy some more tickets?</h3>
-          <div className={styles.buysection}>
-            <input
-              type="number"
-              value={value}
-              min={0}
-              max={3}
-              onChange={handleInputChange}
-            />
-            <button onClick={() => setValue(1)}>1</button>
-            <button onClick={() => setValue(2)}>2</button>
-            <button onClick={() => setValue(3)}>3</button>
-          </div>
-          <div className={styles.buybutton}>
-            <button
-              style={{ textTransform: "uppercase" }}
-              onClick={buyTickets}
-            >
-              Buy for{" "}
-              {(
-                (value * parseInt(lotteryData.data?.ticketPrice.sol?.value, 16)) /
-                1000000000
-              ).toFixed(2)}{" "}
-              SOL
-            </button>
-          </div>
-        </section>
-        <section className={styles.container}>
-          <div>
+        <div className={styles.gridwrapper}>
+          <section className={styles.container}>
+            <div>
+              <h3 >Lottery ID: {lotteryData.data?.lotteryId}</h3>
+              <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
+              <p>Tickets sold: {lotteryData.data?.ticketsSold}</p>
+              <p>
+                Ticket Price:{" "}
+                {parseInt(lotteryData.data?.ticketPrice.sol?.value as string, 16) /
+                  1000000000}{" "}
+                SOL
+              </p>
+              <p>
+                Min Tickets:{" "}
+                {lotteryData.data?.lotteryType.time?.requiredMinTicketsSold}
+              </p>
+              <p>
+                EndTime:{" "}
+                {hexToReadableString(lotteryData.data?.lotteryType.time?.endTime as string)}
+              </p>
+            </div>
+          </section>
+          <section className={styles.container}>
+            <h3>Want to buy some more tickets?</h3>
+            <div className={styles.buysection}>
+              <input
+                type="number"
+                value={value}
+                min={0}
+                max={3}
+                onChange={handleInputChange}
+              />
+              <button onClick={() => setValue(1)}>1</button>
+              <button onClick={() => setValue(2)}>2</button>
+              <button onClick={() => setValue(3)}>3</button>
+            </div>
+            <div className={styles.buybutton}>
+              <button
+                style={{ textTransform: "uppercase" }}
+                onClick={buyTickets}
+              >
+                Buy for{" "}
+                {(
+                  (value * parseInt(lotteryData.data?.ticketPrice.sol?.value, 16)) /
+                  1000000000
+                ).toFixed(2)}{" "}
+                SOL
+              </button>
+              <h3>Want to watch the drawing?</h3>
+              <button
+                style={{ textTransform: "uppercase" }}
+                disabled={!isEndTimePassed}
+                onClick={handleWatchDrawing}
+              >
+                Watch Drawing
+              </button>
+              <PrizeIcon prizes={prizes} publicKey={key} />
+            </div>
+          </section>
+          <section className={styles.container2}>
             <h3>Your tickets for this lottery:</h3>
             <section>
               {tickets.data?.map((ticket, index) => {
                 return (
                   <>
-                    <div>
-                      <p key={index}>{(ticket.mintAddress).toString()}</p>
-                      <button key={index+1}>Claim ticket</button>
+                    <div key={index}>
+                      <p >{(ticket.mintAddress).toString()}</p>
+                      <button disabled={!isEndTimePassed}>Claim ticket</button>
                     </div>
                   </>
                 )
               })}
             </section>
-          </div>
-        </section>
+          </section>
+        </div>
       </Layout>
     </>
   );

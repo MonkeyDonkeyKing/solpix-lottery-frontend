@@ -1,3 +1,13 @@
+.gridwrapper {
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  grid-template-rows: 1fr 1fr; 
+  gap: 1rem 1rem;
+  grid-template-areas: 
+    ". ."
+    "tickets tickets"; 
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -5,6 +15,17 @@
   border-radius: var(--border-radius);
   padding: 2rem;
   width: 100%;
+}
+
+.container2 {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-text-grey);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  grid-area: tickets;
 }
 
 .buysection {
@@ -34,6 +55,17 @@
   cursor: pointer;
 }
 
+.buybutton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.buybutton div{
+  width: 100%;
+  margin-top: 1rem;
+}
+
 .buybutton button {
   background-color: white;
   color: var(--color-text-dark);
@@ -46,13 +78,19 @@
   margin-top: 1rem;
 }
 
-.container section div {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
+.buybutton button:disabled {
+  background-color: rgb(24, 24, 24);
+  color: var(--color-text-grey);
+  cursor: not-allowed;
 }
 
-.container section div button {
+.container2 section div {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.container2 section div button {
   background-color: white;
   color: var(--color-text-dark);
   border: none;
@@ -62,3 +100,10 @@
   height: 40px;
   font-weight: bold;
 }
+
+.container2 section div button:disabled {
+  background-color: rgb(24, 24, 24);
+  color: var(--color-text-grey);
+  cursor: not-allowed;
+}
+
