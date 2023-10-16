@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { PublicKey, TransactionMessage } from "@solana/web3.js";
+import { ComputeBudgetProgram, PublicKey, TransactionMessage } from "@solana/web3.js";
 import { methods, pdas } from "@/lottery-program-build";
 
 import { TRPCError } from "@trpc/server";
@@ -334,13 +334,17 @@ export const lotteryRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { lottery, admin } = input;
 
+      const computeBudget = ComputeBudgetProgram.setComputeUnitLimit({
+        units: 10000000,
+      })
+      
       const result = await methods.lottery.drawWinners({
         program: ctx.program,
         lottery: lottery,
       });
-
+      
       const msg = new TransactionMessage({
-        instructions: [result.instruction],
+        instructions: [computeBudget,result.instruction],
         payerKey: admin,
         recentBlockhash: (await ctx.solanaRpc.getLatestBlockhash()).blockhash,
       }).compileToV0Message();
