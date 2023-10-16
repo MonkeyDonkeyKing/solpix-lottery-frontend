@@ -60,24 +60,24 @@ const DrawingDetail: NextPage = () => {
           };
         } else if (prize.nft) {
           return {
-            value: prize.nft.mint,
+            value: "NFT",
             ticketID: winner?.ticketId ?? '',
           };
         }
-        return null; // Handle other cases or return a default value if needed
+        return null;
       });
       setAvailableWinners(mergedArray.filter(Boolean) as Ticket[]);
     }
   }, [prizeArray, winnersArray]);
 
-  const [winningAmount, setWinningAmount] = useState<number>(10);
+  const [winningAmount, setWinningAmount] = useState<number | string>(10);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [isDrawingAll, setIsDrawingAll] = useState<boolean>(false);
 
   const slotWalletRef = useRef<SlotCounterRef>(null);
   const slotAmountRef = useRef<SlotCounterRef>(null);
 
- 
+
 
   async function drawWinner() {
     if (availableWinners.length > 0) {
@@ -109,13 +109,13 @@ const DrawingDetail: NextPage = () => {
   async function getWinningTicket() {
     const winnerIndex = Math.floor(Math.random() * availableWinners.length);
     const winner = availableWinners[winnerIndex];
-  
+
     setWinningTicket((winner?.ticketID)?.toString() ?? '');
     setWinningAmount(winner?.value ?? 0);
-  
+
     await delay(2200);
     setTicketsWon([...ticketsWon, winner]);
-  
+
     removeWinner(winner?.ticketID ?? '');
   }
 
@@ -125,6 +125,11 @@ const DrawingDetail: NextPage = () => {
     );
     setAvailableWinners(newWinners);
   }
+
+  const handleViewDetails = () => {
+    const publicKeyBase58 = lotteryPublicKey as string;
+    void router.push(`/lotteries/${publicKeyBase58}`);
+  };
 
   // const formatTicketOwningWallet = (wallet: string | undefined) => {
   //   if (wallet === undefined) {
@@ -163,6 +168,7 @@ const DrawingDetail: NextPage = () => {
 
         <div className={styles.containerD}>
           <div className={styles.drawingColumn}>
+            <p>Ticket ID</p>
             <SlotCounter
               value={winningTicket}
               dummyCharacters={"Solpix".split("")}
@@ -171,6 +177,7 @@ const DrawingDetail: NextPage = () => {
             />
           </div>
           <div className={styles.drawingColumn2}>
+            <p>Prize</p>
             <SlotCounter
               value={winningAmount}
               ref={slotAmountRef}
@@ -184,7 +191,7 @@ const DrawingDetail: NextPage = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>
-                    WINNERS TABLE <span>PRIZE</span>
+                    TICKET ID <span>PRIZE</span>
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -193,7 +200,10 @@ const DrawingDetail: NextPage = () => {
                   <TableRow key={index}>
                     <TableCell>
                       {owner.ticketID}{" "}
-                      <p>{owner.value} %</p>
+                      <p>        {typeof owner.value === 'number'
+                        ? `${owner.value}%`
+                        : 'NFT'
+                      }{" "}</p>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -208,6 +218,13 @@ const DrawingDetail: NextPage = () => {
             disabled={isDrawing || isDrawingAll || availableWinners?.length == 0}
           >
             Draw one
+          </button>
+          <button
+            className={styles.button}
+            style={{ textTransform: "uppercase" }}
+            onClick={handleViewDetails}
+          >
+            View Details
           </button>
           {/* <button
             className={styles.button}

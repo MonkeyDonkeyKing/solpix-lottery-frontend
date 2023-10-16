@@ -38,9 +38,9 @@ const Banner = ({
           {subHeaderDraw}
         </h2>
         <div className={styles.chipcontainer}>
-        <ChipInput content={ id} />
-        <ChipInput content={prizePool} />
-        <ChipInput maxTickets={maxTickets}  soldTickets={soldTickets} />
+        <ChipInput content={"Lottery ID: " + id} />
+        <ChipInput content={"Prize Pool: " + prizePool} />
+        <ChipInput maxTickets={maxTickets} soldTickets={soldTickets} />
         </div>
         </>
       )}
