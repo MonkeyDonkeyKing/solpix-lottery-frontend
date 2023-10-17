@@ -1,5 +1,4 @@
-// components/NFTCard.tsx
-import { Metadata } from "@metaplex-foundation/js";
+import { type Metadata } from "@metaplex-foundation/js";
 import styles from "./NFTCard.module.css";
 
 type NFTCardProps = {

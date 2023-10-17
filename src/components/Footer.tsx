@@ -5,7 +5,7 @@ const Footer = () => {
     <ul className={styles.footer}>
       <li><a href="https://discord.gg/solpix" target="_blank">Discord</a></li>
       <li><a href="https://twitter.com/solpixdao" target="_blank">Twitter</a></li>
-      <li><a href="" target="_blank">by solpix labs</a></li>
+      <li><a href="https://solpix.io" target="_blank">by Solpix</a></li>
     </ul>
   );
 };

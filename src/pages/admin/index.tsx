@@ -10,7 +10,7 @@ const Admin: NextPage = () => {
     <>
       <Head>
         <title>Admin</title>
-        <meta name="description" content="Solpix Lottery" />
+        <meta name="description" content="Solpix NexDraw" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>

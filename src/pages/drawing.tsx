@@ -53,12 +53,12 @@ const Drawing: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Lottery Drawing</title>
-        <meta name="description" content="Solpix Lottery" />
+        <title>NexDraw Drawing</title>
+        <meta name="description" content="Solpix NexDraw" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <Banner heading="Upcoming Lotteries" paragraph="Unleash Your Inner Crypto Maverick: Dive into the Hottest Upcoming Lotteries!" />
+        <Banner heading="Upcoming NexDraw events" paragraph="Unleash Your Inner Crypto Maverick: Dive into the Hottest Upcoming NexDraw events!" />
         <div className={styles.sortButtons}>
           <button
             onClick={() => setSortingOption("all")}
@@ -85,7 +85,7 @@ const Drawing: NextPage = () => {
           </button>
         </div>
         <div className={styles.cardcontainer}>
-          {filteredLotteries?.filter(item => Object.keys(item.account.lotteryStatus)[0] === 'live').map(({ account, publicKey }, index) => (
+          {filteredLotteries?.filter(item => Object.keys(item.account.lotteryStatus)[0] === 'live' || Object.keys(item.account.lotteryStatus)[0] === 'drawing').map(({ account, publicKey }, index) => (
             <CardDrawing key={index} lotteryData={account} publicKey={publicKey}/>
           ))}
         </div>

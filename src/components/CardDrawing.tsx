@@ -1,6 +1,6 @@
 import { RouterOutputs } from "@/utils/api";
 import styles from "./CardDrawing.module.css";
-import React, { useState } from "react";
+import React from "react";
 import TimeBox from "./TimeBox";
 import { PublicKey } from "@solana/web3.js";
 import Image from "next/image";
@@ -61,7 +61,7 @@ const CardDrawing = ({ lotteryData, publicKey }: {
             >
               {endTime.toLocaleDateString()}
             </span>
-            <Link href={`/lotteries/${publicKey.toBase58()}`}>Lottery ID:  {lotteryData.lotteryId}</Link>
+            <Link href={`/lotteries/${publicKey.toBase58()}`}>NexDraw ID:  {lotteryData.lotteryId}</Link>
           </section>
           <section className={styles.middlesection}>
             <div className={styles.cardcolumn}>
@@ -90,10 +90,10 @@ const CardDrawing = ({ lotteryData, publicKey }: {
           </section>
           <section className={styles.imagesection}>
             <Image
-              src="/solanaIconScaled.png"
-              width={100}
-              height={100}
-              alt="Picture of the author"
+              src="/NexDrawLogoWhite.png"
+              width={150}
+              height={150}
+              alt="nexdrawLogo"
             ></Image>
           </section>
           <section className={styles.lastsection}>
@@ -104,13 +104,14 @@ const CardDrawing = ({ lotteryData, publicKey }: {
               >
                 View Details
               </button>
-              <button
-                style={{ textTransform: "uppercase" }}
-                disabled={!isEndTimePassed}
-                onClick={handleWatchDrawing}
-              >
-                Watch Drawing
-              </button>
+              {lotteryData.lotteryStatus && Object.keys(lotteryData.lotteryStatus)[0] === 'drawing' &&
+                <button
+                  style={{ textTransform: "uppercase" }}
+                  disabled={!isEndTimePassed}
+                  onClick={handleWatchDrawing}
+                >
+                  Watch Drawing
+                </button>}
             </div>
           </section>
         </div>
@@ -120,7 +121,3 @@ const CardDrawing = ({ lotteryData, publicKey }: {
 };
 
 export default CardDrawing;
-{/* <div className={styles.buybutton}>
-<Link href={`/lotteries/${publicKey.toBase58()}`}>View Details</Link>
-<Link href={`/lotteries/${publicKey.toBase58()}`}>View Details</Link>
-</div> */}

@@ -9,12 +9,8 @@ import Head from "next/head";
 import { NextPage } from "next";
 import styles from "../components/AdminCreate.module.css";
 import Banner from "@/components/Banner";
-import { Methods } from "@/lottery-program-build/utilityTypes";
-import { RouterInputs, api } from "@/utils/api";
+import { api } from "@/utils/api";
 import Link from "next/link";
-
-type method = Methods<"initializeLottery">;
-type lotteryInput = RouterInputs["lottery"]["initializeLottery"]["params"];
 
 const AdminCreate: NextPage = () => {
   const initLottery = api.lottery.initializeLottery.useMutation();
@@ -76,7 +72,7 @@ const AdminCreate: NextPage = () => {
       <>
         <Head>
           <title>Admin Create</title>
-          <meta name="description" content="Solpix Lottery" />
+          <meta name="description" content="Solpix NexDraw" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <Layout>
@@ -91,17 +87,17 @@ const AdminCreate: NextPage = () => {
     <>
       <Head>
         <title>Admin Create</title>
-        <meta name="description" content="Solpix Lottery" />
+        <meta name="description" content="Solpix NexDraw" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <Banner heading="Create Lottery Concept" paragraph="Create a new lottery" />
+        <Banner heading="Create NexDraw Concept" paragraph="Create a new NexDraw event" />
         <div className={styles.wrapper}>
           <section className={styles.formContainer}>
             <div className={styles.initialinput}>
               <div className={styles.initialinput}>
 
-                <p>When should the lottery end?</p>
+                <p>When should the NexDraw end?</p>
 
                 <input
                   type="datetime-local"
@@ -150,7 +146,7 @@ const AdminCreate: NextPage = () => {
             {useDate === "time" && (
               <div className={styles.inputSections}>
                 <p>
-                  The lottery pool will be between{" "}
+                  The NexDraw prize pool will be between{" "}
                   <p className={styles.boldText}>
                     {(minTicketAmount * ticketPrice).toFixed(2)} SOL -{" "}
                     {(maxTicketAmount * ticketPrice).toFixed(2)} SOL
@@ -161,7 +157,7 @@ const AdminCreate: NextPage = () => {
           </section>
         </div>
         <section className={styles.actions}>
-          <button onClick={handleSubmit}>Create lottery concept</button>
+          <button onClick={handleSubmit}>Create NexDraw concept</button>
         </section>
         <div className={styles.container}>
           <Link href={"/adminOverview"} className={styles.link}>Back to overview</Link>

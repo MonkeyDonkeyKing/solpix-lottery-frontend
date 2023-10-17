@@ -26,7 +26,6 @@ const DrawingDetail: NextPage = () => {
   const router = useRouter();
   const {
     id: queryId,
-    endTime,
     numberOfTicketsSold,
     numberOfTickets,
     ticketPrice,
@@ -152,13 +151,13 @@ const DrawingDetail: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Lottery Drawing</title>
-        <meta name="description" content="Solpix Lottery" />
+        <title>NexDraw Drawing</title>
+        <meta name="description" content="Solpix NexDraw" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
         <Banner
-          heading={"Lottery ID: " + lotteryId}
+          heading={"NexDraw ID: " + lotteryId}
           subHeaderDraw="Epic Draw Event: Witness the Excitement Unfold!"
           id={lotteryId}
           prizePool={formatPricePool(prizePool)}
@@ -171,7 +170,7 @@ const DrawingDetail: NextPage = () => {
             <p>Ticket ID</p>
             <SlotCounter
               value={winningTicket}
-              dummyCharacters={"Solpix".split("")}
+              dummyCharacters={"NexDraw".split("")}
               ref={slotWalletRef}
               autoAnimationStart={false}
             />

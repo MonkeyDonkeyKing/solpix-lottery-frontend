@@ -39,7 +39,7 @@ const AdminOverview: NextPage = () => {
       <>
         <Head>
           <title>Admin Overview</title>
-          <meta name="description" content="Solpix Lottery" />
+          <meta name="description" content="Solpix NexDraw" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <Layout>
@@ -83,19 +83,19 @@ const AdminOverview: NextPage = () => {
     <>
       <Head>
         <title>Admin Overview</title>
-        <meta name="description" content="Solpix Lottery" />
+        <meta name="description" content="Solpix NexDraw" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
         <Banner
           heading="Admin Overview"
-          paragraph="Create new lotteries and check ongoing ones"
+          paragraph="Create new NexDraw concepts, add prizes and go live- also check ongoing events"
         />
         <section className={styles.table}>
           <table>
             <thead>
               <tr>
-                <th>Lottery ID</th>
+                <th>NexDraw ID</th>
                 <th>Price pool</th>
                 <th>Ticket price</th>
                 <th>Status</th>
@@ -103,9 +103,9 @@ const AdminOverview: NextPage = () => {
               </tr>
             </thead>
             <tbody>
-              {lotteryData.data?.map(({ account, publicKey }, index) => (
+              {lotteryData.data?.sort((a, b) => a.account.lotteryId - b.account.lotteryId).map(({ account, publicKey }, index) => (
                 <tr key={index}>
-                  <td><Link href={`/lotteries/${publicKey}`}>Lottery ID:  {account.lotteryId}</Link></td>
+                  <td><Link href={`/lotteries/${publicKey}`}>NexDraw ID:  {account.lotteryId}</Link></td>
                   <td>
                     {ticketPriceReadable(account.ticketPrice.sol?.value) * account.ticketsSold} <span>SOL</span>
                   </td>
@@ -135,7 +135,7 @@ const AdminOverview: NextPage = () => {
           </table>
         </section>
         <div className={styles.container}>
-          <Link href={"/adminCreate"} className={styles.link}>Create Lottery Concept</Link>
+          <Link href={"/adminCreate"} className={styles.link}>Create NexDraw Concept</Link>
         </div>
       </Layout>
     </>

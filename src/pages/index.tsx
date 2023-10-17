@@ -36,15 +36,15 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Lottery Home</title>
-        <meta name="description" content="Solpix Lottery" />
+        <title>NexDraw</title>
+        <meta name="description" content="Solpix NexDraw" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
         <Banner
           imageUrl="https://res.cloudinary.com/dew0rdkok/image/upload/v1686065840/Home_yrhfqt.jpg"
           imageAlt="Solpix Banner"
-          heading="Solana Lottery"
+          heading="Solpix NexDraw"
           paragraph="built by Solpix, an exclusive DAO dedicated to the empowerment of the Solana community"
         />
         {lotteryData.data?.filter(item => Object.keys(item.account.lotteryStatus)[0] === 'live').map(({ account, publicKey }, index) => (

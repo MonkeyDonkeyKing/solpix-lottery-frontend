@@ -25,7 +25,6 @@ const ModalCard = ({
               </div>
             ))}
           </div>
-
         {prizes[0]?.pool && (
           <div className={styles.container}>
             {prizes.map((prize, index) => (

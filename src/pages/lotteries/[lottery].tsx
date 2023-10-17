@@ -23,7 +23,6 @@ const LotteryDetails: NextPage = () => {
 
   if (PublicKey.isOnCurve(key)) return <p>Not a PDA</p>;
 
-
   const lotteryData = api.lottery.getLotteryData.useQuery({
     lottery: key.toBase58(),
   });
@@ -51,7 +50,7 @@ const LotteryDetails: NextPage = () => {
 
   const isEndTimePassed = Date.now() >= endTime.getTime();
 
-  const bannerHeading = `Lottery ID: ${lotteryData.data?.lotteryId}`;
+  const bannerHeading = `NexDraw ID: ${lotteryData.data?.lotteryId}`;
   const prizes = lotteryData.data?.prizes;
 
   const buyTicket = api.lottery.buyTicket.useMutation();
@@ -109,11 +108,12 @@ const LotteryDetails: NextPage = () => {
     });
   };
 
+
   return (
     <>
       <Head>
-        <title>Lottery Details</title>
-        <meta name="description" content="Solpix Lottery" />
+        <title>NexDraw Event Details</title>
+        <meta name="description" content="Solpix NexDraw" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
@@ -124,8 +124,8 @@ const LotteryDetails: NextPage = () => {
         <div className={styles.gridwrapper}>
           <section className={styles.container}>
             <div>
-              <h3>Lottery ID: {lotteryData.data?.lotteryId}</h3>
-              {/* <p>Lottery Status: {Object.keys(lotteryData.data?.lotteryStatus)[0]}</p> */}
+              <h3>NexDraw ID: {lotteryData.data?.lotteryId}</h3>
+              {lotteryData.data?.lotteryStatus && <p>NexDraw Event Status: {Object.keys(lotteryData.data?.lotteryStatus)}</p>}
               <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
               <p>Tickets sold: {lotteryData.data?.ticketsSold}</p>
               <p>
@@ -170,13 +170,14 @@ const LotteryDetails: NextPage = () => {
                 SOL
               </button>
               <h3>Want to watch the drawing?</h3>
-              <button
-                style={{ textTransform: "uppercase" }}
-                disabled={!isEndTimePassed}
-                onClick={handleWatchDrawing}
-              >
-                Watch Drawing
-              </button>
+              {lotteryData.data?.lotteryStatus && Object.keys(lotteryData.data?.lotteryStatus)[0] === 'drawing' &&
+                <button
+                  style={{ textTransform: "uppercase" }}
+                  disabled={!isEndTimePassed}
+                  onClick={handleWatchDrawing}
+                >
+                  Watch Drawing
+                </button>}
               <PrizeIcon prizes={prizes} publicKey={key} />
             </div>
           </section>

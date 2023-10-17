@@ -7,7 +7,6 @@ import TimeBox from "./TimeBox";
 import {
   MessageV0,
   PublicKey,
-  TransactionMessage,
   VersionedTransaction,
 } from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -78,7 +77,7 @@ const CardMain = ({
             >
               {endTime}
             </span>
-            <Link href={`/lotteries/${address.toBase58()}`}>Lottery ID:  {lotteryData.lotteryId}</Link>
+            <Link href={`/lotteries/${address.toBase58()}`}>NexDraw ID:  {lotteryData.lotteryId}</Link>
           </section>
           <Divider orientation="vertical" flexItem />
           <section>

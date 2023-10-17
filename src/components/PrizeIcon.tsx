@@ -3,8 +3,8 @@ import { Portal } from "./Portal";
 import styles from "./PrizeIcon.module.css";
 import Image from "next/image";
 import ModalCard from "./ModalCard";
-import { RouterOutputs } from "@/utils/api";
-import { PublicKey } from "@solana/web3.js";
+import { type RouterOutputs } from "@/utils/api";
+import { type PublicKey } from "@solana/web3.js";
 
 
 const PrizeIcon = ({prizes, publicKey}:{prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"],publicKey: PublicKey}) => {
@@ -18,12 +18,13 @@ const PrizeIcon = ({prizes, publicKey}:{prizes: RouterOutputs["lottery"]["getAll
         height={40}
         alt="Picture of the author"
       ></Image>
-      <p>Whats the price ?!</p>
+      <p>Whats the prize ?!</p>
       {isOpen && <Portal>
         <div className={styles.modal}>
           <div className={styles.card}>
-              <h1>Solana Prices & NFT(s)</h1>
+              <h1>NexDraw event prizes</h1>
             <section>
+              <h3>Prizes are NFT(s) and %-Prize based on the pricepool in solana</h3>
               <div className={styles.imagecontainer}>
                 <ModalCard prizes={prizes} publicKey={publicKey}></ModalCard>
               </div>

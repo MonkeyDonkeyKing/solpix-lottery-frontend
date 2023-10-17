@@ -9,8 +9,8 @@ const Collaborate: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Collaborate</title>
-        <meta name="description" content="Solpix Lottery" />
+        <title>NexDraw Collaborate</title>
+        <meta name="description" content="Solpix NexDraw" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>

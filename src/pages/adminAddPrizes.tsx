@@ -114,8 +114,8 @@ const AdminAddPrizes: NextPage = () => {
       const instruction = await startLottery.mutateAsync({
         authority: publicKey?.toBase58() ?? "",
         lottery: lotteryPublicKey,
-        symbol: 'LTRY',
-        name: `Lottery ID: ${lotteryData.data?.lotteryId}`,
+        symbol: 'NXDRW',
+        name: `NexDraw ID: ${lotteryData.data?.lotteryId}`,
         uri: 'https://ipfs.io/ipfs/bafkreibavp3ud47wyte5c73mb7fynieczuyjp43uy4kclwwblu4lpiq3lq/'
       });
       const messagev0 = MessageV0.deserialize(instruction);
@@ -155,7 +155,7 @@ const AdminAddPrizes: NextPage = () => {
       <>
         <Head>
           <title>Admin add prizes</title>
-          <meta name="description" content="Solpix Lottery" />
+          <meta name="description" content="Solpix NexDraw" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <Layout>
@@ -170,7 +170,7 @@ const AdminAddPrizes: NextPage = () => {
     <>
       <Head>
         <title>Admin add prizes</title>
-        <meta name="description" content="Solpix Lottery" />
+        <meta name="description" content="Solpix NexDraw" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
@@ -178,7 +178,7 @@ const AdminAddPrizes: NextPage = () => {
         <div className={styles.toprow}>
         <section className={styles.formContainer3}>
           <div >
-            <p>Lottery ID: {lotteryData.data?.lotteryId}</p>
+            <p>NexDraw ID: {lotteryData.data?.lotteryId}</p>
             <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
             <p>
               Ticket Price:{" "}
@@ -222,7 +222,7 @@ const AdminAddPrizes: NextPage = () => {
             </div>
           </section>
           <section className={styles.nftcontainer}>
-            <h3>Lottery Wallet</h3>
+            <h3>NexDraw Wallet</h3>
             <div className={styles.nftcontainerNoBorder}>
             {lotteryNfts.data?.map((nft, index) => (
               <NFTCard key={index} nft={nft} />
@@ -243,7 +243,7 @@ const AdminAddPrizes: NextPage = () => {
         {error && <div className={styles.error}>{error}</div>}
         <section className={styles.actions}>
           <button disabled={!selectedNFT} onClick={addNFTPrizeToLottery}>
-            Add NFT to lottery
+            Add NFT to NexDraw
           </button>
           {/* <button onClick={() => addSOLPrizesToLottery(solanaPrizesTable)}>
             Add SOL prizes to lottery

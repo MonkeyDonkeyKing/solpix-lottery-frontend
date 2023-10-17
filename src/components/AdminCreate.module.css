@@ -4,17 +4,6 @@
   gap: 5rem;
 }
 
-.nftcontainer {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  border: 1px solid var(--color-text-grey);
-  border-radius: 20px;
-  padding: 1rem;
-  flex-basis: 202%;
-  flex-wrap: wrap;
-  align-content: flex-start;
-}
 .link {
   border: 1px solid gray;
   padding: 1rem;
@@ -29,76 +18,6 @@
   min-width: 29rem;
 }
 
-.formContainer2 {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--color-text-grey);
-  border-radius: var(--border-radius);
-  padding: 2rem;
-}
-
-.formContainer3 {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--color-text-grey);
-  border-radius: var(--border-radius);
-  padding: 2rem;
-  width: 100%;
-  margin-bottom: 2rem;
-}
-
-.switchwrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  flex-direction: column;
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 88px;
-  height: 34px;
-  margin: 0px 10px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-.switchDesc {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-  border-radius: 50%;
-}
 
 .boldText {
   margin-bottom: 0;
@@ -143,28 +62,7 @@ input:checked + .slider:before {
   margin-top: 1rem;
 }
 
-.error {
-  color: red;
-  padding: 1rem 0rem;
-}
 
-.addsolprice {
-  display: flex;
-  flex-direction: column;
-}
-
-.table {
-  border: 1px solid var(--color-text-grey);
-  border-radius: 20px;
-  padding: 1rem;
-  margin-top: 2rem;
-  align-self: flex-start;
-}
-
-.table table {
-  width: 100%;
-  text-align: match-parent;
-}
 .actions {
   display: flex;
   flex-direction: row;
@@ -180,10 +78,10 @@ input:checked + .slider:before {
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
-    width: 100%;
+    min-width: 29rem;
     height: 40px;
     font-weight: bold;
-    margin-top: 1rem;
+    text-transform: uppercase;
 }
 
 .actions button:disabled {
