@@ -174,7 +174,7 @@ const AdminAddPrizes: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <Banner heading="Create Lottery" paragraph="Create a new lottery" />
+        <Banner heading="Add prizes to the concept" paragraph="Add prizes and go live with the event" />
         <div className={styles.toprow}>
         <section className={styles.formContainer3}>
           <div >
