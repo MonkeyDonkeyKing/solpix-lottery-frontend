@@ -1,7 +1,7 @@
-import { PublicKey } from "@solana/web3.js";
-import { AccountParams, Methods } from "../utilityTypes";
-import { SolpixLottery } from "@/lottery-program-build/types/0.1.0/solpix_lottery";
-import * as anchor from "@coral-xyz/anchor";
+import { type PublicKey } from "@solana/web3.js";
+import { type AccountParams, type Methods } from "../utilityTypes";
+import { type SolpixLottery } from "@/lottery-program-build/types/0.1.0/solpix_lottery";
+import type * as anchor from "@coral-xyz/anchor";
 import { lotteryPdas } from "../pdas";
 import { Metaplex } from "@metaplex-foundation/js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
@@ -43,6 +43,7 @@ export default async function claimPrize({
         nft.collection.address.equals(collectionMint)
     )
     // grab the public keys of the mint addresses
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     .map((nft) => nft.mintAddress as PublicKey)
     // filter the mint addresses that are in the winning tickets
@@ -66,7 +67,7 @@ export default async function claimPrize({
       };
     });
 
-  let instructions: anchor.web3.TransactionInstruction[] = [];
+  const instructions: anchor.web3.TransactionInstruction[] = [];
 
   for await (const ticket of winningTicketsByOwner) {
     if (!ticket) return;
@@ -74,14 +75,14 @@ export default async function claimPrize({
       lottery: lotteryAddress,
       lotteryPdaAuthority,
       lotteryTicketMint: ticket.address,
-      prizeMint: ticket.prize["nft"] ? ticket.prize["nft"].mint : null,
+      prizeMint: ticket.prize?.nft ? ticket.prize.nft.mint : null,
       prizeVault: lotteryPrizeVault,
-      receiverAta: ticket.prize["nft"]
-        ? getAssociatedTokenAddressSync(ticket.prize["nft"].mint, address)
+      receiverAta: ticket.prize?.nft
+        ? getAssociatedTokenAddressSync(ticket.prize.nft.mint, address)
         : null,
-      senderAta: ticket.prize["nft"]
+      senderAta: ticket.prize?.nft
         ? getAssociatedTokenAddressSync(
-            ticket.prize["nft"].mint,
+            ticket.prize.nft.mint,
             lotteryPrizeVault
           )
         : null,

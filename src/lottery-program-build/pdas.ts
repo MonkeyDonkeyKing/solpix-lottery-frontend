@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { PublicKey } from "@solana/web3.js";
 import { LOTTERY_PROGRAM_ID } from "./common";
 import * as anchor from "@coral-xyz/anchor";

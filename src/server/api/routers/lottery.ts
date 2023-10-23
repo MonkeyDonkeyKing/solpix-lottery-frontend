@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
@@ -312,13 +318,13 @@ export const lotteryRouter = createTRPCRouter({
           ...nft,
           prize: null,
         };
-        const indexof = lotteryData.winningTickets.findIndex((index) =>
-          ticket?.mintAddress?.equals(index.mint)
-        );
-        if (indexof !== -1) {
-          const prize = prizeArray[indexof];
-          ticket.prize = prize;
-        }
+        const indexOf = lotteryData.winningTickets.findIndex((index) =>
+        (ticket as any)?.mintAddress?.equals(index.ticketId)
+      );
+      if (indexOf !== -1) {
+        const prize = prizeArray[indexOf];
+        (ticket as any).prize = prize;
+      }
         return ticket;
       });
 

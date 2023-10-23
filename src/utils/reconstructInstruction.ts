@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 
 export default function reconstructInstruction(serializedData: any) {

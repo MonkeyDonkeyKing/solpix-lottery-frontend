@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import Banner from "@/components/Banner";
 import Layout from "@/components/Layout";
 import { api } from "@/utils/api";
@@ -18,8 +21,6 @@ const LotteryDetails: NextPage = () => {
   const [value, setValue] = useState(0);
   const buyTicket = api.lottery.buyTicket.useMutation();
 
-  console.log(lotteryAdress);
-  console.log(userkey);
   const key = new PublicKey(lotteryAdress as string);
 
   const keyOnCurve = PublicKey.isOnCurve(lotteryAdress as string);
@@ -30,14 +31,13 @@ const LotteryDetails: NextPage = () => {
   const tickets = api.lottery.getLotteryTicketsByUser.useQuery(
     {
       lotteryAddress: key.toBase58(),
-      userAddress: userkey?.toBase58() || "",
+      userAddress: userkey?.toBase58() ?? "",
     },
     {
       enabled: !!userkey,
     }
   );
 
-  console.log(lotteryAdress);
 
   if (!userkey) return <h2>Please connect your wallet first</h2>;
 
@@ -103,9 +103,9 @@ const LotteryDetails: NextPage = () => {
       pathname: "/drawingDetail",
       query: {
         id: lotteryData.data?.lotteryId,
-        endTime: lotteryData.data?.lotteryType.time?.endTime,
-        numberOfTicketsSold: lotteryData.data.ticketsSold,
-        numberOfTickets: lotteryData.data.maxTicketsForSale,
+        endTime: lotteryData.data?.lotteryType.time?.endTime as string,
+        numberOfTicketsSold: lotteryData.data?.ticketsSold,
+        numberOfTickets: lotteryData.data?.maxTicketsForSale,
         ticketPrice: ticketPrice,
         lotteryPublicKey: key.toBase58(),
       },
@@ -173,7 +173,7 @@ const LotteryDetails: NextPage = () => {
               <h3>Want to watch the drawing?</h3>
               {lotteryData.data?.lotteryStatus &&
                 Object.keys(lotteryData.data?.lotteryStatus)[0] ===
-                  "drawing" && (
+                "drawing" && (
                   <button
                     style={{ textTransform: "uppercase" }}
                     disabled={!isEndTimePassed}
@@ -190,7 +190,8 @@ const LotteryDetails: NextPage = () => {
             <section>
               {tickets.data?.map((ticket, index) => (
                 <div key={index}>
-                  <p>{ticket.mintAddress.toString()}</p>
+                  {/*eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <p>{(ticket as any).mintAddress?.toString()}</p>
                   <button disabled={!isEndTimePassed}>Redeem ticket</button>
                 </div>
               ))}

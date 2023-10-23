@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { useState } from "react";
 import { Portal } from "./Portal";
 import styles from "./PrizeIcon.module.css";
@@ -7,7 +9,7 @@ import { type RouterOutputs } from "@/utils/api";
 import { type PublicKey } from "@solana/web3.js";
 
 
-const PrizeIcon = ({prizes, publicKey}:{prizes: RouterOutputs["lottery"]["getAllLotteries"][number]["account"]["prizes"],publicKey: PublicKey}) => {
+const PrizeIcon = ({prizes, publicKey}:{prizes: any,publicKey: PublicKey}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

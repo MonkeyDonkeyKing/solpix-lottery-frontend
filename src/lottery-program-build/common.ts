@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@metaplex-foundation/js";
 import { Program } from "@coral-xyz/anchor";

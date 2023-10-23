@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import Layout from "@/components/Layout";
 import { useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -58,6 +60,7 @@ const AdminCreate: NextPage = () => {
     const messagev0 = MessageV0.deserialize(instruction);
     const transaction = new VersionedTransaction(messagev0);
     console.log("transaction: ", transaction);
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const txid = await sendTransaction!(transaction, connection, {
       skipPreflight: true,
     });

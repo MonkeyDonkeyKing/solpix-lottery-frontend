@@ -5,7 +5,7 @@ import "@/styles/globals.css";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { ContextProvider } from "@/contexts/walletProvider/ContextProvider";
 
-const MyApp: AppType<{}> = ({ Component, pageProps: { ...pageProps } }) => {
+const MyApp: AppType<object> = ({ Component, pageProps: { ...pageProps } }) => {
   return (
     <ContextProvider>
       <Component {...pageProps} />

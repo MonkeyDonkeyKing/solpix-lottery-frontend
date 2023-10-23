@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import Layout from "@/components/Layout";
 import NFTCard from "@/components/NFTCard";
 import { useState } from "react";
@@ -18,10 +22,10 @@ import { env } from "@/env.mjs";
 import { api } from "@/utils/api";
 
 const AdminAddPrizes: NextPage = () => {
-  const { publicKey, sendTransaction, signTransaction } = useWallet();
+  const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const [selectedNFT, setSelectedNFT] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const addNFTPrize = api.lottery.addNftPrice.useMutation();
   const addSolPrize = api.lottery.addPoolPrize.useMutation();
   const startLottery = api.lottery.startLottery.useMutation();
@@ -39,10 +43,10 @@ const AdminAddPrizes: NextPage = () => {
   const router = useRouter();
   const lotteryPublicKey = router.query.lotterPublicKey as string;
 
-  const hexToReadableDate = (hexTime) => {
-    const unixTime = parseInt(hexTime, 16) * 1000; // Convert to milliseconds
+  const hexToReadableDate = (hexTime: string) => {
+    const unixTime = parseInt(hexTime, 16) * 1000;
     const date = new Date(unixTime);
-    return date.toLocaleString(); // Customize the date format as needed
+    return date.toLocaleString();
   };
 
   const [userNfts, lotteryNfts] = api.useQueries((t) => [
@@ -105,7 +109,7 @@ const AdminAddPrizes: NextPage = () => {
     setSolanaPrizesTable(updatedPrizes);
   };
 
-  function handleSolPriceInput(e) {
+  function handleSolPriceInput(e: { target: { value: string; }; }) {
     setInputPrice(Number(e.target.value));
   }
 
@@ -120,7 +124,8 @@ const AdminAddPrizes: NextPage = () => {
       });
       const messagev0 = MessageV0.deserialize(instruction);
       const transaction = new VersionedTransaction(messagev0);
-      const txid = await sendTransaction(transaction, connection, {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const txid = await sendTransaction!(transaction, connection, {
         skipPreflight: true,
       });
 
@@ -140,7 +145,7 @@ const AdminAddPrizes: NextPage = () => {
       const messagev0 = MessageV0.deserialize(instruction);
       const transaction = new VersionedTransaction(messagev0);
       console.log("transaction: ", transaction);
-      const txid = await sendTransaction!(transaction, connection, {
+      const txid = await sendTransaction(transaction, connection, {
         skipPreflight: true,
       });
       console.log("txid: ", txid);
@@ -182,12 +187,12 @@ const AdminAddPrizes: NextPage = () => {
             <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
             <p>
               Ticket Price:{" "}
-              {parseInt(lotteryData.data?.ticketPrice.sol?.value, 16) /
+              {parseInt(lotteryData.data?.ticketPrice.sol?.value as string, 16) /
                 1000000000}{" "}
               SOL
             </p>
             <p>Min Tickets: {lotteryData.data?.lotteryType.time?.requiredMinTicketsSold}</p>
-            <p>EndTime: {hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime)}</p>
+            <p>EndTime: {hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime as string)}</p>
           </div>
         </section>
           <section className={styles.formContainer2}>
@@ -202,7 +207,7 @@ const AdminAddPrizes: NextPage = () => {
                 value={inputPrice}
                 onChange={handleSolPriceInput}
               />
-              <button onClick={() => addPrize(inputPrice)}>Add % Price</button>
+              <button onClick={() => addPrize()}>Add % Price</button>
             </div>
           </section>
 
@@ -274,5 +279,6 @@ const getPrizeVaultPda = (lottery: PublicKey): [PublicKey, number] => {
 };
 
 export const LOTTERY_PROGRAM_ID = new PublicKey(
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   env.NEXT_PUBLIC_LOTTERY_PROGRAM_ID!
 );

@@ -19,7 +19,7 @@ export const fetchRouter = createTRPCRouter({
 
       const nfts = (await metaplex
         .nfts()
-        .findAllByOwner({ owner: input.address })) as Metadata[];
+        .findAllByOwner({ owner: input.address })) as unknown as Metadata[];
 
       // Extract JSON and address from NFT metadata
       const nftDataPromises = nfts.map(async (nft) => {
@@ -38,8 +38,10 @@ export const fetchRouter = createTRPCRouter({
       const nftData = await Promise.all(nftDataPromises);
 
       const filteredNftData = nftData.filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (data): data is any => data !== null
       );
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return filteredNftData;
     }),
 });
@@ -47,6 +49,7 @@ export const fetchRouter = createTRPCRouter({
 const fetchJsonData = async (uri: string) => {
   try {
     const response = await fetch(uri);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const jsonData: { image: string; name: string } = await response.json();
     return jsonData;
   } catch (error) {

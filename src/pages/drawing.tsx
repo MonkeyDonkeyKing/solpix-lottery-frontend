@@ -30,7 +30,7 @@ const Drawing: NextPage = () => {
       },
     }
   );
-  const hexToReadableDate = (hexTime) => {
+  const hexToReadableDate = (hexTime: string) => {
     const unixTime = parseInt(hexTime, 16) * 1000; 
     const date = new Date(unixTime);
     return date; 
@@ -43,11 +43,11 @@ const Drawing: NextPage = () => {
       : sortingOption === "current"
         ? lotteryData.data?.filter(
           (lottery) =>
-            hexToReadableDate(lottery.account.lotteryType.time?.endTime) > new Date()
+            hexToReadableDate(lottery.account.lotteryType.time?.endTime as string) > new Date()
         )
         : lotteryData.data?.filter(
           (lottery) =>
-            hexToReadableDate(lottery.account.lotteryType.time?.endTime) <= new Date()
+            hexToReadableDate(lottery.account.lotteryType.time?.endTime as string) <= new Date()
         );
 
   return (

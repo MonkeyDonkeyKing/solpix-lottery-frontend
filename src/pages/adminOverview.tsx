@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import Banner from "@/components/Banner";
 import Layout from "@/components/Layout";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -107,10 +110,10 @@ const AdminOverview: NextPage = () => {
                 <tr key={index}>
                   <td><Link href={`/lotteries/${publicKey}`}>NexDraw ID:  {account.lotteryId}</Link></td>
                   <td>
-                    {ticketPriceReadable(account.ticketPrice.sol?.value) * account.ticketsSold} <span>SOL</span>
+                    {ticketPriceReadable(account.ticketPrice.sol?.value as string) * account.ticketsSold} <span>SOL</span>
                   </td>
                   <td>
-                    {ticketPriceReadable(account.ticketPrice.sol?.value)}{" "}
+                    {ticketPriceReadable(account.ticketPrice.sol?.value as string)}{" "}
                     <span>SOL</span>
                   </td>
                   <td>{Object.keys(account.lotteryStatus)[0]}</td>

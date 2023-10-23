@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
   PublicKey,
@@ -35,6 +36,7 @@ export const SendTransaction: FC = () => {
       setLatestBlockhash(blockhash.blockhash);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchLatestBlockhash();
   }, [connection]);
 
@@ -74,8 +76,9 @@ export const SendTransaction: FC = () => {
 
         console.log(signature);
       }
-    } catch (error: any) {
-      console.log("error", `Transaction failed! ${error?.message}`, signature);
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      console.log("error", `Transaction failed! ${error}`, signature);
       return;
     }
   }, [

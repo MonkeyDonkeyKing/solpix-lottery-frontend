@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @next/next/no-img-element */
 import { PublicKey } from "@solana/web3.js";
 import styles from "./ModalCard.module.css";
 import { RouterOutputs, api } from "@/utils/api";

@@ -1,8 +1,8 @@
-import { RouterOutputs } from "@/utils/api";
+import { type RouterOutputs } from "@/utils/api";
 import styles from "./CardDrawing.module.css";
 import React from "react";
 import TimeBox from "./TimeBox";
-import { PublicKey } from "@solana/web3.js";
+import { type PublicKey } from "@solana/web3.js";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -15,17 +15,17 @@ const CardDrawing = ({ lotteryData, publicKey }: {
 }) => {
   const router = useRouter();
 
-  const hexToReadableDate = (hexTime) => {
+  const hexToReadableDate = (hexTime: string) => {
     const unixTime = parseInt(hexTime, 16) * 1000; 
     const date = new Date(unixTime);
     return date; 
   };
 
-  const endTime = hexToReadableDate(lotteryData.lotteryType.time?.endTime);
+  const endTime = hexToReadableDate(lotteryData.lotteryType.time?.endTime as string);
   const isEndTimePassed = Date.now() >= endTime.getTime();
 
   const ticketPrice = (
-    parseInt(lotteryData.ticketPrice.sol?.value, 16) / 1000000000);
+    parseInt(lotteryData.ticketPrice.sol?.value as string, 16) / 1000000000);
 
   const handleViewDetails = () => {
     const publicKeyBase58 = publicKey.toBase58();
@@ -37,7 +37,7 @@ const CardDrawing = ({ lotteryData, publicKey }: {
       pathname: "/drawingDetail",
       query: {
         id: lotteryData.lotteryId,
-        endTime: lotteryData.lotteryType.time?.endTime,
+        endTime: lotteryData.lotteryType.time?.endTime as string,
         numberOfTicketsSold: lotteryData.ticketsSold,
         numberOfTickets: lotteryData.maxTicketsForSale,
         ticketPrice: ticketPrice,
@@ -51,7 +51,7 @@ const CardDrawing = ({ lotteryData, publicKey }: {
     <>
       <div className={styles.card}>
         <div className={styles.iconwrapper}>
-          <TimeBox isoProp={lotteryData.lotteryType.time?.endTime} />
+          <TimeBox isoProp={lotteryData.lotteryType.time?.endTime as string} />
         </div>
         <div id={styles["card-layout"]}>
           <section className={styles.cardcolumn}>
@@ -72,7 +72,7 @@ const CardDrawing = ({ lotteryData, publicKey }: {
                 Ticket price:{" "}
               </span>
               <span>
-                {parseInt(lotteryData.ticketPrice.sol?.value, 16) / 1000000000}{" "}
+                {parseInt(lotteryData.ticketPrice.sol?.value as string, 16) / 1000000000}{" "}
                 SOL
               </span>
             </div>

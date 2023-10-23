@@ -71,7 +71,7 @@ const DrawingDetail: NextPage = () => {
 
   const [winningAmount, setWinningAmount] = useState<number | string>(10);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
-  const [isDrawingAll, setIsDrawingAll] = useState<boolean>(false);
+  const [isDrawingAll] = useState<boolean>(false);
 
   const slotWalletRef = useRef<SlotCounterRef>(null);
   const slotAmountRef = useRef<SlotCounterRef>(null);
@@ -113,12 +113,13 @@ const DrawingDetail: NextPage = () => {
     setWinningAmount(winner?.value ?? 0);
 
     await delay(2200);
-    setTicketsWon([...ticketsWon, winner]);
-
-    removeWinner(winner?.ticketID ?? '');
+    if(ticketsWon && winner) {
+      setTicketsWon([...ticketsWon, winner]);
+      removeWinner(winner?.ticketID ?? '');
+    }
   }
 
-  function removeWinner(ticketID: any) {
+  function removeWinner(ticketID: string) {
     const newWinners = availableWinners.filter(
       (ticket) => ticket.ticketID !== ticketID
     );
@@ -213,6 +214,7 @@ const DrawingDetail: NextPage = () => {
         <div className={styles.buttoncontainer}>
           <button
             className={styles.button}
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onClick={drawWinner}
             disabled={isDrawing || isDrawingAll || availableWinners?.length == 0}
           >

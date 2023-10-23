@@ -6,11 +6,11 @@ import TimeBox from "./TimeBox";
 
 import {
   MessageV0,
-  PublicKey,
+  type PublicKey,
   VersionedTransaction,
 } from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { RouterOutputs, api } from "@/utils/api";
+import { type RouterOutputs, api } from "@/utils/api";
 import Link from "next/link";
 
 const CardMain = ({
@@ -30,12 +30,12 @@ const CardMain = ({
     setValue(Number(e.target.value));
   };
 
-  const hexToReadableDate = (hexTime) => {
+  const hexToReadableDate = (hexTime: string) => {
     const unixTime = parseInt(hexTime, 16) * 1000; 
     const date = new Date(unixTime);
     return date.toLocaleDateString(); 
   };
-  const endTime = hexToReadableDate(lotteryData.lotteryType.time?.endTime);
+  const endTime = hexToReadableDate(lotteryData.lotteryType.time?.endTime as string);
 
   const buyTickets = async () => {
     try {
@@ -53,7 +53,7 @@ const CardMain = ({
       console.log(
         `Transaction for lottery address: ${address.toBase58()}% completed. TXID: ${txid}
         Bought ${value} tickets for ${(
-          (value * parseInt(lotteryData.ticketPrice.sol?.value, 16)) /
+          (value * parseInt(lotteryData.ticketPrice.sol?.value as string, 16)) /
           1000000000
         ).toFixed(2)} SOL`
       );
@@ -67,7 +67,7 @@ const CardMain = ({
       <section className={styles.card}>
         <div className={styles.iconwrapper}>
           <PrizeIcon prizes={lotteryData.prizes} publicKey={address} />
-          <TimeBox isoProp={lotteryData.lotteryType.time?.endTime} />
+          <TimeBox isoProp={lotteryData.lotteryType.time?.endTime as string} />
         </div>
         <div id={styles["card-layout"]}>
           <section className={styles.cardcolumn}>
@@ -89,7 +89,7 @@ const CardMain = ({
                 Ticket price:
               </span>
               <span>
-                {parseInt(lotteryData.ticketPrice.sol?.value, 16) / 1000000000}{" "}
+                {parseInt(lotteryData.ticketPrice.sol?.value as string, 16) / 1000000000}{" "}
                 SOL
               </span>
             </div>
@@ -122,11 +122,12 @@ const CardMain = ({
             <div className={styles.buybutton}>
               <button
                 style={{ textTransform: "uppercase" }}
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 onClick={buyTickets}
               >
                 Buy for{" "}
                 {(
-                  (value * parseInt(lotteryData.ticketPrice.sol?.value, 16)) /
+                  (value * parseInt(lotteryData.ticketPrice.sol?.value as string, 16)) /
                   1000000000
                 ).toFixed(2)}{" "}
                 SOL

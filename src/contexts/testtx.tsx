@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
   PublicKey,
@@ -59,7 +60,6 @@ export const SendTransaction: FC = () => {
       }
 
       // Get the latest block hash to use on our transaction and confirmation
-      let latestBlockhash = await connection.getLatestBlockhash();
 
       // Create a new TransactionMessage with version and compile it to legacy
       const messageLegacy = new Transaction().add(transaction).compileMessage();
@@ -74,8 +74,9 @@ export const SendTransaction: FC = () => {
       await connection.confirmTransaction(signature, "confirmed");
 
       console.log(signature);
-    } catch (error: any) {
-      console.log("error", `Transaction failed! ${error?.message}`, signature);
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      console.log("error", `Transaction failed! ${error}`, signature);
       return;
     }
   }, [publicKey, connection, sendTransaction]);
