@@ -33,6 +33,12 @@ const Home: NextPage = () => {
     }
   );
 
+  const hexToReadableDate = (hexTime: string) => {
+    const unixTime = parseInt(hexTime, 16) * 1000; 
+    const date = new Date(unixTime);
+    return date; 
+  };
+
   return (
     <>
       <Head>
@@ -47,7 +53,10 @@ const Home: NextPage = () => {
           heading="NexDraw"
           paragraph="built by Solpix, an exclusive DAO dedicated to the empowerment of the Solana community"
         />
-        {lotteryData.data?.filter(item => Object.keys(item.account.lotteryStatus)[0] === 'live').map(({ account, publicKey }, index) => (
+        {lotteryData.data?.filter(item => Object.keys(item.account.lotteryStatus)[0] === 'live').filter(
+          (lottery) =>
+            hexToReadableDate(lottery.account.lotteryType.time?.endTime as string) > new Date()
+        ).map(({ account, publicKey }, index) => (
           <CardMain key={index} address={publicKey} lotteryData={account} />
         ))}
         <InfoSection></InfoSection>

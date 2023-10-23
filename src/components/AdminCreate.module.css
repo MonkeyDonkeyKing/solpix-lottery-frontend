@@ -99,3 +99,10 @@ input:checked + .slider:before {
   margin: 10px 0;
 }
 
+.success {
+  border: 1px solid green;
+}
+
+.error {
+  border: 1px solid red;
+}

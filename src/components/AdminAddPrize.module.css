@@ -125,3 +125,19 @@
   color: var(--color-text-grey);
   cursor: not-allowed;
 }
+
+.success {
+  border: 1px solid green;
+}
+
+.error {
+  border: 1px solid red;
+}
+
+.messageSuccess {
+  color: green;
+}
+
+.messageError {
+  color: red;
+}

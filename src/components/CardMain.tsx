@@ -25,19 +25,29 @@ const CardMain = ({
 
   const { connection } = useConnection();
   const [value, setValue] = useState(0);
+  const [transactionStatus, setTransactionStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle');
+
+  const resetTransactionStatus = () => {
+    setTimeout(() => {
+      setTransactionStatus('idle');
+    }, 5000);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(Number(e.target.value));
   };
 
   const hexToReadableDate = (hexTime: string) => {
-    const unixTime = parseInt(hexTime, 16) * 1000; 
+    const unixTime = parseInt(hexTime, 16) * 1000;
     const date = new Date(unixTime);
-    return date.toLocaleDateString(); 
+    return date.toLocaleDateString();
   };
   const endTime = hexToReadableDate(lotteryData.lotteryType.time?.endTime as string);
 
   const buyTickets = async () => {
+    setTransactionStatus('idle');
     try {
       const instruction = await buyTicket.mutateAsync({
         buyer: user?.publicKey?.toBase58() ?? "",
@@ -57,8 +67,12 @@ const CardMain = ({
           1000000000
         ).toFixed(2)} SOL`
       );
+      setTransactionStatus('success');
+      resetTransactionStatus()
     } catch (error) {
       console.log(error);
+      setTransactionStatus('error');
+      resetTransactionStatus()
     }
   };
 
@@ -67,10 +81,17 @@ const CardMain = ({
       <section className={styles.card}>
         <div className={styles.iconwrapper}>
           <PrizeIcon prizes={lotteryData.prizes} publicKey={address} />
+          {transactionStatus === 'success' && (
+              <div className={styles.messageSuccess}>Transaction Successful</div>
+            )}
+            {transactionStatus === 'error' && (
+              <div className={styles.messageError}>Transaction Failed</div>
+            )}
           <TimeBox isoProp={lotteryData.lotteryType.time?.endTime as string} />
         </div>
-        <div id={styles["card-layout"]}>
+        <div id={styles["card-layout"]} className={`${transactionStatus === 'success' ? styles.success : transactionStatus === 'error' ? styles.error : ''}`}>
           <section className={styles.cardcolumn}>
+           
             <span
               className={styles.ticketlabel}
               style={{ textTransform: "uppercase" }}

@@ -25,7 +25,6 @@ const AdminAddPrizes: NextPage = () => {
   const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const [selectedNFT, setSelectedNFT] = useState<string | null>(null);
-  const [error] = useState<string | null>(null);
   const addNFTPrize = api.lottery.addNftPrice.useMutation();
   const addSolPrize = api.lottery.addPoolPrize.useMutation();
   const startLottery = api.lottery.startLottery.useMutation();
@@ -39,9 +38,18 @@ const AdminAddPrizes: NextPage = () => {
   );
   const [solanaPrizesTable, setSolanaPrizesTable] = useState<number[]>([]);
   const [inputPrice, setInputPrice] = useState<number>(0);
+  const [transactionStatus, setTransactionStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle');
 
   const router = useRouter();
   const lotteryPublicKey = router.query.lotterPublicKey as string;
+
+  const resetTransactionStatus = () => {
+    setTimeout(() => {
+      setTransactionStatus('idle');
+    }, 5000);
+  };
 
   const hexToReadableDate = (hexTime: string) => {
     const unixTime = parseInt(hexTime, 16) * 1000;
@@ -84,6 +92,7 @@ const AdminAddPrizes: NextPage = () => {
 
   const addPrize = async () => {
     if (inputPrice > 100 || inputPrice <= 0) return;
+    setTransactionStatus('idle');
     try {
       const instruction = await addSolPrize.mutateAsync({
         authority: publicKey?.toBase58() ?? "",
@@ -98,8 +107,12 @@ const AdminAddPrizes: NextPage = () => {
 
       console.log(`Transaction for ${inputPrice}% completed. TXID: ${txid}`);
       setSolanaPrizesTable([...solanaPrizesTable, inputPrice]);
+      setTransactionStatus('success');
+      resetTransactionStatus();
     } catch (error) {
       console.log(error);
+      setTransactionStatus('error');
+      resetTransactionStatus();
     }
   };
 
@@ -114,6 +127,7 @@ const AdminAddPrizes: NextPage = () => {
   }
 
   async function onGoLive() {
+    setTransactionStatus('idle');
     try {
       const instruction = await startLottery.mutateAsync({
         authority: publicKey?.toBase58() ?? "",
@@ -130,12 +144,17 @@ const AdminAddPrizes: NextPage = () => {
       });
 
       console.log(`Transaction for Go LIVE completed. TXID: ${txid}`);
+      setTransactionStatus('success');
+      resetTransactionStatus();
     } catch (error) {
       console.log(error);
+      setTransactionStatus('error');
+      resetTransactionStatus();
     }
   }
 
   async function addNFTPrizeToLottery() {
+    setTransactionStatus('idle');
     try {
       const instruction = await addNFTPrize.mutateAsync({
         authority: publicKey?.toBase58() ?? "",
@@ -149,8 +168,12 @@ const AdminAddPrizes: NextPage = () => {
         skipPreflight: true,
       });
       console.log("txid: ", txid);
+      setTransactionStatus('success');
+      resetTransactionStatus();
     } catch (error) {
       console.log(error);
+      setTransactionStatus('error');
+      resetTransactionStatus();
     }
   }
 
@@ -180,22 +203,29 @@ const AdminAddPrizes: NextPage = () => {
       </Head>
       <Layout>
         <Banner heading="Add prizes to the concept" paragraph="Add prizes and go live with the event" />
+        {transactionStatus === 'success' && (
+              <div className={styles.messageSuccess}>Transaction Successful</div>
+            )}
+            {transactionStatus === 'error' && (
+              <div className={styles.messageError}>Transaction Failed</div>
+            )}
         <div className={styles.toprow}>
-        <section className={styles.formContainer3}>
-          <div >
-            <p>NexDraw ID: {lotteryData.data?.lotteryId}</p>
-            <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
-            <p>
-              Ticket Price:{" "}
-              {parseInt(lotteryData.data?.ticketPrice.sol?.value as string, 16) /
-                1000000000}{" "}
-              SOL
-            </p>
-            <p>Min Tickets: {lotteryData.data?.lotteryType.time?.requiredMinTicketsSold}</p>
-            <p>EndTime: {hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime as string)}</p>
-          </div>
-        </section>
-          <section className={styles.formContainer2}>
+        <section className={`${styles.formContainer3} ${transactionStatus === 'success' ? styles.success : transactionStatus === 'error' ? styles.error : ''}`}>
+            <div >
+              <p>NexDraw ID: {lotteryData.data?.lotteryId}</p>
+              <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
+              <p>
+                Ticket Price:{" "}
+                {parseInt(lotteryData.data?.ticketPrice.sol?.value as string, 16) /
+                  1000000000}{" "}
+                SOL
+              </p>
+              <p>Min Tickets: {lotteryData.data?.lotteryType.time?.requiredMinTicketsSold}</p>
+              <p>EndTime: {hexToReadableDate(lotteryData.data?.lotteryType.time?.endTime as string)}</p>
+            </div>
+          </section>
+          <section className={`${styles.formContainer2} ${transactionStatus === 'success' ? styles.success : transactionStatus === 'error' ? styles.error : ''}`}>
+            
             <div className={styles.addsolprice}>
               <p>
                 Add % to calculate prizes from the prize pool.
@@ -213,39 +243,38 @@ const AdminAddPrizes: NextPage = () => {
 
         </div>
         <div className={styles.wrapper}>
-          <section className={styles.nftcontainer}>
+          <section className={`${styles.nftcontainer} ${transactionStatus === 'success' ? styles.success : transactionStatus === 'error' ? styles.error : ''}`}>
             <h3>Your Wallet</h3>
             <div className={styles.nftcontainerNoBorder}>
-            {userNfts.data?.map((nft, index) => (
-              <NFTCard
-                key={index}
-                nft={nft}
-                isSelected={selectedNFT === nft?.mintAddress}
-                onSelect={handleNFTSelect}
-              />
-            ))}
+              {userNfts.data?.map((nft, index) => (
+                <NFTCard
+                  key={index}
+                  nft={nft}
+                  isSelected={selectedNFT === nft?.mintAddress}
+                  onSelect={handleNFTSelect}
+                />
+              ))}
             </div>
           </section>
           <section className={styles.nftcontainer}>
             <h3>NexDraw Wallet</h3>
             <div className={styles.nftcontainerNoBorder}>
-            {lotteryNfts.data?.map((nft, index) => (
-              <NFTCard key={index} nft={nft} />
-            ))}
-            {lotteryData.data?.prizes.map((price, index) => {
-              if (price.pool)
-                return (
-                  <PrizeCard
-                    key={index}
-                    price={price.pool.value}
-                  />
-                );
-            })}
+              {lotteryNfts.data?.map((nft, index) => (
+                <NFTCard key={index} nft={nft} />
+              ))}
+              {lotteryData.data?.prizes.map((price, index) => {
+                if (price.pool)
+                  return (
+                    <PrizeCard
+                      key={index}
+                      price={price.pool.value}
+                    />
+                  );
+              })}
             </div>
           </section>
         </div>
 
-        {error && <div className={styles.error}>{error}</div>}
         <section className={styles.actions}>
           <button disabled={!selectedNFT} onClick={addNFTPrizeToLottery}>
             Add NFT to NexDraw

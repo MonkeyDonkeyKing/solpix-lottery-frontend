@@ -17,6 +17,9 @@ import Link from "next/link";
 const AdminCreate: NextPage = () => {
   const initLottery = api.lottery.initializeLottery.useMutation();
   const { publicKey, sendTransaction, signTransaction } = useWallet();
+  const [transactionStatus, setTransactionStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle');
   const { data: isAdmin } = api.lottery.isAdmin.useQuery(
     {
       admin: publicKey?.toBase58()!,
@@ -31,10 +34,8 @@ const AdminCreate: NextPage = () => {
   const [maxTicketAmount, setMaxTicketAmount] = useState<number>(0);
   const [minTicketAmount, setMinTicketAmount] = useState<number>(0);
   const [endDateTime, setEndDateTime] = useState<string>(
-    new Date().toISOString().split('T')[0] + 'T12:00' // Default date and time
+    new Date().toISOString().split('T')[0] + 'T12:00'
   );
-  const [useDate, setUseDate] = useState<"time" | "capped">("time");
-
   const maxDate = new Date();
   maxDate.setMonth(maxDate.getMonth() + 3);
   const maxDateFormatted = maxDate.toISOString().split("T")[0];
@@ -42,29 +43,43 @@ const AdminCreate: NextPage = () => {
   const today = new Date();
   const todayFormatted = today.toISOString().split("T")[0];
 
-  const handleSubmit = async () => {
+  const resetTransactionStatus = () => {
+    setTimeout(() => {
+      setTransactionStatus('idle');
+    }, 5000);
+  };
 
-    const instruction = await initLottery.mutateAsync({
-      lotteryManagerPublicKey: publicKey?.toBase58() ?? "",
-      params: {
-        LotteryType: {
-          time: {
-            endTime: new Date(endDateTime),
-            requiredMinTicketsSold: minTicketAmount,
+  const handleSubmit = async () => {
+    setTransactionStatus('idle');
+    try {
+      const instruction = await initLottery.mutateAsync({
+        lotteryManagerPublicKey: publicKey?.toBase58() ?? "",
+        params: {
+          LotteryType: {
+            time: {
+              endTime: new Date(endDateTime),
+              requiredMinTicketsSold: minTicketAmount,
+            },
           },
+          maxTicketsForSale: maxTicketAmount,
+          ticketPrice: ticketPrice,
         },
-        maxTicketsForSale: maxTicketAmount,
-        ticketPrice: ticketPrice,
-      },
-    });
-    const messagev0 = MessageV0.deserialize(instruction);
-    const transaction = new VersionedTransaction(messagev0);
-    console.log("transaction: ", transaction);
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const txid = await sendTransaction!(transaction, connection, {
-      skipPreflight: true,
-    });
-    console.log("txid: ", txid);
+      });
+      const messagev0 = MessageV0.deserialize(instruction);
+      const transaction = new VersionedTransaction(messagev0);
+      console.log("transaction: ", transaction);
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const txid = await sendTransaction!(transaction, connection, {
+        skipPreflight: true,
+      });
+      console.log("txid: ", txid);
+      setTransactionStatus('success');
+      resetTransactionStatus();
+    }
+    catch (error) {
+      setTransactionStatus('error');
+      resetTransactionStatus();
+    }
   };
 
 
@@ -96,7 +111,13 @@ const AdminCreate: NextPage = () => {
       <Layout>
         <Banner heading="Create NexDraw Concept" paragraph="Create a new NexDraw event" />
         <div className={styles.wrapper}>
-          <section className={styles.formContainer}>
+          <section className={`${styles.formContainer} ${transactionStatus === 'success' ? styles.success : transactionStatus === 'error' ? styles.error : ''}`}>
+            {transactionStatus === 'success' && (
+              <div className={styles.messageSuccess}>Transaction Successful</div>
+            )}
+            {transactionStatus === 'error' && (
+              <div className={styles.messageError}>Transaction Failed</div>
+            )}
             <div className={styles.initialinput}>
               <div className={styles.initialinput}>
 
@@ -146,17 +167,15 @@ const AdminCreate: NextPage = () => {
                 onChange={(e) => setTicketPrice(Number(e.target.value))}
               />
             </div>
-            {useDate === "time" && (
-              <div className={styles.inputSections}>
-                <p>
-                  The NexDraw prize pool will be between{" "}
-                  <p className={styles.boldText}>
-                    {(minTicketAmount * ticketPrice).toFixed(2)} SOL -{" "}
-                    {(maxTicketAmount * ticketPrice).toFixed(2)} SOL
-                  </p>
+            <div className={styles.inputSections}>
+              <p>
+                The NexDraw prize pool will be between{" "}
+                <p className={styles.boldText}>
+                  {(minTicketAmount * ticketPrice).toFixed(2)} SOL -{" "}
+                  {(maxTicketAmount * ticketPrice).toFixed(2)} SOL
                 </p>
-              </div>
-            )}
+              </p>
+            </div>
           </section>
         </div>
         <section className={styles.actions}>

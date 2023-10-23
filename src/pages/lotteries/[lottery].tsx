@@ -20,7 +20,9 @@ const LotteryDetails: NextPage = () => {
   const { connection } = useConnection();
   const [value, setValue] = useState(0);
   const buyTicket = api.lottery.buyTicket.useMutation();
-
+  const [transactionStatus, setTransactionStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle');
   const key = new PublicKey(lotteryAdress as string);
 
   const keyOnCurve = PublicKey.isOnCurve(lotteryAdress as string);
@@ -38,10 +40,15 @@ const LotteryDetails: NextPage = () => {
     }
   );
 
-
   if (!userkey) return <h2>Please connect your wallet first</h2>;
 
   if (PublicKey.isOnCurve(key)) return <p>Not a PDA</p>;
+
+  const resetTransactionStatus = () => {
+    setTimeout(() => {
+      setTransactionStatus('idle');
+    }, 5000);
+  };
 
   const hexToReadableString = (hexTime: string) => {
     const unixTime = parseInt(hexTime, 16) * 1000;
@@ -65,6 +72,7 @@ const LotteryDetails: NextPage = () => {
   const prizes = lotteryData.data?.prizes;
 
   const buyTickets = async () => {
+    setTransactionStatus('idle');
     try {
       const instruction = await buyTicket.mutateAsync({
         buyer: userkey.toBase58() ?? "",
@@ -85,8 +93,12 @@ const LotteryDetails: NextPage = () => {
           1000000000
         ).toFixed(2)} SOL`
       );
+      setTransactionStatus('success');
+      resetTransactionStatus();
     } catch (error) {
       console.log(error);
+      setTransactionStatus('error');
+      resetTransactionStatus();
     }
   };
 
@@ -149,7 +161,13 @@ const LotteryDetails: NextPage = () => {
               </p>
             </div>
           </section>
-          <section className={styles.container}>
+          <section className={`${styles.container} ${transactionStatus === 'success' ? styles.success : transactionStatus === 'error' ? styles.error : ''}`}>
+            {transactionStatus === 'success' && (
+              <div className={styles.messageSuccess}>Transaction Successful</div>
+            )}
+            {transactionStatus === 'error' && (
+              <div className={styles.messageError}>Transaction Failed</div>
+            )}
             <h3>Want to buy some more tickets?</h3>
             <div className={styles.buysection}>
               <input

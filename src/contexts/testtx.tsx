@@ -60,7 +60,7 @@ export const SendTransaction: FC = () => {
       }
 
       // Get the latest block hash to use on our transaction and confirmation
-
+      const latestBlockhash = await connection.getLatestBlockhash();
       // Create a new TransactionMessage with version and compile it to legacy
       const messageLegacy = new Transaction().add(transaction).compileMessage();
 
