@@ -110,7 +110,7 @@ const AdminOverview: NextPage = () => {
                 <tr key={index}>
                   <td><Link href={`/lotteries/${publicKey}`}>NexDraw ID:  {account.lotteryId}</Link></td>
                   <td>
-                    {ticketPriceReadable(account.ticketPrice.sol?.value as string) * account.ticketsSold} <span>SOL</span>
+                    {(ticketPriceReadable(account.ticketPrice.sol?.value as string) * account.ticketsSold).toFixed(2)} <span>SOL</span>
                   </td>
                   <td>
                     {ticketPriceReadable(account.ticketPrice.sol?.value as string)}{" "}
