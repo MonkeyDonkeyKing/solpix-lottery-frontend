@@ -16,21 +16,32 @@ const LotteryDetails: NextPage = () => {
   const lotteryAdress = router.query.lottery;
   const { connection } = useConnection();
   const [value, setValue] = useState(0);
+  const buyTicket = api.lottery.buyTicket.useMutation();
 
-  if (!userkey) return <h2>Please connect your wallet first</h2>;
-
+  console.log(lotteryAdress);
+  console.log(userkey);
   const key = new PublicKey(lotteryAdress as string);
 
-  if (PublicKey.isOnCurve(key)) return <p>Not a PDA</p>;
-
+  const keyOnCurve = PublicKey.isOnCurve(lotteryAdress as string);
   const lotteryData = api.lottery.getLotteryData.useQuery({
     lottery: key.toBase58(),
   });
 
-  const tickets = api.lottery.getLotteryTicketsByUser.useQuery({
-    lotteryAddress: key.toBase58(),
-    userAddress: userkey.toBase58(),
-  });
+  const tickets = api.lottery.getLotteryTicketsByUser.useQuery(
+    {
+      lotteryAddress: key.toBase58(),
+      userAddress: userkey?.toBase58() || "",
+    },
+    {
+      enabled: !!userkey,
+    }
+  );
+
+  console.log(lotteryAdress);
+
+  if (!userkey) return <h2>Please connect your wallet first</h2>;
+
+  if (PublicKey.isOnCurve(key)) return <p>Not a PDA</p>;
 
   const hexToReadableString = (hexTime: string) => {
     const unixTime = parseInt(hexTime, 16) * 1000;
@@ -53,8 +64,6 @@ const LotteryDetails: NextPage = () => {
   const bannerHeading = `NexDraw ID: ${lotteryData.data?.lotteryId}`;
   const prizes = lotteryData.data?.prizes;
 
-  const buyTicket = api.lottery.buyTicket.useMutation();
-
   const buyTickets = async () => {
     try {
       const instruction = await buyTicket.mutateAsync({
@@ -72,10 +81,7 @@ const LotteryDetails: NextPage = () => {
         `Transaction for lottery address: ${key.toBase58()}% completed. TXID: ${txid}
         Bought ${value} tickets for ${(
           (value *
-            parseInt(
-              lotteryData.data?.ticketPrice.sol?.value as string,
-              16
-            )) /
+            parseInt(lotteryData.data?.ticketPrice.sol?.value as string, 16)) /
           1000000000
         ).toFixed(2)} SOL`
       );
@@ -89,10 +95,8 @@ const LotteryDetails: NextPage = () => {
   };
 
   const ticketPrice =
-    (parseInt(
-      lotteryData.data?.ticketPrice.sol?.value as string,
-      16
-    ) / 1000000000);
+    parseInt(lotteryData.data?.ticketPrice.sol?.value as string, 16) /
+    1000000000;
 
   const handleWatchDrawing = () => {
     void router.push({
@@ -107,7 +111,6 @@ const LotteryDetails: NextPage = () => {
       },
     });
   };
-
 
   return (
     <>
@@ -125,13 +128,15 @@ const LotteryDetails: NextPage = () => {
           <section className={styles.container}>
             <div>
               <h3>NexDraw ID: {lotteryData.data?.lotteryId}</h3>
-              {lotteryData.data?.lotteryStatus && <p>NexDraw Event Status: {Object.keys(lotteryData.data?.lotteryStatus)}</p>}
+              {lotteryData.data?.lotteryStatus && (
+                <p>
+                  NexDraw Event Status:{" "}
+                  {Object.keys(lotteryData.data?.lotteryStatus)}
+                </p>
+              )}
               <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
               <p>Tickets sold: {lotteryData.data?.ticketsSold}</p>
-              <p>
-                Ticket Price:{" "}
-                {ticketPrice} SOL
-              </p>
+              <p>Ticket Price: {ticketPrice} SOL</p>
               <p>
                 Min Tickets:{" "}
                 {lotteryData.data?.lotteryType.time?.requiredMinTicketsSold}
@@ -163,21 +168,20 @@ const LotteryDetails: NextPage = () => {
                 style={{ textTransform: "uppercase" }}
                 onClick={buyTickets}
               >
-                Buy for{" "}
-                {(
-                  (value * ticketPrice)
-                ).toFixed(2)}{" "}
-                SOL
+                Buy for {(value * ticketPrice).toFixed(2)} SOL
               </button>
               <h3>Want to watch the drawing?</h3>
-              {lotteryData.data?.lotteryStatus && Object.keys(lotteryData.data?.lotteryStatus)[0] === 'drawing' &&
-                <button
-                  style={{ textTransform: "uppercase" }}
-                  disabled={!isEndTimePassed}
-                  onClick={handleWatchDrawing}
-                >
-                  Watch Drawing
-                </button>}
+              {lotteryData.data?.lotteryStatus &&
+                Object.keys(lotteryData.data?.lotteryStatus)[0] ===
+                  "drawing" && (
+                  <button
+                    style={{ textTransform: "uppercase" }}
+                    disabled={!isEndTimePassed}
+                    onClick={handleWatchDrawing}
+                  >
+                    Watch Drawing
+                  </button>
+                )}
               <PrizeIcon prizes={prizes} publicKey={key} />
             </div>
           </section>
