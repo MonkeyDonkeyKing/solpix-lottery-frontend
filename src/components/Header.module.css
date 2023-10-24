@@ -11,6 +11,8 @@
   color: var(--color-text-light);
   position: absolute;
   margin: 0rem 3rem;
+  opacity: 1;
+  transition: all 500ms ease-in-out;
 }
 
 .navigation h3 {
@@ -66,8 +68,8 @@
   font-size: inherit;
 }
 
-@media screen and (max-width: 1084px) {
+@media screen and (max-width: 1284px) {
   .navigation a:first-child {
-    display: none;
+    opacity: 0;
   }
 }

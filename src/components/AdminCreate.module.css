@@ -106,3 +106,11 @@ input:checked + .slider:before {
 .error {
   border: 1px solid red;
 }
+
+.messageSuccess {
+  color: green;
+}
+
+.messageError {
+  color: red;
+}
