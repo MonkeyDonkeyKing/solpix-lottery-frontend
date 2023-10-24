@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import Banner from "@/components/Banner";
 import Layout from "@/components/Layout";
 import { api } from "@/utils/api";
@@ -25,7 +24,6 @@ const LotteryDetails: NextPage = () => {
   >('idle');
   const key = new PublicKey(lotteryAdress as string);
 
-  const keyOnCurve = PublicKey.isOnCurve(lotteryAdress as string);
   const lotteryData = api.lottery.getLotteryData.useQuery({
     lottery: key.toBase58(),
   });
@@ -39,10 +37,6 @@ const LotteryDetails: NextPage = () => {
       enabled: !!userkey,
     }
   );
-
-  if (!userkey) return <h2>Please connect your wallet first</h2>;
-
-  if (PublicKey.isOnCurve(key)) return <p>Not a PDA</p>;
 
   const resetTransactionStatus = () => {
     setTimeout(() => {
@@ -74,6 +68,7 @@ const LotteryDetails: NextPage = () => {
   const buyTickets = async () => {
     setTransactionStatus('idle');
     try {
+      if(!userkey) return;
       const instruction = await buyTicket.mutateAsync({
         buyer: userkey.toBase58() ?? "",
         lottery: key.toBase58(),
@@ -123,6 +118,22 @@ const LotteryDetails: NextPage = () => {
       },
     });
   };
+  
+  // NOT LOGGED IN
+  if (!userkey) {
+    return (
+      <>
+        <Head>
+          <title>NexDraw Event Details</title>
+          <meta name="description" content="Solpix NexDraw" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <Layout>
+          <p>Please log in with your wallet to access this page.</p>
+        </Layout>
+      </>
+    );
+  }
 
   return (
     <>
@@ -184,6 +195,7 @@ const LotteryDetails: NextPage = () => {
             <div className={styles.buybutton}>
               <button
                 style={{ textTransform: "uppercase" }}
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 onClick={buyTickets}
               >
                 Buy for {(value * ticketPrice).toFixed(2)} SOL
@@ -208,7 +220,7 @@ const LotteryDetails: NextPage = () => {
             <section>
               {tickets.data?.map((ticket, index) => (
                 <div key={index}>
-                  {/*eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   <p>{(ticket as any).mintAddress?.toString()}</p>
                   <button disabled={!isEndTimePassed}>Redeem ticket</button>
                 </div>
