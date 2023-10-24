@@ -37,7 +37,7 @@ const Header = () => {
         </Link>
         <li>
           <FontAwesomeIcon icon={faPencil} />
-          <Link href={"/drawing"}>Drawing</Link>
+          <Link href={"/drawing"}>Events</Link>
         </li>
         <li>
           <FontAwesomeIcon icon={faHandshake} />
