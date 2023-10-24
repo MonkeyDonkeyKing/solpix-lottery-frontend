@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Layout from "@/components/Layout";
 import type { NextPage } from "next";
 import Head from "next/head";
-import styles from "@/components/DrawingPage.module.css";
+import styles from "@/components/DrawingDetail.module.css";
 import {
   Table,
   TableBody,
@@ -72,7 +72,7 @@ const DrawingDetail: NextPage = () => {
   const [winningAmount, setWinningAmount] = useState<number | string>(10);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [isDrawingAll] = useState<boolean>(false);
-
+  const [animateWinner, setAnimateWinner] = useState<boolean>(false);
   const slotWalletRef = useRef<SlotCounterRef>(null);
   const slotAmountRef = useRef<SlotCounterRef>(null);
 
@@ -116,6 +116,7 @@ const DrawingDetail: NextPage = () => {
     if(ticketsWon && winner) {
       setTicketsWon([...ticketsWon, winner]);
       removeWinner(winner?.ticketID ?? '');
+      setAnimateWinner(true);
     }
   }
 
@@ -139,6 +140,15 @@ const DrawingDetail: NextPage = () => {
   //   const lastFour = wallet.substring(wallet.length - 4);
   //   return `${firstFour}...${lastFour}`;
   // };
+
+  useEffect(() => {
+    if (animateWinner) {
+      const timer = setTimeout(() => {
+        setAnimateWinner(false);
+      }, 1000); 
+      return () => clearTimeout(timer);
+    }
+  }, [animateWinner]);
 
   function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -197,13 +207,15 @@ const DrawingDetail: NextPage = () => {
               </TableHead>
               <TableBody>
                 {ticketsWon.map((owner, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
+                  <TableRow key={index} >
+                    <TableCell className={animateWinner ? styles.winnerAnimation : ''}>
                       {owner.ticketID}{" "}
-                      <p>        {typeof owner.value === 'number'
-                        ? `${owner.value}%`
-                        : 'NFT'
-                      }{" "}</p>
+                      <p>
+                        {typeof owner.value === 'number'
+                          ? `${owner.value}%`
+                          : 'NFT'
+                        }{" "}
+                      </p>
                     </TableCell>
                   </TableRow>
                 ))}
