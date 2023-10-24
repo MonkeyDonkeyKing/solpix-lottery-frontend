@@ -357,4 +357,27 @@ export const lotteryRouter = createTRPCRouter({
 
       return msg.serialize();
     }),
+    verifyWinners: publicProcedure
+    .input(
+      z.object({
+        lottery: z.string().transform((key) => new PublicKey(key)),
+        admin: z.string().transform((key) => new PublicKey(key)),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { lottery, admin } = input;
+      
+      const result = await methods.lottery.verifyWinner({
+        program: ctx.program,
+        lottery: lottery,
+      });
+      
+      const msg = new TransactionMessage({
+        instructions: result.instructions,
+        payerKey: admin,
+        recentBlockhash: (await ctx.solanaRpc.getLatestBlockhash()).blockhash,
+      }).compileToV0Message();
+
+      return msg.serialize();
+    }),
 });

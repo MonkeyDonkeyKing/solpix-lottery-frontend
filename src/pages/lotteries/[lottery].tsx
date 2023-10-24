@@ -68,7 +68,7 @@ const LotteryDetails: NextPage = () => {
   const buyTickets = async () => {
     setTransactionStatus('idle');
     try {
-      if(!userkey) return;
+      if (!userkey) return;
       const instruction = await buyTicket.mutateAsync({
         buyer: userkey.toBase58() ?? "",
         lottery: key.toBase58(),
@@ -118,7 +118,7 @@ const LotteryDetails: NextPage = () => {
       },
     });
   };
-  
+
   // NOT LOGGED IN
   if (!userkey) {
     return (
@@ -150,26 +150,33 @@ const LotteryDetails: NextPage = () => {
         <div className={styles.gridwrapper}>
           <section className={styles.container}>
             <div>
-              <h3>NexDraw ID: {lotteryData.data?.lotteryId}</h3>
+              <h3>
+                <span className={styles.staticText}>NexDraw ID:</span>
+                <span>{lotteryData.data?.lotteryId}</span>
+              </h3>
               {lotteryData.data?.lotteryStatus && (
                 <p>
-                  NexDraw Event Status:{" "}
-                  {Object.keys(lotteryData.data?.lotteryStatus)}
+                  NexDraw Event Status:
+                  <span>{Object.keys(lotteryData.data?.lotteryStatus)}</span>
                 </p>
               )}
-              <p>Max Tickets for sale: {lotteryData.data?.maxTicketsForSale}</p>
-              <p>Tickets sold: {lotteryData.data?.ticketsSold}</p>
-              <p>Ticket Price: {ticketPrice} SOL</p>
+              <p>Max Tickets for sale:<span>{lotteryData.data?.maxTicketsForSale}</span> </p>
+              <p>Tickets sold: <span>{lotteryData.data?.ticketsSold}</span> </p>
+              <p>Ticket Price: <span>{ticketPrice} SOL</span></p>
               <p>
-                Min Tickets:{" "}
-                {lotteryData.data?.lotteryType.time?.requiredMinTicketsSold}
+                Min Tickets: <span>{lotteryData.data?.lotteryType.time?.requiredMinTicketsSold}</span>
               </p>
               <p>
-                EndTime:{" "}
-                {hexToReadableString(
+                EndTime:<span>{hexToReadableString(
                   lotteryData.data?.lotteryType.time?.endTime as string
-                )}
+                )}</span>
               </p>
+              {lotteryData.data &&
+                <p>
+                  Prize pool:{" "}
+                  <span> {(lotteryData.data?.ticketsSold * ticketPrice).toFixed(3)} SOL</span>
+                </p>
+              }
             </div>
           </section>
           <section className={`${styles.container} ${transactionStatus === 'success' ? styles.success : transactionStatus === 'error' ? styles.error : ''}`}>
