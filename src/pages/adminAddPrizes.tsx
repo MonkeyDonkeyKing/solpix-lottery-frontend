@@ -134,7 +134,7 @@ const AdminAddPrizes: NextPage = () => {
         lottery: lotteryPublicKey,
         symbol: 'NXDRW',
         name: `NexDraw ID: ${lotteryData.data?.lotteryId}`,
-        uri: 'https://ipfs.io/ipfs/bafkreibavp3ud47wyte5c73mb7fynieczuyjp43uy4kclwwblu4lpiq3lq/'
+        uri: 'https://ipfs.io/ipfs/bafkreicja2w6txnvco7hhcynm7ubh236kn4xmp3u7msdf4lanctxclt25q/'
       });
       const messagev0 = MessageV0.deserialize(instruction);
       const transaction = new VersionedTransaction(messagev0);
