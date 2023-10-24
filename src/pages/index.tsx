@@ -5,7 +5,6 @@ import Head from "next/head";
 import Layout from "@/components/Layout";
 import CardMain from "@/components/CardMain";
 
-///CHECK
 import * as web3 from "@solana/web3.js";
 import { api } from "@/utils/api";
 
