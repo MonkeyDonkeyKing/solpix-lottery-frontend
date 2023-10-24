@@ -17,6 +17,36 @@ const ModalCard = ({
     address: getPrizeVaultPda(new PublicKey(publicKey))[0].toBase58(),
   });
 
+  const getBorderStyle = (value: number | undefined) => {
+    if(!value) return;
+    const intValue = value;
+
+    switch (true) {
+    case intValue >= 100:
+      return styles.borderRed100;
+    case intValue >= 90:
+      return styles.borderRed90;
+    case intValue >= 80:
+      return styles.borderRed80;
+    case intValue >= 70:
+      return styles.borderRed70;
+    case intValue >= 60:
+      return styles.borderRed60;
+    case intValue >= 50:
+      return styles.borderRed50;
+    case intValue >= 40:
+      return styles.borderRed40;
+    case intValue >= 30:
+      return styles.borderRed30;
+    case intValue >= 20:
+      return styles.borderRed20;
+    case intValue >= 10:
+      return styles.borderRed10;
+    default:
+      return "";
+  }
+  };
+
   return (
     <>
       <div className={styles.wrapper}>
@@ -31,7 +61,10 @@ const ModalCard = ({
         {prizes[0]?.pool && (
           <div className={styles.container}>
             {prizes.map((prize, index) => (
-              <div className={styles.card} key={index}>
+              <div
+                className={`${styles.card} ${getBorderStyle(prize.pool?.value)}`}
+                key={index}
+              >
                 <p className={styles.name}>{prize.pool?.value} %</p>
               </div>
             ))}
