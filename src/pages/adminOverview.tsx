@@ -53,11 +53,6 @@ const AdminOverview: NextPage = () => {
     );
   }
 
-  // const drawWinners = await methods.lottery.drawWinners({
-  //   lottery: new PublicKey(createLottery.accounts.lottery!),
-  //   program,
-  // });
-
   async function drawWinners(lottery: PublicKey) {
     try {
       const instruction = await drawWinnersMutation.mutateAsync({
