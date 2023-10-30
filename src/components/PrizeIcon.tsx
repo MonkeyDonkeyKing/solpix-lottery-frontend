@@ -26,7 +26,7 @@ const PrizeIcon = ({prizes, publicKey}:{prizes: any,publicKey: PublicKey}) => {
           <div className={styles.card}>
               <h1>NexDraw event prizes</h1>
             <section>
-              <h3>Prizes are NFT(s) and %-Prize based on the pricepool in solana</h3>
+              <h3>Prizes are NFT(s) and %-Prize based on the prizepool in solana</h3>
               <div className={styles.imagecontainer}>
                 <ModalCard prizes={prizes} publicKey={publicKey}></ModalCard>
               </div>
