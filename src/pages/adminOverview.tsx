@@ -73,28 +73,6 @@ const AdminOverview: NextPage = () => {
     }
   }
 
-  async function verifyWinners(lottery: PublicKey) {
-    try {
-      const instruction = await verifyWinnersMutation.mutateAsync({
-        admin: publicKey?.toBase58() ?? "",
-        lottery: lottery.toString(),
-      });
-      const messagev0 = MessageV0.deserialize(instruction);
-      const transaction = new VersionedTransaction(messagev0);
-      console.log("transaction: ", transaction);
-
-      const txid = await sendTransaction(transaction, connection, {
-        skipPreflight: true,
-      });
-
-      console.log("Verifiy Winners txid:: ", txid);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-
-
   function ticketPriceReadable(price: string) {
     return parseInt(price, 16) / 1000000000;
   }
@@ -149,9 +127,6 @@ const AdminOverview: NextPage = () => {
                     ) : (
                       "No actions"
                     )}
-                    {Object.keys(account.lotteryStatus)[0] === "drawing" &&
-                      <button onClick={() => verifyWinners(publicKey)}>Verifiy Winners</button>
-                    }
                   </td>
                 </tr>
               ))}
