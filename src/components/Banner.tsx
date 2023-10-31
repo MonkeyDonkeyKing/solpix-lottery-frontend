@@ -30,18 +30,19 @@ const Banner = ({
     <div
       className={`${styles.banner} ${hasImage ? styles.withImage : ""}`}
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       {imageUrl && <img src={imageUrl} alt={imageAlt} />}
       <h1>{heading.toLocaleUpperCase()}</h1>
       {subHeaderDraw && (
         <>
-        <h2>
-          {subHeaderDraw}
-        </h2>
-        <div className={styles.chipcontainer}>
-        <ChipInput content={"NexDraw ID: " + id} />
-        <ChipInput content={"Prize Pool: " + prizePool} />
-        <ChipInput maxTickets={maxTickets} soldTickets={soldTickets} />
-        </div>
+          <h2>
+            {subHeaderDraw}
+          </h2>
+          <div className={styles.chipcontainer}>
+            <ChipInput content={"NexDraw ID: " + id} />
+            {prizePool && <ChipInput content={"Prize Pool: " + parseFloat(prizePool).toFixed(2)} />}
+            <ChipInput maxTickets={maxTickets} soldTickets={soldTickets} />
+          </div>
         </>
       )}
       {paragraph && <p>{paragraph}</p>}
