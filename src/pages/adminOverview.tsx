@@ -4,12 +4,12 @@
 import Banner from "@/components/Banner";
 import Layout from "@/components/Layout";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { NextPage } from "next";
+import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "../components/AdminOverview.module.css";
 import { api } from "@/utils/api";
-import { MessageV0, PublicKey, VersionedTransaction } from "@solana/web3.js";
+import { MessageV0, type PublicKey, VersionedTransaction } from "@solana/web3.js";
 
 
 
@@ -34,8 +34,6 @@ const AdminOverview: NextPage = () => {
     }
   );
   const drawWinnersMutation = api.lottery.drawWinners.useMutation();
-  const verifyWinnersMutation = api.lottery.verifyWinners.useMutation();
-
 
   if (!isAdmin) {
     // NOT ALLOWED
