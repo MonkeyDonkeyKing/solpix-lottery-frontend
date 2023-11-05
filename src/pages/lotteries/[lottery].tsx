@@ -225,7 +225,7 @@ const LotteryDetails: NextPage = () => {
           <section className={styles.container2}>
             <h3>Your tickets for this lottery:</h3>
             <section>
-              {tickets.data?.map((ticket, index) => (
+              {tickets && tickets.data?.map((ticket, index) => (
                 <div key={index}>
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   <p>{(ticket as any).mintAddress?.toString()}</p>
