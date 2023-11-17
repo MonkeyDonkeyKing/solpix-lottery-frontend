@@ -128,6 +128,7 @@ const AdminAddPrizes: NextPage = () => {
 
   async function onGoLive() {
     setTransactionStatus('idle');
+
     try {
       const instruction = await startLottery.mutateAsync({
         authority: publicKey?.toBase58() ?? "",
@@ -155,6 +156,7 @@ const AdminAddPrizes: NextPage = () => {
 
   async function addNFTPrizeToLottery() {
     setTransactionStatus('idle');
+    
     try {
       const instruction = await addNFTPrize.mutateAsync({
         authority: publicKey?.toBase58() ?? "",
